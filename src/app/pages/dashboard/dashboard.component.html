@@ -1,67 +1,82 @@
 <div class="dashboard">
   <div class="dashboard-header">
-    <h2>Home</h2>
+    <h2>Dashboard</h2>
     <button (click)="logout()" class="logout-btn">
       <i class="fas fa-sign-out-alt"></i>
       <span>Logout</span>
     </button>
   </div>
 
-  <!-- Main Category Buttons -->
-  <div class="main-categories">
-    <button (click)="setActiveCategory('customers')" [class.active]="activeCategory === 'customers'">
-      <i class="fas fa-users"></i>
-      <span>Customers</span>
-    </button>
-    <button (click)="setActiveCategory('invoices')" [class.active]="activeCategory === 'invoices'">
-      <i class="fas fa-file-invoice"></i>
-      <span>Invoices</span>
-    </button>
-    <button (click)="setActiveCategory('revenue')" [class.active]="activeCategory === 'revenue'">
-      <i class="fas fa-chart-line"></i>
-      <span>Revenue Dashboard</span>
-    </button>
-  </div>
-
-  <!-- Customers Sub-Functions -->
-  <div *ngIf="activeCategory === 'customers'" class="sub-functions">
-    <h3>Customer Management</h3>
-    <div class="actions">
-      <button routerLink="/add-customer">
-        <i class="fas fa-user-plus"></i> Add Customer
+  <!-- Accordion Style Navigation -->
+  <div class="accordion-navigation">
+    
+    <!-- Customers Section -->
+    <div class="accordion-item">
+      <button class="accordion-header" (click)="toggleCategory('customers')" [class.active]="activeCategory === 'customers'">
+        <i class="fas fa-users"></i>
+        <span>Customers</span>
+        <i class="fas fa-chevron-down accordion-icon" [class.rotated]="activeCategory === 'customers'"></i>
       </button>
-      <button routerLink="/view-customer">
-        <i class="fas fa-users"></i> View Customers
-      </button>
+      <div class="accordion-content" [class.expanded]="activeCategory === 'customers'">
+        <div class="sub-functions">
+          <h3>Customer Management</h3>
+          <div class="actions">
+            <button routerLink="/add-customer">
+              <i class="fas fa-user-plus"></i> Add Customer
+            </button>
+            <button routerLink="/view-customer">
+              <i class="fas fa-users"></i> View Customers
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
-  </div>
 
-  <!-- Invoices Sub-Functions -->
-  <div *ngIf="activeCategory === 'invoices'" class="sub-functions">
-    <h3>Invoice Management</h3>
-    <div class="actions">
-      <button routerLink="/create-invoice">
-        <i class="fas fa-plus-circle"></i> Create Invoice
+    <!-- Invoices Section -->
+    <div class="accordion-item">
+      <button class="accordion-header" (click)="toggleCategory('invoices')" [class.active]="activeCategory === 'invoices'">
+        <i class="fas fa-file-invoice"></i>
+        <span>Invoices</span>
+        <i class="fas fa-chevron-down accordion-icon" [class.rotated]="activeCategory === 'invoices'"></i>
       </button>
-      <button routerLink="/view-invoices">
-        <i class="fas fa-file-invoice-dollar"></i> View Invoices
-      </button>
+      <div class="accordion-content" [class.expanded]="activeCategory === 'invoices'">
+        <div class="sub-functions">
+          <h3>Invoice Management</h3>
+          <div class="actions">
+            <button routerLink="/create-invoice">
+              <i class="fas fa-plus-circle"></i> Create Invoice
+            </button>
+            <button routerLink="/view-invoices">
+              <i class="fas fa-file-invoice-dollar"></i> View Invoices
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
-  </div>
 
-  <!-- Revenue Dashboard Sub-Functions -->
-  <div *ngIf="activeCategory === 'revenue'" class="sub-functions">
-    <h3>Revenue Analytics</h3>
-    <div class="actions">
-      <button (click)="setActiveSection('monthlyRevenue')" [class.active]="activeSection === 'monthlyRevenue'">
-        <i class="fas fa-calendar-alt"></i> Monthly Revenue
+    <!-- Revenue Dashboard Section -->
+    <div class="accordion-item">
+      <button class="accordion-header" (click)="toggleCategory('revenue')" [class.active]="activeCategory === 'revenue'">
+        <i class="fas fa-chart-line"></i>
+        <span>Revenue Dashboard</span>
+        <i class="fas fa-chevron-down accordion-icon" [class.rotated]="activeCategory === 'revenue'"></i>
       </button>
-      <button (click)="setActiveSection('customerRevenue')" [class.active]="activeSection === 'customerRevenue'">
-        <i class="fas fa-user-chart"></i> Customer Revenue
-      </button>
-      <button (click)="setActiveSection('revenueReports')" [class.active]="activeSection === 'revenueReports'">
-        <i class="fas fa-chart-bar"></i> Revenue Reports
-      </button>
+      <div class="accordion-content" [class.expanded]="activeCategory === 'revenue'">
+        <div class="sub-functions">
+          <h3>Revenue Analytics</h3>
+          <div class="actions">
+            <button (click)="setActiveSection('monthlyRevenue')" [class.active]="activeSection === 'monthlyRevenue'">
+              <i class="fas fa-calendar-alt"></i> Monthly Revenue
+            </button>
+            <button (click)="setActiveSection('customerRevenue')" [class.active]="activeSection === 'customerRevenue'">
+              <i class="fas fa-user-chart"></i> Customer Revenue
+            </button>
+            <button (click)="setActiveSection('revenueReports')" [class.active]="activeSection === 'revenueReports'">
+              <i class="fas fa-chart-bar"></i> Revenue Reports
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 

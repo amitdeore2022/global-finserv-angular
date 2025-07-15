@@ -177,6 +177,16 @@ export class DashboardComponent implements OnInit {
     this.activeSection = null; // Reset section when category changes
   }
 
+  toggleCategory(category: string) {
+    // If the clicked category is already active, close it; otherwise, open it
+    if (this.activeCategory === category) {
+      this.activeCategory = null;
+    } else {
+      this.activeCategory = category;
+    }
+    this.activeSection = null; // Reset section when category changes
+  }
+
   setActiveSection(section: string | null) {
     this.activeSection = section;
   }

@@ -1,6 +1,6 @@
 :host {
   display: block;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #f8f9fa;
   min-height: calc(100vh - 120px);
 }
 
@@ -15,7 +15,7 @@
 }
 
 .back-btn {
-  background: rgba(255, 255, 255, 0.2);
+  background: #6c757d;
   color: white;
   border: none;
   border-radius: 8px;
@@ -27,11 +27,11 @@
 }
 
 .back-btn:hover {
-  background: rgba(255, 255, 255, 0.3);
+  background: #5a6268;
 }
 
 .header h2 {
-  color: white;
+  color: #2c3e50;
   font-size: 32px;
   margin: 0;
   font-weight: 600;
