@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterModule, ActivatedRoute } from '@angular/router';
 import { PdfGenerationService } from '../../services/pdf-generation.service';
 // import { CustomerService, Customer } from '../../services/customer.service';
 import { LocalCustomerService as CustomerService, Customer } from '../../services/local-customer.service';
@@ -13,9 +13,9 @@ import { LocalInvoiceService as InvoiceService, Invoice } from '../../services/l
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css'],
   standalone: true,
-  imports: [CommonModule, FormsModule]
+  imports: [CommonModule, FormsModule, RouterModule]
 })
-export class DashboardComponent {
+export class DashboardComponent implements OnInit {
   activeCategory: string | null = null;
   activeSection: string | null = null;
   
@@ -135,7 +135,8 @@ export class DashboardComponent {
   ];
 
   constructor(
-    private router: Router, 
+    private router: Router,
+    private route: ActivatedRoute,
     private pdfService: PdfGenerationService,
     private customerService: CustomerService,
     private invoiceService: InvoiceService
@@ -144,6 +145,13 @@ export class DashboardComponent {
   }
 
   async ngOnInit() {
+    // Check for query parameters to set active category
+    this.route.queryParams.subscribe(params => {
+      if (params['category']) {
+        this.activeCategory = params['category'];
+      }
+    });
+    
     await this.loadCustomers();
     await this.loadInvoices();
   }

@@ -47,7 +47,7 @@ export class ViewCustomerComponent {
   }
 
   goBack() {
-    this.router.navigate(['/dashboard']);
+    this.router.navigate(['/dashboard'], { queryParams: { category: 'customers' } });
   }
 
   editCustomer(customerId: number) {

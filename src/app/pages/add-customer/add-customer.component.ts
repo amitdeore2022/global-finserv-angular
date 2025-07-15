@@ -12,10 +12,13 @@ import { Router } from '@angular/router';
 })
 export class AddCustomerComponent {
   newCustomer = { 
-    prefix: '', 
+    customerType: 'individual', // 'individual' or 'company'
+    prefix: 'Mr.', 
     firstName: '', 
     middleName: '', 
-    lastName: '', 
+    lastName: '',
+    companyName: '', // For company type
+    companyType: '', // For company type
     countryCode: '+91', 
     mobile: '', 
     gst: '', 
@@ -43,16 +46,27 @@ export class AddCustomerComponent {
   constructor(private router: Router) {}
 
   addCustomer() {
-    // Validate mandatory fields including address fields
-    if (this.newCustomer.prefix && this.newCustomer.firstName && this.newCustomer.lastName && 
-        this.newCustomer.countryCode && this.newCustomer.mobile &&
-        this.newCustomer.addressLine1 && this.newCustomer.village && 
-        this.newCustomer.taluka && this.newCustomer.district && this.newCustomer.pinCode) {
-      
-      // Combine name fields
-      const fullName = `${this.newCustomer.prefix} ${this.newCustomer.firstName} ${this.newCustomer.middleName ? this.newCustomer.middleName + ' ' : ''}${this.newCustomer.lastName}`;
+    // Validate mandatory fields based on customer type
+    let isValid = false;
+    let fullName = '';
+
+    if (this.newCustomer.customerType === 'individual') {
+      isValid = !!(this.newCustomer.prefix && this.newCustomer.firstName && this.newCustomer.lastName && 
+                   this.newCustomer.countryCode && this.newCustomer.mobile &&
+                   this.newCustomer.addressLine1 && this.newCustomer.village && 
+                   this.newCustomer.district);
+      fullName = `${this.newCustomer.prefix} ${this.newCustomer.firstName} ${this.newCustomer.middleName ? this.newCustomer.middleName + ' ' : ''}${this.newCustomer.lastName}`.trim();
+    } else if (this.newCustomer.customerType === 'company') {
+      isValid = !!(this.newCustomer.companyName && this.newCustomer.companyType && 
+                   this.newCustomer.countryCode && this.newCustomer.mobile &&
+                   this.newCustomer.addressLine1 && this.newCustomer.village && 
+                   this.newCustomer.district);
+      fullName = `${this.newCustomer.companyName} (${this.newCustomer.companyType})`;
+    }
+
+    if (isValid) {
       const fullMobile = `${this.newCustomer.countryCode} ${this.newCustomer.mobile}`;
-      const fullAddress = `${this.newCustomer.addressLine1}, ${this.newCustomer.village}, ${this.newCustomer.taluka}, ${this.newCustomer.district}, ${this.newCustomer.pinCode}`;
+      const fullAddress = `${this.newCustomer.addressLine1}, ${this.newCustomer.village}${this.newCustomer.taluka ? ', ' + this.newCustomer.taluka : ''}, ${this.newCustomer.district}${this.newCustomer.pinCode ? ', ' + this.newCustomer.pinCode : ''}`;
       
       const customerData = {
         name: fullName,
@@ -67,10 +81,13 @@ export class AddCustomerComponent {
       
       // Reset form
       this.newCustomer = { 
-        prefix: '', 
+        customerType: 'individual',
+        prefix: 'Mr.', 
         firstName: '', 
         middleName: '', 
-        lastName: '', 
+        lastName: '',
+        companyName: '',
+        companyType: '',
         countryCode: '+91',
         mobile: '', 
         gst: '', 
@@ -85,11 +102,11 @@ export class AddCustomerComponent {
       // Navigate back to dashboard
       this.router.navigate(['/dashboard']);
     } else {
-      alert('Please fill in all mandatory fields (Prefix, First Name, Last Name, and Mobile Number)');
+      alert('Please fill in all mandatory fields');
     }
   }
 
   goBack() {
-    this.router.navigate(['/dashboard']);
+    this.router.navigate(['/dashboard'], { queryParams: { category: 'customers' } });
   }
 }
