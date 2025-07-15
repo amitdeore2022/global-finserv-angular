@@ -6,25 +6,59 @@
 
   <div class="form-container">
     <form (ngSubmit)="addCustomer()">
+      <!-- Customer Type Selection -->
       <div class="form-group">
+        <label>Customer Type *</label>
+        <div class="radio-group-horizontal">
+          <label class="radio-option">
+            <input type="radio" name="customerType" value="individual" [(ngModel)]="newCustomer.customerType" />
+            Individual
+          </label>
+          <label class="radio-option">
+            <input type="radio" name="customerType" value="company" [(ngModel)]="newCustomer.customerType" />
+            Company
+          </label>
+        </div>
+      </div>
+
+      <!-- Individual Customer Name -->
+      <div *ngIf="newCustomer.customerType === 'individual'" class="form-group">
         <label>Customer Name *</label>
         <div class="name-input-group">
-          <select id="prefix" [(ngModel)]="newCustomer.prefix" name="prefix" class="prefix-select" required>
-            <option value="">Select</option>
-            <option *ngFor="let prefix of prefixOptions" [value]="prefix">{{prefix}}</option>
-          </select>
+          <input id="prefix" type="text" [(ngModel)]="newCustomer.prefix" name="prefix" placeholder="Prefix" class="prefix-input" />
           <input id="firstName" type="text" [(ngModel)]="newCustomer.firstName" name="firstName" placeholder="First Name" class="name-input" required />
         </div>
       </div>
       
-      <div class="form-group">
+      <div *ngIf="newCustomer.customerType === 'individual'" class="form-group">
         <label for="middleName">Middle Name</label>
         <input id="middleName" type="text" [(ngModel)]="newCustomer.middleName" name="middleName" placeholder="Enter middle name" />
       </div>
       
-      <div class="form-group">
+      <div *ngIf="newCustomer.customerType === 'individual'" class="form-group">
         <label for="lastName">Last Name *</label>
         <input id="lastName" type="text" [(ngModel)]="newCustomer.lastName" name="lastName" placeholder="Enter last name" required />
+      </div>
+
+      <!-- Company Customer Name -->
+      <div *ngIf="newCustomer.customerType === 'company'" class="form-group">
+        <label for="companyName">Company Name *</label>
+        <input id="companyName" type="text" [(ngModel)]="newCustomer.companyName" name="companyName" placeholder="Enter company name" required />
+      </div>
+      
+      <div *ngIf="newCustomer.customerType === 'company'" class="form-group">
+        <label for="companyType">Company Type *</label>
+        <select id="companyType" [(ngModel)]="newCustomer.companyType" name="companyType" required>
+          <option value="">Select Company Type</option>
+          <option value="Pvt Ltd">Pvt Ltd</option>
+          <option value="LLP">LLP</option>
+          <option value="Partnership">Partnership</option>
+          <option value="Proprietorship">Proprietorship</option>
+          <option value="Public Ltd">Public Ltd</option>
+          <option value="Trust">Trust</option>
+          <option value="Society">Society</option>
+          <option value="FPCL">FPCL</option>
+        </select>
       </div>
       
       <div class="form-group">
@@ -64,8 +98,8 @@
         </div>
         
         <div class="form-group">
-          <label for="taluka">Taluka *</label>
-          <input id="taluka" type="text" [(ngModel)]="newCustomer.taluka" name="taluka" placeholder="Enter taluka name" required />
+          <label for="taluka">Taluka</label>
+          <input id="taluka" type="text" [(ngModel)]="newCustomer.taluka" name="taluka" placeholder="Enter taluka name" />
         </div>
         
         <div class="form-group">
@@ -74,8 +108,8 @@
         </div>
         
         <div class="form-group">
-          <label for="pinCode">Pin Code *</label>
-          <input id="pinCode" type="text" [(ngModel)]="newCustomer.pinCode" name="pinCode" placeholder="Enter pin code" pattern="[0-9]{6}" required />
+          <label for="pinCode">Pin Code</label>
+          <input id="pinCode" type="text" [(ngModel)]="newCustomer.pinCode" name="pinCode" placeholder="Enter pin code" pattern="[0-9]{6}" />
         </div>
       </div>
 

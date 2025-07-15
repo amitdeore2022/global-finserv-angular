@@ -88,17 +88,23 @@ export class CreateInvoiceComponent {
   showAddCustomerForm = false;
   showCustomerSearch = false;
 
-  newCustomer: Customer = {
-    id: '',
+  newCustomer = {
+    customerType: 'individual', // 'individual' or 'company'
     prefix: 'Mr.',
     firstName: '',
+    middleName: '',
     lastName: '',
+    companyName: '', // For company type
+    companyType: '', // For company type
+    countryCode: '+91',
     mobile: '',
+    gst: '',
     email: '',
-    address: '',
-    city: '',
-    state: '',
-    pincode: ''
+    addressLine1: '',
+    village: '',
+    taluka: '',
+    district: '',
+    pinCode: ''
   };
 
   bankAccounts = [
@@ -119,6 +125,16 @@ export class CreateInvoiceComponent {
     'Compliance Services',
     'Other Services'
   ];
+
+  countryCodeOptions = [
+    { code: '+91', country: 'India' },
+    { code: '+1', country: 'USA' },
+    { code: '+44', country: 'UK' },
+    { code: '+86', country: 'China' },
+    { code: '+81', country: 'Japan' }
+  ];
+
+  companyTypeOptions = ['Private Limited', 'Public Limited', 'LLP', 'Partnership', 'Sole Proprietorship', 'OPC'];
 
   constructor(private router: Router) {
     this.calculateTotals();
@@ -170,26 +186,68 @@ export class CreateInvoiceComponent {
   }
 
   addNewCustomer(): void {
-    if (this.newCustomer.firstName && this.newCustomer.lastName && this.newCustomer.mobile) {
-      this.newCustomer.id = (this.existingCustomers.length + 1).toString();
-      this.existingCustomers.push({ ...this.newCustomer });
-      this.invoice.customer = { ...this.newCustomer };
+    // Validate mandatory fields based on customer type
+    let isValid = false;
+    let fullName = '';
+
+    if (this.newCustomer.customerType === 'individual') {
+      isValid = !!(this.newCustomer.prefix && this.newCustomer.firstName && this.newCustomer.lastName && 
+                   this.newCustomer.countryCode && this.newCustomer.mobile &&
+                   this.newCustomer.addressLine1 && this.newCustomer.village && 
+                   this.newCustomer.district);
+      fullName = `${this.newCustomer.prefix} ${this.newCustomer.firstName} ${this.newCustomer.middleName ? this.newCustomer.middleName + ' ' : ''}${this.newCustomer.lastName}`.trim();
+    } else if (this.newCustomer.customerType === 'company') {
+      isValid = !!(this.newCustomer.companyName && this.newCustomer.companyType && 
+                   this.newCustomer.countryCode && this.newCustomer.mobile &&
+                   this.newCustomer.addressLine1 && this.newCustomer.village && 
+                   this.newCustomer.district);
+      fullName = `${this.newCustomer.companyName} (${this.newCustomer.companyType})`;
+    }
+
+    if (isValid) {
+      const fullMobile = `${this.newCustomer.countryCode} ${this.newCustomer.mobile}`;
+      const fullAddress = `${this.newCustomer.addressLine1}, ${this.newCustomer.village}${this.newCustomer.taluka ? ', ' + this.newCustomer.taluka : ''}, ${this.newCustomer.district}${this.newCustomer.pinCode ? ', ' + this.newCustomer.pinCode : ''}`;
+      
+      // Create Customer object from form data
+      const customerData: Customer = {
+        id: (this.existingCustomers.length + 1).toString(),
+        prefix: this.newCustomer.customerType === 'individual' ? this.newCustomer.prefix : '',
+        firstName: this.newCustomer.customerType === 'individual' ? this.newCustomer.firstName : this.newCustomer.companyName,
+        lastName: this.newCustomer.customerType === 'individual' ? this.newCustomer.lastName : '',
+        mobile: fullMobile,
+        email: this.newCustomer.email || '',
+        address: fullAddress,
+        city: this.newCustomer.district,
+        state: 'Maharashtra', // Default state
+        pincode: this.newCustomer.pinCode || ''
+      };
+      
+      this.existingCustomers.push(customerData);
+      this.invoice.customer = customerData;
       this.showAddCustomerForm = false;
-      this.invoice.searchTerm = `${this.newCustomer.firstName} ${this.newCustomer.lastName} (${this.newCustomer.mobile})`;
+      this.invoice.searchTerm = `${fullName} (${fullMobile})`;
       
       // Reset new customer form
       this.newCustomer = {
-        id: '',
+        customerType: 'individual',
         prefix: 'Mr.',
         firstName: '',
+        middleName: '',
         lastName: '',
+        companyName: '',
+        companyType: '',
+        countryCode: '+91',
         mobile: '',
+        gst: '',
         email: '',
-        address: '',
-        city: '',
-        state: '',
-        pincode: ''
+        addressLine1: '',
+        village: '',
+        taluka: '',
+        district: '',
+        pinCode: ''
       };
+    } else {
+      alert('Please fill in all mandatory fields');
     }
   }
 
@@ -253,6 +311,6 @@ export class CreateInvoiceComponent {
   }
 
   goBack(): void {
-    this.router.navigate(['/dashboard']);
+    this.router.navigate(['/dashboard'], { queryParams: { category: 'invoices' } });
   }
 }
