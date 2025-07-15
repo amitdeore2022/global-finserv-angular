@@ -1,0 +1,88 @@
+<div class="add-customer">
+  <div class="header">
+    <button class="back-btn" (click)="goBack()">← Back to Dashboard</button>
+    <h2>Add New Customer</h2>
+  </div>
+
+  <div class="form-container">
+    <form (ngSubmit)="addCustomer()">
+      <div class="form-group">
+        <label>Customer Name *</label>
+        <div class="name-input-group">
+          <select id="prefix" [(ngModel)]="newCustomer.prefix" name="prefix" class="prefix-select" required>
+            <option value="">Select</option>
+            <option *ngFor="let prefix of prefixOptions" [value]="prefix">{{prefix}}</option>
+          </select>
+          <input id="firstName" type="text" [(ngModel)]="newCustomer.firstName" name="firstName" placeholder="First Name" class="name-input" required />
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label for="middleName">Middle Name</label>
+        <input id="middleName" type="text" [(ngModel)]="newCustomer.middleName" name="middleName" placeholder="Enter middle name" />
+      </div>
+      
+      <div class="form-group">
+        <label for="lastName">Last Name *</label>
+        <input id="lastName" type="text" [(ngModel)]="newCustomer.lastName" name="lastName" placeholder="Enter last name" required />
+      </div>
+      
+      <div class="form-group">
+        <label for="mobile">Mobile Number *</label>
+        <div class="mobile-input-group">
+          <select id="countryCode" [(ngModel)]="newCustomer.countryCode" name="countryCode" class="country-code-select" required>
+            <option *ngFor="let country of countryCodeOptions" [value]="country.code">
+              {{country.code}} ({{country.country}})
+            </option>
+          </select>
+          <input id="mobile" type="tel" [(ngModel)]="newCustomer.mobile" name="mobile" placeholder="Enter mobile number" class="mobile-input" required />
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label for="gst">GST Number</label>
+        <input id="gst" type="text" [(ngModel)]="newCustomer.gst" name="gst" placeholder="Enter GST number" />
+      </div>
+      
+      <div class="form-group">
+        <label for="email">Email Address</label>
+        <input id="email" type="email" [(ngModel)]="newCustomer.email" name="email" placeholder="Enter email address" />
+      </div>
+
+      <!-- Address Section -->
+      <div class="address-section">
+        <h4>Address Information</h4>
+        
+        <div class="form-group">
+          <label for="addressLine1">Address Line 1 *</label>
+          <input id="addressLine1" type="text" [(ngModel)]="newCustomer.addressLine1" name="addressLine1" placeholder="Enter address line 1" required />
+        </div>
+        
+        <div class="form-group">
+          <label for="village">Village *</label>
+          <input id="village" type="text" [(ngModel)]="newCustomer.village" name="village" placeholder="Enter village name" required />
+        </div>
+        
+        <div class="form-group">
+          <label for="taluka">Taluka *</label>
+          <input id="taluka" type="text" [(ngModel)]="newCustomer.taluka" name="taluka" placeholder="Enter taluka name" required />
+        </div>
+        
+        <div class="form-group">
+          <label for="district">District *</label>
+          <input id="district" type="text" [(ngModel)]="newCustomer.district" name="district" placeholder="Enter district name" required />
+        </div>
+        
+        <div class="form-group">
+          <label for="pinCode">Pin Code *</label>
+          <input id="pinCode" type="text" [(ngModel)]="newCustomer.pinCode" name="pinCode" placeholder="Enter pin code" pattern="[0-9]{6}" required />
+        </div>
+      </div>
+
+      <div class="button-group">
+        <button type="button" class="cancel-btn" (click)="goBack()">Cancel</button>
+        <button type="submit" class="submit-btn">Add Customer</button>
+      </div>
+    </form>
+  </div>
+</div>

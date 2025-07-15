@@ -1,0 +1,65 @@
+<div class="view-customer">
+  <div class="header">
+    <button class="back-btn" (click)="goBack()">← Back to Dashboard</button>
+    <h2>View Customers</h2>
+  </div>
+
+  <div class="customers-container">
+    <div class="customer-stats">
+      <div class="stat-card">
+        <h3>Total Customers</h3>
+        <p class="stat-number">{{customers.length}}</p>
+      </div>
+      <div class="stat-card">
+        <h3>Total Due Amount</h3>
+        <p class="stat-number due-amount">₹{{totalDueAmount}}</p>
+      </div>
+    </div>
+
+    <div class="customer-list">
+      <div *ngFor="let customer of customers" class="customer-card">
+        <div class="customer-header">
+          <h3>{{customer.name}}</h3>
+          <div class="customer-actions">
+            <button class="edit-btn" (click)="editCustomer(customer.id)">✏️ Edit</button>
+            <button class="delete-btn" (click)="deleteCustomer(customer.id)">🗑️ Delete</button>
+          </div>
+        </div>
+        
+        <div class="customer-details">
+          <div class="detail-row">
+            <span class="label">📱 Mobile:</span>
+            <span class="value">{{customer.mobile}}</span>
+          </div>
+          
+          <div class="detail-row" *ngIf="customer.gst">
+            <span class="label">🏢 GST Number:</span>
+            <span class="value">{{customer.gst}}</span>
+          </div>
+          
+          <div class="detail-row" *ngIf="customer.email">
+            <span class="label">📧 Email:</span>
+            <span class="value">{{customer.email}}</span>
+          </div>
+          
+          <div class="detail-row">
+            <span class="label">📍 Address:</span>
+            <span class="value">{{customer.address}}</span>
+          </div>
+          
+          <div class="detail-row due-row">
+            <span class="label">💰 Due Amount:</span>
+            <span class="value due-amount" [class.no-due]="customer.dueAmount === 0">
+              ₹{{customer.dueAmount}}
+              <span *ngIf="customer.dueAmount === 0" class="paid-badge">PAID</span>
+            </span>
+          </div>
+        </div>
+      </div>
+      
+      <div *ngIf="customers.length === 0" class="no-customers">
+        <p>No customers found. <a (click)="goBack()">Add your first customer</a></p>
+      </div>
+    </div>
+  </div>
+</div>

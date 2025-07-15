@@ -1,0 +1,320 @@
+<div class="create-invoice-container">
+  <div class="invoice-header">
+    <h2>Create Invoice</h2>
+    <button type="button" class="back-btn" (click)="goBack()">← Back to Dashboard</button>
+  </div>
+
+  <form class="invoice-form" (ngSubmit)="saveInvoice()">
+    <!-- Invoice Basic Details -->
+    <div class="form-section">
+      <h3>📋 Invoice Details</h3>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="invoiceNumber">Invoice Number</label>
+          <input 
+            type="text" 
+            id="invoiceNumber" 
+            [(ngModel)]="invoice.invoiceNumber" 
+            name="invoiceNumber"
+            class="form-control">
+        </div>
+        <div class="form-group">
+          <label for="invoiceDate">Invoice Date</label>
+          <input 
+            type="date" 
+            id="invoiceDate" 
+            [(ngModel)]="invoice.invoiceDate" 
+            name="invoiceDate"
+            class="form-control">
+        </div>
+      </div>
+    </div>
+
+    <!-- Customer Selection -->
+    <div class="form-section">
+      <h3>👤 Customer Details</h3>
+      
+      <div class="radio-group">
+        <label class="radio-option">
+          <input 
+            type="radio" 
+            [(ngModel)]="invoice.customerType" 
+            name="customerType" 
+            value="existing"
+            (change)="onCustomerTypeChange()">
+          <span>Existing Customer</span>
+        </label>
+        <label class="radio-option">
+          <input 
+            type="radio" 
+            [(ngModel)]="invoice.customerType" 
+            name="customerType" 
+            value="new"
+            (change)="onCustomerTypeChange()">
+          <span>New Customer</span>
+        </label>
+      </div>
+
+      <!-- Existing Customer Search -->
+      <div *ngIf="invoice.customerType === 'existing'" class="customer-search">
+        <div class="form-group">
+          <label for="customerSearch">Search Customer (Name or Mobile)</label>
+          <input 
+            type="text" 
+            id="customerSearch"
+            [(ngModel)]="invoice.searchTerm" 
+            name="customerSearch"
+            placeholder="Enter customer name or mobile number"
+            class="form-control"
+            (input)="searchCustomer()">
+        </div>
+
+        <!-- Search Results -->
+        <div *ngIf="searchResults.length > 0" class="search-results">
+          <div 
+            *ngFor="let customer of searchResults" 
+            class="customer-result"
+            (click)="selectCustomer(customer)">
+            <div class="customer-info">
+              <span class="customer-name">{{customer.prefix}} {{customer.firstName}} {{customer.lastName}}</span>
+              <span class="customer-mobile">{{customer.mobile}}</span>
+              <span class="customer-email">{{customer.email}}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Selected Customer Display -->
+        <div *ngIf="invoice.customer" class="selected-customer">
+          <h4>Selected Customer:</h4>
+          <div class="customer-card">
+            <p><strong>{{invoice.customer.prefix}} {{invoice.customer.firstName}} {{invoice.customer.lastName}}</strong></p>
+            <p>Mobile: {{invoice.customer.mobile}}</p>
+            <p>Email: {{invoice.customer.email}}</p>
+            <p>Address: {{invoice.customer.address}}, {{invoice.customer.city}}, {{invoice.customer.state}} - {{invoice.customer.pincode}}</p>
+          </div>
+        </div>
+
+        <!-- Add New Customer Button -->
+        <button 
+          *ngIf="invoice.searchTerm && searchResults.length === 0" 
+          type="button" 
+          class="add-customer-btn"
+          (click)="showAddNewCustomer()">
+          + Add New Customer
+        </button>
+      </div>
+
+      <!-- New Customer Form -->
+      <div *ngIf="invoice.customerType === 'new' || showAddCustomerForm" class="new-customer-form">
+        <h4>Add Customer Details</h4>
+        <div class="form-row">
+          <div class="form-group small">
+            <label for="prefix">Prefix</label>
+            <select id="prefix" [(ngModel)]="newCustomer.prefix" name="prefix" class="form-control">
+              <option value="Mr.">Mr.</option>
+              <option value="Ms.">Ms.</option>
+              <option value="Mrs.">Mrs.</option>
+              <option value="Dr.">Dr.</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="firstName">First Name *</label>
+            <input 
+              type="text" 
+              id="firstName" 
+              [(ngModel)]="newCustomer.firstName" 
+              name="firstName"
+              class="form-control" 
+              required>
+          </div>
+          <div class="form-group">
+            <label for="lastName">Last Name *</label>
+            <input 
+              type="text" 
+              id="lastName" 
+              [(ngModel)]="newCustomer.lastName" 
+              name="lastName"
+              class="form-control" 
+              required>
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="mobile">Mobile Number *</label>
+            <input 
+              type="tel" 
+              id="mobile" 
+              [(ngModel)]="newCustomer.mobile" 
+              name="mobile"
+              class="form-control" 
+              required>
+          </div>
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input 
+              type="email" 
+              id="email" 
+              [(ngModel)]="newCustomer.email" 
+              name="email"
+              class="form-control">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="address">Address</label>
+          <textarea 
+            id="address" 
+            [(ngModel)]="newCustomer.address" 
+            name="address"
+            class="form-control" 
+            rows="2"></textarea>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="city">City</label>
+            <input 
+              type="text" 
+              id="city" 
+              [(ngModel)]="newCustomer.city" 
+              name="city"
+              class="form-control">
+          </div>
+          <div class="form-group">
+            <label for="state">State</label>
+            <input 
+              type="text" 
+              id="state" 
+              [(ngModel)]="newCustomer.state" 
+              name="state"
+              class="form-control">
+          </div>
+          <div class="form-group">
+            <label for="pincode">Pincode</label>
+            <input 
+              type="text" 
+              id="pincode" 
+              [(ngModel)]="newCustomer.pincode" 
+              name="pincode"
+              class="form-control">
+          </div>
+        </div>
+
+        <button *ngIf="showAddCustomerForm" type="button" class="save-customer-btn" (click)="addNewCustomer()">
+          Save Customer
+        </button>
+      </div>
+    </div>
+
+    <!-- Service Details -->
+    <div class="form-section">
+      <h3>💼 Service Details</h3>
+      
+      <div *ngFor="let service of invoice.serviceDetails; let i = index" class="service-item">
+        <div class="service-header">
+          <h4>Service {{i + 1}}</h4>
+          <button 
+            *ngIf="invoice.serviceDetails.length > 1"
+            type="button" 
+            class="remove-service-btn"
+            (click)="removeServiceDetail(i)">
+            ✕
+          </button>
+        </div>
+        
+        <div class="form-group">
+          <label for="description{{i}}">Service Description / Particulars *</label>
+          <input 
+            type="text" 
+            id="description{{i}}"
+            [(ngModel)]="service.description" 
+            name="description{{i}}"
+            placeholder="e.g., Incorporation of Producer Company, ITR filing, GST filing"
+            class="form-control"
+            list="serviceOptions">
+          <datalist id="serviceOptions">
+            <option *ngFor="let option of serviceOptions" [value]="option">
+          </datalist>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="amount{{i}}">Amount *</label>
+            <input 
+              type="number" 
+              id="amount{{i}}"
+              [(ngModel)]="service.amount" 
+              name="amount{{i}}"
+              min="0"
+              step="0.01"
+              class="form-control"
+              (input)="onAmountChange()">
+          </div>
+          <div class="form-group">
+            <label for="notes{{i}}">Notes (Optional)</label>
+            <input 
+              type="text" 
+              id="notes{{i}}"
+              [(ngModel)]="service.notes" 
+              name="notes{{i}}"
+              placeholder="e.g., Including challan fees"
+              class="form-control">
+          </div>
+        </div>
+      </div>
+
+      <button type="button" class="add-service-btn" (click)="addServiceDetail()">
+        + Add Another Service
+      </button>
+    </div>
+
+    <!-- Payment Summary -->
+    <div class="form-section">
+      <h3>💰 Payment Summary</h3>
+      
+      <div class="payment-summary">
+        <div class="summary-row">
+          <span class="label">Total Amount:</span>
+          <span class="amount">₹{{invoice.totalAmount | number:'1.2-2'}}</span>
+        </div>
+        
+        <div class="form-group">
+          <label for="advanceReceived">Advance Received</label>
+          <input 
+            type="number" 
+            id="advanceReceived"
+            [(ngModel)]="invoice.advanceReceived" 
+            name="advanceReceived"
+            min="0"
+            step="0.01"
+            class="form-control"
+            (input)="onAdvanceChange()">
+        </div>
+        
+        <div class="summary-row total">
+          <span class="label">Balance / Net Payable:</span>
+          <span class="amount">₹{{invoice.balancePayable | number:'1.2-2'}}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bank Account Selection -->
+    <div class="form-section">
+      <h3>🏦 Bank Account</h3>
+      <div class="form-group">
+        <label for="bankAccount">Select Bank Account (To Receive Amount) *</label>
+        <select id="bankAccount" [(ngModel)]="invoice.selectedBank" name="bankAccount" class="form-control" required>
+          <option value="">Select Bank Account</option>
+          <option *ngFor="let bank of bankAccounts" [value]="bank">{{bank}}</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="form-actions">
+      <button type="button" class="cancel-btn" (click)="goBack()">Cancel</button>
+      <button type="submit" class="save-btn">Create Invoice</button>
+    </div>
+  </form>
+</div>

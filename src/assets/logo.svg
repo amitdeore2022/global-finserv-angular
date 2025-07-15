@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400">
+  <!-- Globe Background -->
+  <circle cx="130" cy="200" r="80" fill="#2E5BBA" stroke="#1E3F7A" stroke-width="3"/>
+  
+  <!-- Globe Grid Lines -->
+  <path d="M50 200 Q130 150 210 200 Q130 250 50 200" fill="none" stroke="#1E3F7A" stroke-width="2"/>
+  <path d="M50 200 Q130 120 210 200 Q130 280 50 200" fill="none" stroke="#1E3F7A" stroke-width="2"/>
+  <line x1="130" y1="120" x2="130" y2="280" stroke="#1E3F7A" stroke-width="2"/>
+  <line x1="50" y1="200" x2="210" y2="200" stroke="#1E3F7A" stroke-width="2"/>
+  
+  <!-- Bar Chart Inside Globe -->
+  <rect x="105" y="240" width="12" height="30" fill="#ffffff"/>
+  <rect x="120" y="220" width="12" height="50" fill="#ffffff"/>
+  <rect x="135" y="200" width="12" height="70" fill="#ffffff"/>
+  <rect x="150" y="180" width="12" height="90" fill="#ffffff"/>
+  
+  <!-- Text -->
+  <text x="300" y="160" font-family="Arial, sans-serif" font-size="42" font-weight="bold" fill="#2E5BBA">Global</text>
+  <text x="300" y="210" font-family="Arial, sans-serif" font-size="42" font-weight="bold" fill="#2E5BBA">Financial</text>
+  <text x="300" y="260" font-family="Arial, sans-serif" font-size="42" font-weight="bold" fill="#2E5BBA">Services</text>
+  <text x="300" y="310" font-family="Arial, sans-serif" font-size="18" fill="#2E5BBA">By Pravin Shinde &amp; Associate</text>
+</svg>
