@@ -5,6 +5,7 @@ import { AddCustomerComponent } from './pages/add-customer/add-customer.componen
 import { ViewCustomerComponent } from './pages/view-customer/view-customer.component';
 import { CreateInvoiceComponent } from './pages/create-invoice/create-invoice.component';
 import { ViewInvoicesComponent } from './pages/view-invoices/view-invoices.component';
+import { InvoicePreviewComponent } from './pages/invoice-preview/invoice-preview.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -14,4 +15,6 @@ export const routes: Routes = [
   { path: 'view-customer', component: ViewCustomerComponent },
   { path: 'create-invoice', component: CreateInvoiceComponent },
   { path: 'view-invoices', component: ViewInvoicesComponent },
+  { path: 'invoice-preview/:id', component: InvoicePreviewComponent },
+  { path: 'invoice-preview', component: InvoicePreviewComponent },
 ];

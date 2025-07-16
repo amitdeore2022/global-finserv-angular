@@ -65,6 +65,17 @@ export class LocalInvoiceService {
     }
   }
 
+  // Get invoice by ID
+  async getInvoiceById(invoiceId: string): Promise<Invoice | null> {
+    try {
+      const invoices = this.getInvoicesFromStorage();
+      return invoices.find(invoice => invoice.id === invoiceId) || null;
+    } catch (error) {
+      console.error('Error getting invoice by ID:', error);
+      throw error;
+    }
+  }
+
   // Update an invoice
   async updateInvoice(invoiceId: string, invoiceData: Partial<Invoice>): Promise<void> {
     try {

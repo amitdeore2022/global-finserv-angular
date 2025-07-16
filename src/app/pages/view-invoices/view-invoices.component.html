@@ -1,10 +1,21 @@
-<div class="view-invoices">
-  <div class="dashboard-header">
+<div class="view-invoices-container">
+  <div class="invoice-header">
     <h2>View Invoices</h2>
     <button (click)="goBackToDashboard()" class="back-btn">
       <i class="fas fa-arrow-left"></i>
       <span>Back to Dashboard</span>
     </button>
+  </div>
+
+  <!-- Customer Filter Indicator -->
+  <div *ngIf="customerFilter" class="customer-filter-indicator">
+    <div class="filter-info">
+      <i class="fas fa-filter"></i>
+      <span>Showing invoices for customer: {{customerFilter}}</span>
+      <button class="clear-filter-btn" (click)="clearCustomerFilter()">
+        <i class="fas fa-times"></i> Clear Filter
+      </button>
+    </div>
   </div>
 
   <!-- Invoice Search and Filter Section -->
@@ -57,114 +68,155 @@
   </div>
 
   <!-- Invoice List -->
-  <div class="invoice-list">
-    <div *ngFor="let invoice of filteredInvoices" class="invoice-card">
-      <div class="invoice-header">
-        <div class="invoice-basic-info">
-          <h4>{{invoice.invoiceNumber}}</h4>
-          <span class="invoice-date">{{invoice.invoiceDate | date:'shortDate'}}</span>
-          <span class="status-badge" [class]="'status-' + invoice.status.toLowerCase()">
-            {{invoice.status}}
-          </span>
-        </div>
-        <div class="invoice-actions">
-          <button class="view-btn" (click)="printInvoice(invoice.id!)" title="Print Invoice">
-            <i class="fas fa-print"></i> Print
-          </button>
-          <button class="whatsapp-btn" (click)="shareOnWhatsApp(invoice.id!)" title="Share on WhatsApp">
-            <i class="fab fa-whatsapp"></i> WhatsApp
-          </button>
-          <button class="edit-btn" (click)="editInvoice(invoice.id!)" title="Edit Invoice">
-            <i class="fas fa-edit"></i> Edit
-          </button>
-          <button class="delete-btn" (click)="deleteInvoice(invoice.id!)" title="Delete Invoice">
-            <i class="fas fa-trash"></i> Delete
-          </button>
-        </div>
-      </div>
+  <div class="invoice-cards-container">
+    <div *ngFor="let invoice of filteredInvoices" class="invoice-card" [class.expanded]="isCardExpanded(invoice.id!)">
       
-      <div class="invoice-details">
-        <!-- Customer Information -->
-        <div class="invoice-section">
-          <h5>👤 Customer Details</h5>
-          <div class="detail-row">
-            <span class="label">Name:</span>
-            <span class="value">{{invoice.customer.name}}</span>
+      <!-- Minimal View (Default) -->
+      <div *ngIf="!isCardExpanded(invoice.id!)" class="invoice-minimal-view">
+        <div class="minimal-header">
+          <div class="invoice-info">
+            <h4 class="invoice-number">{{invoice.invoiceNumber}}</h4>
+            <span class="invoice-date">{{invoice.invoiceDate | date:'shortDate'}}</span>
+            <span class="status-badge" [class]="'status-' + invoice.status.toLowerCase()">
+              {{invoice.status}}
+            </span>
           </div>
-          <div class="detail-row">
-            <span class="label">📱 Mobile:</span>
-            <span class="value">{{invoice.customer.mobile}}</span>
-          </div>
-          <div class="detail-row" *ngIf="invoice.customer.email">
-            <span class="label">📧 Email:</span>
-            <span class="value">{{invoice.customer.email}}</span>
-          </div>
-          <div class="detail-row">
-            <span class="label">📍 Address:</span>
-            <span class="value">{{invoice.customer.address}}</span>
-          </div>
+          <button class="show-details-btn" (click)="toggleCardExpansion(invoice.id!)">
+            <i class="fas fa-eye"></i> Show Details
+          </button>
         </div>
-
-        <!-- Service Details -->
-        <div class="invoice-section">
-          <h5>💼 Services</h5>
-          <div class="service-list">
-            <div *ngFor="let service of invoice.serviceDetails" class="service-row">
-              <div class="service-info">
-                <span class="service-description">{{service.description}}</span>
-              </div>
-              <span class="service-amount">₹{{service.amount | number:'1.2-2'}}</span>
+        
+        <div class="minimal-content">
+          <div class="minimal-section">
+            <div class="detail-row">
+              <span class="detail-label">Customer:</span>
+              <span class="detail-value">{{invoice.customer.name}}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Mobile:</span>
+              <span class="detail-value">{{invoice.customer.mobile}}</span>
             </div>
           </div>
-        </div>
-
-        <!-- Payment Summary -->
-        <div class="invoice-section">
-          <h5>💰 Payment Summary</h5>
-          <div class="payment-details">
-            <div class="payment-row">
-              <span class="label">Total Amount:</span>
-              <span class="value">₹{{invoice.totalAmount | number:'1.2-2'}}</span>
+          
+          <div class="minimal-section">
+            <div class="detail-row">
+              <span class="detail-label">Total Amount:</span>
+              <span class="detail-value amount-total">₹{{invoice.totalAmount | number:'1.2-2'}}</span>
             </div>
-            <div class="payment-row">
-              <span class="label">Advance Received:</span>
-              <span class="value">₹{{invoice.advanceReceived | number:'1.2-2'}}</span>
-            </div>
-            <div class="payment-row total">
-              <span class="label">Balance Payable:</span>
-              <span class="value" [class.paid]="invoice.balancePayable === 0">
+            <div class="detail-row">
+              <span class="detail-label">Due Amount:</span>
+              <span class="detail-value amount-due" [class.paid]="invoice.balancePayable === 0">
                 ₹{{invoice.balancePayable | number:'1.2-2'}}
-                <span *ngIf="invoice.balancePayable === 0" class="paid-badge">FULLY PAID</span>
               </span>
             </div>
-            <div class="payment-row">
-              <span class="label">Bank Account:</span>
-              <span class="value bank-info">{{invoice.selectedBank}}</span>
-            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Detailed View (Expanded) -->
+      <div *ngIf="isCardExpanded(invoice.id!)" class="invoice-detailed-view">
+        <div class="detailed-header">
+          <div class="invoice-info">
+            <h4 class="invoice-number">{{invoice.invoiceNumber}}</h4>
+            <span class="invoice-date">{{invoice.invoiceDate | date:'shortDate'}}</span>
+            <span class="status-badge" [class]="'status-' + invoice.status.toLowerCase()">
+              {{invoice.status}}
+            </span>
+          </div>
+          <div class="header-actions">
+            <button class="action-btn print-btn" (click)="printInvoice(invoice.id!)" title="Print Invoice">
+              <i class="fas fa-print"></i>
+            </button>
+            <button class="action-btn whatsapp-btn" (click)="shareOnWhatsApp(invoice.id!)" title="Share on WhatsApp">
+              <i class="fab fa-whatsapp"></i>
+            </button>
+            <button class="action-btn edit-btn" (click)="editInvoice(invoice.id!)" title="Edit Invoice">
+              <i class="fas fa-edit"></i>
+            </button>
+            <button class="action-btn delete-btn" (click)="deleteInvoice(invoice.id!)" title="Delete Invoice">
+              <i class="fas fa-trash"></i>
+            </button>
+            <button class="hide-details-btn" (click)="toggleCardExpansion(invoice.id!)">
+              <i class="fas fa-eye-slash"></i> Hide Details
+            </button>
           </div>
         </div>
 
-        <!-- Status Update Actions -->
-        <div class="invoice-section status-actions">
-          <h5>Status Management</h5>
-          <div class="status-buttons">
+        <!-- Customer Details Section -->
+        <div class="card-section">
+          <div class="section-header">
+            <span class="section-icon">👤</span>
+            Customer Details
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Name:</span>
+            <span class="detail-value">{{invoice.customer.name}}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Mobile:</span>
+            <span class="detail-value">{{invoice.customer.mobile}}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Address:</span>
+            <span class="detail-value">{{invoice.customer.address}}</span>
+          </div>
+        </div>
+
+        <!-- Services Section -->
+        <div class="card-section">
+          <div class="section-header">
+            <span class="section-icon">🔧</span>
+            Services
+          </div>
+          <div *ngFor="let service of invoice.serviceDetails" class="service-item">
+            <span class="service-description">{{service.description}}</span>
+            <span class="service-amount">₹{{service.amount | number:'1.2-2'}}</span>
+          </div>
+        </div>
+
+        <!-- Payment Summary Section -->
+        <div class="card-section">
+          <div class="section-header">
+            <span class="section-icon">💰</span>
+            Payment Summary
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Total Amount:</span>
+            <span class="detail-value">₹{{invoice.totalAmount | number:'1.2-2'}}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Advance Received:</span>
+            <span class="detail-value">₹{{invoice.advanceReceived | number:'1.2-2'}}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Balance Payable:</span>
+            <span class="detail-value" [class.paid]="invoice.balancePayable === 0">
+              ₹{{invoice.balancePayable | number:'1.2-2'}}
+            </span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Bank Account:</span>
+            <span class="detail-value">{{invoice.selectedBank}}</span>
+          </div>
+          
+          <!-- Payment Actions -->
+          <div class="payment-actions">
             <button 
-              *ngIf="invoice.status !== 'PAID'"
-              class="status-btn paid-btn" 
-              (click)="updateInvoiceStatus(invoice.id!, 'PAID')">
-              Mark as Paid
-            </button>
-            <button 
-              *ngIf="invoice.status !== 'PARTIAL'"
-              class="status-btn partial-btn" 
-              (click)="updateInvoiceStatus(invoice.id!, 'PARTIAL')">
-              Mark as Partial
+              class="payment-btn add-payment-btn" 
+              (click)="addPayment(invoice.id!)">
+              <i class="fas fa-plus"></i> Add Payment
             </button>
             <button 
               *ngIf="invoice.status !== 'PENDING'"
-              class="status-btn pending-btn" 
+              class="payment-btn pending-btn" 
               (click)="updateInvoiceStatus(invoice.id!, 'PENDING')">
-              Mark as Pending
+              <i class="fas fa-clock"></i> Mark as Pending
+            </button>
+            <button 
+              *ngIf="invoice.status !== 'PAID'"
+              class="payment-btn paid-btn" 
+              (click)="updateInvoiceStatus(invoice.id!, 'PAID')">
+              <i class="fas fa-check"></i> Mark as Paid
             </button>
           </div>
         </div>

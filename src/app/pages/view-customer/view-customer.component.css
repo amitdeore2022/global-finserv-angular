@@ -109,37 +109,57 @@
 
 .customer-actions {
   display: flex;
-  gap: 10px;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
-.edit-btn, .delete-btn {
-  padding: 8px 15px;
+.edit-btn, .delete-btn, .invoices-btn, .ledger-btn {
+  padding: 8px 12px;
   border: none;
-  border-radius: 8px;
+  border-radius: 6px;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 500;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .edit-btn {
-  background: #28a745;
-  color: white;
+  background-color: #ffc107;
+  color: #212529;
 }
 
 .edit-btn:hover {
-  background: #218838;
-  transform: translateY(-1px);
+  background-color: #e0a800;
 }
 
 .delete-btn {
-  background: #dc3545;
+  background-color: #dc3545;
   color: white;
 }
 
 .delete-btn:hover {
-  background: #c82333;
-  transform: translateY(-1px);
+  background-color: #c82333;
+}
+
+.invoices-btn {
+  background-color: #007bff;
+  color: white;
+}
+
+.invoices-btn:hover {
+  background-color: #0056b3;
+}
+
+.ledger-btn {
+  background-color: #28a745;
+  color: white;
+}
+
+.ledger-btn:hover {
+  background-color: #218838;
 }
 
 .customer-details {
@@ -187,8 +207,49 @@
   color: white;
   padding: 2px 8px;
   border-radius: 12px;
-  font-size: 12px;
-  margin-left: 10px;
+  font-size: 10px;
+  font-weight: 600;
+  margin-left: 8px;
+}
+
+.transaction-summary {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 15px;
+  margin-top: 15px;
+  border-left: 4px solid #007bff;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.summary-row:last-child {
+  margin-bottom: 0;
+}
+
+.summary-row .label {
+  font-weight: 500;
+  color: #495057;
+}
+
+.summary-row .value {
+  font-weight: 600;
+}
+
+.summary-row .value.transaction-amount {
+  color: #28a745;
+}
+
+.summary-row .value.due-amount {
+  color: #dc3545;
+}
+
+.summary-row .value.no-due {
+  color: #28a745;
 }
 
 .no-customers {
@@ -203,6 +264,78 @@
   text-decoration: underline;
 }
 
+/* Loading State */
+.loading {
+  text-align: center;
+  padding: 40px;
+  color: white;
+  font-size: 16px;
+}
+
+/* Search Section Styles */
+.search-section {
+  margin-bottom: 30px;
+}
+
+.search-container {
+  position: relative;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.search-input {
+  width: 100%;
+  padding: 15px 45px 15px 20px;
+  border: 2px solid #e0e0e0;
+  border-radius: 25px;
+  font-size: 16px;
+  background: white;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 4px 20px rgba(102, 126, 234, 0.2);
+}
+
+.clear-search-btn {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: #999;
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+.clear-search-btn:hover {
+  background: #f5f5f5;
+  color: #667eea;
+}
+
+.search-results-info {
+  text-align: center;
+  margin-top: 15px;
+  color: #666;
+  font-size: 14px;
+}
+
+.clear-search-btn-inline {
+  background: none;
+  border: none;
+  color: #667eea;
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: inherit;
+}
+
+/* Responsive Design */
 @media (max-width: 768px) {
   .customer-header {
     flex-direction: column;
@@ -211,8 +344,13 @@
   }
   
   .customer-actions {
-    width: 100%;
-    justify-content: flex-end;
+    flex-direction: column;
+  }
+  
+  .action-btn {
+    justify-content: center;
+    padding: 10px 12px;
+    font-size: 13px;
   }
   
   .detail-row {
@@ -230,5 +368,99 @@
   
   .customers-container {
     padding: 20px;
+  }
+  
+  .customer-stats {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Customer card toggle styles */
+.customer-minimal-view {
+  padding: 0;
+}
+
+.customer-detailed-view {
+  margin-top: 15px;
+  padding: 15px;
+  background: #f8f9fa;
+  border-radius: 10px;
+  border: 1px solid #e9ecef;
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.customer-actions-minimal {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.customer-actions-detailed {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+  justify-content: flex-start;
+}
+
+.show-details-btn {
+  background: #6c757d;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.show-details-btn:hover {
+  background: #545862;
+  transform: translateY(-1px);
+}
+
+.customer-basic-info {
+  margin-top: 15px;
+}
+
+.detailed-info {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.customer-expanded {
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  transform: scale(1.02);
+  transition: all 0.3s ease;
+}
+
+/* Responsive design for customer actions */
+@media (max-width: 768px) {
+  .customer-actions-minimal {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .customer-actions-detailed {
+    flex-direction: column;
+  }
+  
+  .show-details-btn {
+    order: -1; /* Put show details button first on mobile */
   }
 }

@@ -1,0 +1,14 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Allow read/write access to customers collection
+    match /customers/{document} {
+      allow read, write: if true; // You can add authentication rules here later
+    }
+    
+    // Allow read/write access to invoices collection
+    match /invoices/{document} {
+      allow read, write: if true; // You can add authentication rules here later
+    }
+  }
+}
