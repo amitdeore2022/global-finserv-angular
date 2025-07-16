@@ -3,6 +3,15 @@
     <img src="logo.jpg" alt="CA India Logo" class="app-logo" />
     <h1 class="app-title">Global Financial Services</h1>
   </div>
+  
+  <!-- PWA Install Button -->
+  <div *ngIf="showInstallButton" class="install-prompt">
+    <button type="button" class="install-btn" (click)="installApp()">
+      <i class="fas fa-download"></i>
+      Install App
+    </button>
+  </div>
+  
   <h2>Login</h2>
   <form (ngSubmit)="login()">
     <div class="form-group">

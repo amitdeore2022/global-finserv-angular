@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Auth, signInWithEmailAndPassword } from '@angular/fire/auth';
@@ -11,12 +11,52 @@ import { Router } from '@angular/router';
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
   email = '';
   password = '';
   errorMessage = '';
+  deferredPrompt: any = null;
+  showInstallButton = false;
 
   constructor(private auth: Auth, private router: Router) {}
+
+  ngOnInit() {
+    // Listen for the beforeinstallprompt event
+    window.addEventListener('beforeinstallprompt', (e) => {
+      // Prevent the mini-infobar from appearing on mobile
+      e.preventDefault();
+      // Store the event so it can be triggered later
+      this.deferredPrompt = e;
+      // Show install button
+      this.showInstallButton = true;
+    });
+
+    // Check if app is already installed
+    window.addEventListener('appinstalled', () => {
+      this.showInstallButton = false;
+      this.deferredPrompt = null;
+    });
+  }
+
+  async installApp() {
+    if (this.deferredPrompt) {
+      // Show the install prompt
+      this.deferredPrompt.prompt();
+      
+      // Wait for the user to respond to the prompt
+      const { outcome } = await this.deferredPrompt.userChoice;
+      
+      if (outcome === 'accepted') {
+        console.log('✅ PWA installed successfully');
+      } else {
+        console.log('❌ PWA installation dismissed');
+      }
+      
+      // Reset the deferred prompt
+      this.deferredPrompt = null;
+      this.showInstallButton = false;
+    }
+  }
 
   async login() {
     this.errorMessage = '';
