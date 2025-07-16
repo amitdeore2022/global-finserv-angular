@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
+import { Router, RouterModule, ActivatedRoute } from '@angular/router';
 import { LocalInvoiceService as InvoiceService, Invoice } from '../../services/local-invoice.service';
+import { PdfGenerationService } from '../../services/pdf-generation.service';
 
 @Component({
   selector: 'app-view-invoices',
@@ -16,28 +17,59 @@ export class ViewInvoicesComponent implements OnInit {
   filteredInvoices: Invoice[] = [];
   invoiceSearchTerm: string = '';
   selectedInvoiceStatus: string = 'ALL';
+  isLoading: boolean = true;
+  customerFilter: string = ''; // For filtering by customer mobile
   
   // Statistics
   totalInvoiceAmount: number = 0;
   totalPendingAmount: number = 0;
   paidInvoicesCount: number = 0;
 
+  // Track expanded cards
+  expandedCards: Set<string> = new Set();
+
   constructor(
     private invoiceService: InvoiceService,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute,
+    private pdfService: PdfGenerationService
   ) {}
 
   ngOnInit() {
-    this.loadInvoices();
+    // Check for customer filter from query params
+    this.route.queryParams.subscribe(params => {
+      this.customerFilter = params['customer'] || '';
+      if (this.customerFilter) {
+        this.invoiceSearchTerm = this.customerFilter;
+      }
+    });
+    
+    this.debugInvoices(); // Debug localStorage
+    this.loadInvoices().then(() => {
+      // If no invoices exist, create a sample one for testing
+      if (this.invoices.length === 0) {
+        this.createSampleInvoice();
+      }
+      // Apply filter after loading
+      if (this.customerFilter) {
+        this.filterInvoices();
+      }
+    });
   }
 
   async loadInvoices() {
     try {
+      this.isLoading = true;
+      console.log('Loading invoices...');
       this.invoices = await this.invoiceService.getInvoices();
-      this.filteredInvoices = this.invoices;
+      console.log('Loaded invoices:', this.invoices);
+      this.filteredInvoices = [...this.invoices];
       this.calculateStatistics();
     } catch (error) {
       console.error('Error loading invoices:', error);
+      alert('Error loading invoices. Please refresh the page.');
+    } finally {
+      this.isLoading = false;
     }
   }
 
@@ -69,14 +101,118 @@ export class ViewInvoicesComponent implements OnInit {
     });
   }
 
-  printInvoice(invoiceId: string) {
-    console.log('Print invoice:', invoiceId);
-    // Implement print functionality
+  async printInvoice(invoiceId: string) {
+    try {
+      const invoice = this.invoices.find(inv => inv.id === invoiceId);
+      if (invoice) {
+        // Show a brief loading indicator
+        const button = document.querySelector(`[data-invoice-id="${invoiceId}"][title="Print Invoice"]`) as HTMLButtonElement;
+        if (button) {
+          button.disabled = true;
+          button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
+        }
+
+        // Generate and download PDF
+        this.pdfService.generateInvoicePDF(invoice);
+        
+        // Reset button after a short delay
+        setTimeout(() => {
+          if (button) {
+            button.disabled = false;
+            button.innerHTML = '<i class="fas fa-print"></i> Print';
+          }
+        }, 2000);
+      } else {
+        alert('Invoice not found!');
+      }
+    } catch (error) {
+      console.error('Error printing invoice:', error);
+      alert('Error generating PDF. Please try again.');
+      
+      // Reset button on error
+      const button = document.querySelector(`[data-invoice-id="${invoiceId}"][title="Print Invoice"]`) as HTMLButtonElement;
+      if (button) {
+        button.disabled = false;
+        button.innerHTML = '<i class="fas fa-print"></i> Print';
+      }
+    }
   }
 
-  shareOnWhatsApp(invoiceId: string) {
-    console.log('Share on WhatsApp:', invoiceId);
-    // Implement WhatsApp sharing functionality
+  async shareOnWhatsApp(invoiceId: string) {
+    try {
+      const invoice = this.invoices.find(inv => inv.id === invoiceId);
+      if (!invoice) {
+        alert('Invoice not found!');
+        return;
+      }
+
+      // Find and update the WhatsApp button
+      const whatsappButton = document.querySelector(`[data-invoice-id="${invoiceId}"][title="Share on WhatsApp"]`) as HTMLButtonElement;
+      if (whatsappButton) {
+        whatsappButton.disabled = true;
+        whatsappButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating PDF...';
+      }
+
+      // First, download the PDF
+      this.pdfService.generateInvoicePDF(invoice);
+
+      // Update button text
+      if (whatsappButton) {
+        whatsappButton.innerHTML = '<i class="fab fa-whatsapp"></i> Opening WhatsApp...';
+      }
+
+      // Wait a moment for the download to start
+      setTimeout(() => {
+        // Prepare comprehensive WhatsApp message
+        const message = `🧾 *Invoice ${invoice.invoiceNumber}*
+
+� Customer: ${invoice.customer.name}
+📅 Date: ${new Date(invoice.invoiceDate).toLocaleDateString('en-IN')}
+💰 Total: ₹${invoice.totalAmount.toLocaleString('en-IN')}
+💳 Advance: ₹${invoice.advanceReceived.toLocaleString('en-IN')}
+🔄 Balance: ₹${invoice.balancePayable.toLocaleString('en-IN')}
+📊 Status: *${invoice.status}*
+
+💼 *Services:*
+${invoice.serviceDetails.map((service, index) => `${index + 1}. ${service.description} - ₹${service.amount.toLocaleString('en-IN')}`).join('\n')}
+
+🏦 *Payment:*
+${invoice.selectedBank}
+
+� *GLOBAL FINANCIAL SERVICES*
+☎️ 9623736781 | 9604722533
+📍 Nashik - 422003
+
+📄 PDF invoice downloaded to your device. Please attach it manually in WhatsApp by clicking the attachment (📎) button.
+
+Thank you for your business! 🙏`;
+
+        // Open WhatsApp with the message
+        const phoneNumber = invoice.customer.mobile.replace(/\D/g, '');
+        const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+        window.open(whatsappUrl, '_blank');
+
+        // Reset button after WhatsApp opens
+        setTimeout(() => {
+          if (whatsappButton) {
+            whatsappButton.disabled = false;
+            whatsappButton.innerHTML = '<i class="fab fa-whatsapp"></i> WhatsApp';
+          }
+        }, 2000);
+
+      }, 1500); // 1.5 second delay to allow PDF download to start
+
+    } catch (error) {
+      console.error('Error sharing on WhatsApp:', error);
+      alert('Error sharing invoice. Please try again.');
+      
+      // Reset button on error
+      const whatsappButton = document.querySelector(`[data-invoice-id="${invoiceId}"][title="Share on WhatsApp"]`) as HTMLButtonElement;
+      if (whatsappButton) {
+        whatsappButton.disabled = false;
+        whatsappButton.innerHTML = '<i class="fab fa-whatsapp"></i> WhatsApp';
+      }
+    }
   }
 
   editInvoice(invoiceId: string) {
@@ -95,15 +231,144 @@ export class ViewInvoicesComponent implements OnInit {
   }
 
   async updateInvoiceStatus(invoiceId: string, status: string) {
+    if (!status) return;
+    
     try {
       await this.invoiceService.updateInvoice(invoiceId, { status: status as 'PENDING' | 'PAID' | 'PARTIAL' });
       await this.loadInvoices();
     } catch (error) {
       console.error('Error updating invoice status:', error);
+      alert('Error updating invoice status. Please try again.');
     }
+  }
+
+  addPayment(invoiceId: string) {
+    const invoice = this.invoices.find(inv => inv.id === invoiceId);
+    if (!invoice) {
+      alert('Invoice not found!');
+      return;
+    }
+
+    const remainingAmount = invoice.balancePayable;
+    if (remainingAmount <= 0) {
+      alert('This invoice is already fully paid!');
+      return;
+    }
+
+    const paymentAmount = prompt(`Enter payment amount (Remaining: ₹${remainingAmount.toLocaleString('en-IN')}):`, remainingAmount.toString());
+    
+    if (paymentAmount === null) return; // User cancelled
+    
+    const amount = parseFloat(paymentAmount);
+    
+    if (isNaN(amount) || amount <= 0) {
+      alert('Please enter a valid payment amount!');
+      return;
+    }
+
+    if (amount > remainingAmount) {
+      alert('Payment amount cannot exceed the remaining balance!');
+      return;
+    }
+
+    try {
+      const newAdvanceReceived = invoice.advanceReceived + amount;
+      const newBalancePayable = invoice.totalAmount - newAdvanceReceived;
+      let newStatus: 'PENDING' | 'PAID' | 'PARTIAL' = 'PARTIAL';
+      
+      if (newBalancePayable <= 0) {
+        newStatus = 'PAID';
+      } else if (newAdvanceReceived === 0) {
+        newStatus = 'PENDING';
+      }
+
+      this.invoiceService.updateInvoice(invoiceId, {
+        advanceReceived: newAdvanceReceived,
+        balancePayable: newBalancePayable,
+        status: newStatus
+      }).then(() => {
+        this.loadInvoices();
+        alert(`Payment of ₹${amount.toLocaleString('en-IN')} added successfully!`);
+      });
+    } catch (error) {
+      console.error('Error adding payment:', error);
+      alert('Error adding payment. Please try again.');
+    }
+  }
+
+  toggleCardExpansion(invoiceId: string) {
+    if (this.expandedCards.has(invoiceId)) {
+      this.expandedCards.delete(invoiceId);
+    } else {
+      this.expandedCards.add(invoiceId);
+    }
+  }
+
+  isCardExpanded(invoiceId: string): boolean {
+    return this.expandedCards.has(invoiceId);
   }
 
   goBackToDashboard() {
     this.router.navigate(['/dashboard'], { queryParams: { category: 'invoices' } });
+  }
+
+  // Method to create sample invoice for testing
+  async createSampleInvoice() {
+    const sampleInvoice = {
+      invoiceNumber: 'INV-001',
+      invoiceDate: new Date().toISOString().split('T')[0],
+      customer: {
+        name: 'Sample Customer',
+        mobile: '9876543210',
+        email: 'sample@email.com',
+        address: 'Sample Address, City - 123456',
+        gst: 'GST123456789'
+      },
+      serviceDetails: [
+        {
+          description: 'Financial Consultation',
+          quantity: 1,
+          rate: 5000,
+          amount: 5000
+        },
+        {
+          description: 'Tax Filing Service',
+          quantity: 1,
+          rate: 2000,
+          amount: 2000
+        }
+      ],
+      totalAmount: 7000,
+      advanceReceived: 2000,
+      balancePayable: 5000,
+      selectedBank: 'HDFC Bank, Thatte Nagar Branch - A/c No: 50200107802130, IFSC: HDFC0000064',
+      createdAt: new Date(),
+      status: 'PENDING' as 'PENDING'
+    };
+
+    try {
+      await this.invoiceService.addInvoice(sampleInvoice);
+      await this.loadInvoices();
+      alert('Sample invoice created successfully!');
+    } catch (error) {
+      console.error('Error creating sample invoice:', error);
+    }
+  }
+
+  // Debug method to check localStorage
+  debugInvoices() {
+    const stored = localStorage.getItem('globalfinserv_invoices');
+    console.log('Raw localStorage data:', stored);
+    console.log('Parsed invoices:', stored ? JSON.parse(stored) : 'No data');
+    console.log('Current invoices array:', this.invoices);
+    console.log('Filtered invoices array:', this.filteredInvoices);
+  }
+
+  clearCustomerFilter() {
+    this.customerFilter = '';
+    this.invoiceSearchTerm = '';
+    this.filterInvoices();
+    // Update URL to remove customer query param
+    this.router.navigate(['/view-invoices']);
   }
 }

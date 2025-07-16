@@ -1,10 +1,10 @@
 <div class="create-invoice-container">
   <div class="invoice-header">
-    <h2>Create Invoice</h2>
+    <h2>{{ isEditMode ? 'Edit Invoice' : 'Create Invoice' }}</h2>
     <button type="button" class="back-btn" (click)="goBack()">← Back to Dashboard</button>
   </div>
 
-  <form class="invoice-form" (ngSubmit)="saveInvoice()">
+  <form class="invoice-form">
     <!-- Invoice Basic Details -->
     <div class="form-section">
       <h3>📋 Invoice Details</h3>
@@ -76,7 +76,7 @@
             class="customer-result"
             (click)="selectCustomer(customer)">
             <div class="customer-info">
-              <span class="customer-name">{{customer.prefix}} {{customer.firstName}} {{customer.lastName}}</span>
+              <span class="customer-name">{{customer.name}}</span>
               <span class="customer-mobile">{{customer.mobile}}</span>
               <span class="customer-email">{{customer.email}}</span>
             </div>
@@ -113,11 +113,11 @@
           <label>Customer Type *</label>
           <div class="radio-group-horizontal">
             <label class="radio-option">
-              <input type="radio" name="customerType" value="individual" [(ngModel)]="newCustomer.customerType" />
+              <input type="radio" name="newCustomerType" value="individual" [(ngModel)]="newCustomer.customerType" />
               Individual
             </label>
             <label class="radio-option">
-              <input type="radio" name="customerType" value="company" [(ngModel)]="newCustomer.customerType" />
+              <input type="radio" name="newCustomerType" value="company" [(ngModel)]="newCustomer.customerType" />
               Company
             </label>
           </div>
@@ -243,17 +243,26 @@
         
         <div class="form-group">
           <label for="description{{i}}">Service Description / Particulars *</label>
-          <input 
-            type="text" 
+          <select 
             id="description{{i}}"
             [(ngModel)]="service.description" 
             name="description{{i}}"
-            placeholder="e.g., Incorporation of Producer Company, ITR filing, GST filing"
-            class="form-control"
-            list="serviceOptions">
-          <datalist id="serviceOptions">
-            <option *ngFor="let option of serviceOptions" [value]="option">
-          </datalist>
+            class="form-control service-dropdown"
+            (change)="onServiceDescriptionChange(i, $event)">
+            <option value="">Select a service or enter custom description</option>
+            <option *ngFor="let option of serviceOptions" [value]="option">{{ option }}</option>
+            <option value="custom">⚡ Enter Custom Description</option>
+          </select>
+          
+          <!-- Custom description input - shown when 'custom' is selected -->
+          <input 
+            *ngIf="service.description === 'custom'"
+            type="text" 
+            [(ngModel)]="service.customDescription"
+            name="customDescription{{i}}"
+            placeholder="Enter your custom service description..."
+            class="form-control custom-input"
+            (blur)="onCustomDescriptionBlur(i)">
         </div>
 
         <div class="form-row">
@@ -332,7 +341,9 @@
     <!-- Action Buttons -->
     <div class="form-actions">
       <button type="button" class="cancel-btn" (click)="goBack()">Cancel</button>
-      <button type="submit" class="save-btn">Create Invoice</button>
+      <button type="button" class="save-btn" (click)="previewInvoice()">
+        {{ isEditMode ? 'Preview Changes' : 'Preview Invoice' }}
+      </button>
     </div>
   </form>
 </div>
