@@ -170,14 +170,37 @@ export class ViewCustomerComponent implements OnInit {
   }
 
   filterCustomers() {
+    const searchTerm = this.customerSearchTerm.trim();
+    
+    // If search term is empty, show all customers
+    if (!searchTerm) {
+      this.filteredCustomers = [...this.customers];
+      return;
+    }
+    
+    const searchLower = searchTerm.toLowerCase();
+    
     this.filteredCustomers = this.customers.filter(customer => {
-      const searchTerm = this.customerSearchTerm.toLowerCase();
-      return !searchTerm || 
-        customer.name.toLowerCase().includes(searchTerm) ||
-        customer.mobile.includes(searchTerm) ||
-        (customer.email && customer.email.toLowerCase().includes(searchTerm)) ||
-        (customer.address && customer.address.toLowerCase().includes(searchTerm)) ||
-        (customer.gst && customer.gst.toLowerCase().includes(searchTerm));
+      // For name search: require at least 3 letters
+      const nameMatch = searchTerm.length >= 3 && 
+        customer.name.toLowerCase().includes(searchLower);
+      
+      // For mobile search: require at least 4 digits (extract only digits)
+      const searchDigits = searchTerm.replace(/\D/g, ''); // Remove non-digits
+      const mobileMatch = searchDigits.length >= 4 && 
+        customer.mobile.replace(/\D/g, '').includes(searchDigits);
+      
+      // For other fields: immediate search
+      const emailMatch = customer.email && 
+        customer.email.toLowerCase().includes(searchLower);
+      
+      const addressMatch = customer.address && 
+        customer.address.toLowerCase().includes(searchLower);
+      
+      const gstMatch = customer.gst && 
+        customer.gst.toLowerCase().includes(searchLower);
+      
+      return nameMatch || mobileMatch || emailMatch || addressMatch || gstMatch;
     });
   }
 

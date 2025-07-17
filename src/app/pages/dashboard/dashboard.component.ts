@@ -18,6 +18,14 @@ import { LocalInvoiceService as InvoiceService, Invoice } from '../../services/l
 export class DashboardComponent implements OnInit {
   activeCategory: string | null = null;
   activeSection: string | null = null;
+  isRevenueMode = false;
+  
+  // Stats properties
+  totalRevenue = 0;
+  outstandingAmount = 0;
+  collectionRate = 0;
+  totalCustomers = 0;
+  totalInvoices = 0;
   
   // Enhanced customer model to match the add-customer component
   newCustomer = {
@@ -154,6 +162,7 @@ export class DashboardComponent implements OnInit {
     
     await this.loadCustomers();
     await this.loadInvoices();
+    this.calculateStats();
   }
 
   async loadCustomers() {
@@ -793,5 +802,51 @@ export class DashboardComponent implements OnInit {
     
     // Navigate to login page
     this.router.navigate(['/login']);
+  }
+
+  // Navigation methods for new dashboard
+  navigateToAddCustomer() {
+    this.router.navigate(['/add-customer']);
+  }
+
+  navigateToViewCustomers() {
+    this.router.navigate(['/view-customer']);
+  }
+
+  navigateToCreateInvoice() {
+    this.router.navigate(['/create-invoice']);
+  }
+
+  navigateToViewInvoices() {
+    this.router.navigate(['/view-invoices']);
+  }
+
+  // Keep old methods for backward compatibility
+  navigateToCustomers() {
+    this.router.navigate(['/view-customer']);
+  }
+
+  navigateToInvoices() {
+    this.router.navigate(['/view-invoices']);
+  }
+
+  toggleRevenueMode() {
+    this.isRevenueMode = !this.isRevenueMode;
+  }
+
+  // Calculate stats
+  private calculateStats() {
+    this.totalCustomers = this.customers.length;
+    this.totalInvoices = this.invoices.length;
+    
+    this.totalRevenue = this.invoices.reduce((sum, invoice) => 
+      sum + invoice.totalAmount, 0);
+    
+    this.outstandingAmount = this.invoices.reduce((sum, invoice) => 
+      sum + invoice.balancePayable, 0);
+    
+    const paidAmount = this.totalRevenue - this.outstandingAmount;
+    this.collectionRate = this.totalRevenue > 0 ? 
+      (paidAmount / this.totalRevenue) * 100 : 0;
   }
 }

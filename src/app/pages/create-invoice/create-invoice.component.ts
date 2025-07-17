@@ -36,6 +36,8 @@ interface Invoice {
   advanceReceived: number;
   balancePayable: number;
   selectedBank: string;
+  paymentType: string;
+  paymentNotes: string;
 }
 
 @Component({
@@ -49,18 +51,24 @@ export class CreateInvoiceComponent implements OnInit {
   // Edit mode properties
   isEditMode = false;
   editInvoiceId: string | null = null;
+  
+  // Preview mode
+  showPreview = false;
+  savedInvoiceId: string | null = null;
 
   invoice: Invoice = {
-    invoiceNumber: this.generateInvoiceNumber(),
+    invoiceNumber: '',
     invoiceDate: this.getCurrentDate(),
     customer: null,
     customerType: 'existing',
     searchTerm: '',
-    serviceDetails: [{ description: '', amount: 0, notes: '' }],
+    serviceDetails: [],
     totalAmount: 0,
     advanceReceived: 0,
     balancePayable: 0,
-    selectedBank: ''
+    selectedBank: '',
+    paymentType: '',
+    paymentNotes: ''
   };
 
   // Sample existing customers (in real app, this would come from a service)
@@ -118,6 +126,39 @@ export class CreateInvoiceComponent implements OnInit {
 
   companyTypeOptions = ['Private Limited', 'Public Limited', 'LLP', 'Partnership', 'Sole Proprietorship', 'OPC'];
 
+  // Payment type options
+  paymentTypeOptions = [
+    'Cash',
+    'UPI',
+    'Bank Transfer',
+    'Card Payment',
+    'Cheque',
+    'Online Payment',
+    'NEFT/RTGS',
+    'Other'
+  ];
+
+  // Prefix options for customer names
+  prefixOptions = [
+    'Mr.',
+    'Mrs.',
+    'Ms.',
+    'Dr.',
+    'Prof.',
+    'Er.',
+    'Adv.',
+    'CA.',
+    'M/s.'
+  ];
+
+  // New service input object
+  newService = {
+    description: '',
+    customDescription: '',
+    amount: null as number | null,
+    notes: ''
+  };
+
   constructor(
     private router: Router,
     private route: ActivatedRoute,
@@ -128,6 +169,12 @@ export class CreateInvoiceComponent implements OnInit {
   }
 
   ngOnInit() {
+    // Generate initial invoice number
+    this.invoice.invoiceNumber = this.generateInvoiceNumber();
+    
+    // Initialize invoice
+    this.initializeInvoice();
+    
     // Load existing customers
     this.loadCustomers();
     
@@ -206,6 +253,8 @@ export class CreateInvoiceComponent implements OnInit {
         this.invoice.advanceReceived = invoice.advanceReceived;
         this.invoice.balancePayable = invoice.balancePayable;
         this.invoice.selectedBank = invoice.selectedBank;
+        // this.invoice.paymentType = invoice.paymentType;
+        // this.invoice.paymentNotes = invoice.paymentNotes;
 
         // Set customer type and data
         this.invoice.customerType = 'existing';
@@ -237,12 +286,19 @@ export class CreateInvoiceComponent implements OnInit {
     }
   }
 
+  // Auto-generate invoice number based on date
   generateInvoiceNumber(): string {
-    const date = new Date();
+    const date = new Date(this.invoice.invoiceDate || new Date());
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
-    const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
-    return `INV-${year}${month}-${random}`;
+    const yearMonth = `${year}${month}`;
+    
+    // In a real app, you'd get the next sequence number from the database
+    // For now, using a random 4-digit number
+    const sequence = Math.floor(Math.random() * 9999) + 1;
+    const sequenceStr = String(sequence).padStart(4, '0');
+    
+    return `INV-${yearMonth}-${sequenceStr}`;
   }
 
   getCurrentDate(): string {
@@ -470,16 +526,15 @@ export class CreateInvoiceComponent implements OnInit {
         if (this.isEditMode && this.editInvoiceId) {
           // Update existing invoice
           await this.invoiceService.updateInvoice(this.editInvoiceId, invoiceData);
-          
-          // Navigate back to preview page
-          this.router.navigate(['/invoice-preview', this.editInvoiceId]);
+          this.savedInvoiceId = this.editInvoiceId;
         } else {
           // Create new invoice
           const invoiceId = await this.invoiceService.addInvoice(invoiceData);
-          
-          // Navigate to preview page
-          this.router.navigate(['/invoice-preview', invoiceId]);
+          this.savedInvoiceId = invoiceId;
         }
+        
+        // Show preview mode
+        this.showPreview = true;
       } catch (error) {
         console.error('Error saving invoice:', error);
         alert(this.isEditMode ? 'Error updating invoice. Please try again.' : 'Error creating invoice. Please try again.');
@@ -523,6 +578,20 @@ export class CreateInvoiceComponent implements OnInit {
     return true;
   }
 
+  // Handle amount input focus to clear default 0
+  onAmountFocus(event: any) {
+    if (event.target.value === '0' || event.target.value === 0) {
+      event.target.value = '';
+    }
+  }
+
+  // Handle custom description focus to auto-select text
+  onCustomDescriptionFocus(event: any) {
+    setTimeout(() => {
+      event.target.select();
+    }, 0);
+  }
+
   // Service dropdown methods
   onServiceDescriptionChange(index: number, event: any): void {
     const selectedValue = event.target.value;
@@ -537,19 +606,100 @@ export class CreateInvoiceComponent implements OnInit {
     }
   }
 
-  onCustomDescriptionBlur(index: number): void {
-    const serviceDetail = this.invoice.serviceDetails[index];
-    if (serviceDetail.customDescription && serviceDetail.customDescription.trim()) {
-      // Use the custom description as the main description
-      serviceDetail.description = serviceDetail.customDescription.trim();
-      delete serviceDetail.customDescription;
-    } else {
-      // If custom description is empty, reset to empty
-      serviceDetail.description = '';
+  // Handle new service description change
+  onNewServiceDescriptionChange(event: any) {
+    const value = event.target.value;
+    this.newService.description = value;
+    
+    if (value !== 'custom') {
+      this.newService.customDescription = '';
     }
+  }
+
+  // Check if service can be added
+  canAddService(): boolean {
+    const hasDescription = this.newService.description && 
+      (this.newService.description !== 'custom' || 
+       (this.newService.description === 'custom' && this.newService.customDescription && this.newService.customDescription.trim().length > 0));
+    const hasAmount = this.newService.amount !== null && this.newService.amount > 0;
+    
+    return !!hasDescription && hasAmount;
+  }
+
+  // Add service to the list
+  addServiceToList() {
+    if (this.canAddService()) {
+      const serviceToAdd = {
+        description: this.newService.description,
+        customDescription: this.newService.customDescription,
+        amount: this.newService.amount || 0,
+        notes: this.newService.notes
+      };
+      
+      this.invoice.serviceDetails.push(serviceToAdd);
+      this.onAmountChange(); // Recalculate totals
+      
+      // Reset the form
+      this.newService = {
+        description: '',
+        customDescription: '',
+        amount: null,
+        notes: ''
+      };
+    }
+  }
+
+  // Remove service from list
+  removeServiceFromList(index: number) {
+    this.invoice.serviceDetails.splice(index, 1);
+    this.onAmountChange(); // Recalculate totals
+  }
+
+  // Initialize invoice with empty service details array
+  initializeInvoice() {
+    if (!this.invoice.serviceDetails || this.invoice.serviceDetails.length === 0) {
+      this.invoice.serviceDetails = [];
+    }
+  }
+
+  // Get display name for service
+  getServiceDisplayName(service: any) {
+    if (service.description === 'custom') {
+      return service.customDescription || 'Custom Service';
+    }
+    return service.description;
+  }
+
+  // Regenerate invoice number when date changes
+  onInvoiceDateChange() {
+    this.invoice.invoiceNumber = this.generateInvoiceNumber();
   }
 
   goBack(): void {
     this.router.navigate(['/dashboard'], { queryParams: { category: 'invoices' } });
+  }
+
+  // Preview mode methods
+  returnToForm(): void {
+    this.showPreview = false;
+  }
+
+  cancelInvoice(): void {
+    this.router.navigate(['/dashboard']);
+  }
+
+  printInvoice(): void {
+    if (this.savedInvoiceId) {
+      // Open print dialog
+      window.print();
+    }
+  }
+
+  shareViaWhatsApp(): void {
+    if (this.savedInvoiceId && this.invoice.customer) {
+      const message = `Invoice ${this.invoice.invoiceNumber} for amount ₹${this.invoice.totalAmount} has been generated. Balance amount: ₹${this.invoice.balancePayable}`;
+      const whatsappUrl = `https://wa.me/91${this.invoice.customer.mobile}?text=${encodeURIComponent(message)}`;
+      window.open(whatsappUrl, '_blank');
+    }
   }
 }

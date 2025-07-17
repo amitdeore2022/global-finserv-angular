@@ -1,4 +1,4 @@
-<div class="create-invoice-container">
+<div class="create-invoice-container" *ngIf="!showPreview">
   <div class="invoice-header">
     <h2>{{ isEditMode ? 'Edit Invoice' : 'Create Invoice' }}</h2>
     <button type="button" class="back-btn" (click)="goBack()">← Back to Dashboard</button>
@@ -25,7 +25,8 @@
             id="invoiceDate" 
             [(ngModel)]="invoice.invoiceDate" 
             name="invoiceDate"
-            class="form-control">
+            class="form-control"
+            (change)="onInvoiceDateChange()">
         </div>
       </div>
     </div>
@@ -42,7 +43,7 @@
             name="customerType" 
             value="existing"
             (change)="onCustomerTypeChange()">
-          <span>Existing Customer</span>
+          <span class="radio-text">Existing Customer</span>
         </label>
         <label class="radio-option">
           <input 
@@ -51,7 +52,7 @@
             name="customerType" 
             value="new"
             (change)="onCustomerTypeChange()">
-          <span>New Customer</span>
+          <span class="radio-text">New Customer</span>
         </label>
       </div>
 
@@ -74,6 +75,7 @@
           <div 
             *ngFor="let customer of searchResults" 
             class="customer-result"
+            [class.selected]="invoice.customer?.id === customer.id"
             (click)="selectCustomer(customer)">
             <div class="customer-info">
               <span class="customer-name">{{customer.name}}</span>
@@ -86,11 +88,11 @@
         <!-- Selected Customer Display -->
         <div *ngIf="invoice.customer" class="selected-customer">
           <h4>Selected Customer:</h4>
-          <div class="customer-card">
-            <p><strong>{{invoice.customer.prefix}} {{invoice.customer.firstName}} {{invoice.customer.lastName}}</strong></p>
+          <div class="customer-card selected">
+            <p><strong>{{invoice.customer.firstName ? (invoice.customer.prefix + ' ' + invoice.customer.firstName + ' ' + invoice.customer.lastName) : invoice.customer.id}}</strong></p>
             <p>Mobile: {{invoice.customer.mobile}}</p>
             <p>Email: {{invoice.customer.email}}</p>
-            <p>Address: {{invoice.customer.address}}, {{invoice.customer.city}}, {{invoice.customer.state}} - {{invoice.customer.pincode}}</p>
+            <p>Address: {{invoice.customer.address}}</p>
           </div>
         </div>
 
@@ -229,26 +231,39 @@
     <div class="form-section">
       <h3>💼 Service Details</h3>
       
-      <div *ngFor="let service of invoice.serviceDetails; let i = index" class="service-item">
-        <div class="service-header">
-          <h4>Service {{i + 1}}</h4>
-          <button 
-            *ngIf="invoice.serviceDetails.length > 1"
-            type="button" 
-            class="remove-service-btn"
-            (click)="removeServiceDetail(i)">
-            ✕
-          </button>
+      <!-- Display added services -->
+      <div *ngIf="invoice.serviceDetails.length > 0" class="service-list">
+        <h4>Added Services:</h4>
+        <div *ngFor="let service of invoice.serviceDetails; let i = index" class="service-item-display">
+          <div class="service-details">
+            <h5>{{ getServiceDisplayName(service) }}</h5>
+            <p *ngIf="service.notes">{{ service.notes }}</p>
+          </div>
+          <div class="service-actions">
+            <span class="service-amount">₹{{ service.amount | number:'1.2-2' }}</span>
+            <button 
+              type="button" 
+              class="remove-service-btn"
+              (click)="removeServiceFromList(i)"
+              title="Remove service">
+              ✕
+            </button>
+          </div>
         </div>
+      </div>
+
+      <!-- Add new service form -->
+      <div class="add-service-form">
+        <h4>{{ invoice.serviceDetails.length > 0 ? 'Add Another Service:' : 'Add Service:' }}</h4>
         
         <div class="form-group">
-          <label for="description{{i}}">Service Description / Particulars *</label>
+          <label for="newServiceDescription">Service Description / Particulars *</label>
           <select 
-            id="description{{i}}"
-            [(ngModel)]="service.description" 
-            name="description{{i}}"
+            id="newServiceDescription"
+            [(ngModel)]="newService.description" 
+            name="newServiceDescription"
             class="form-control service-dropdown"
-            (change)="onServiceDescriptionChange(i, $event)">
+            (change)="onNewServiceDescriptionChange($event)">
             <option value="">Select a service or enter custom description</option>
             <option *ngFor="let option of serviceOptions" [value]="option">{{ option }}</option>
             <option value="custom">⚡ Enter Custom Description</option>
@@ -256,44 +271,49 @@
           
           <!-- Custom description input - shown when 'custom' is selected -->
           <input 
-            *ngIf="service.description === 'custom'"
+            *ngIf="newService.description === 'custom'"
             type="text" 
-            [(ngModel)]="service.customDescription"
-            name="customDescription{{i}}"
+            [(ngModel)]="newService.customDescription"
+            name="newCustomDescription"
             placeholder="Enter your custom service description..."
             class="form-control custom-input"
-            (blur)="onCustomDescriptionBlur(i)">
+            (focus)="onCustomDescriptionFocus($event)">
         </div>
 
         <div class="form-row">
           <div class="form-group">
-            <label for="amount{{i}}">Amount *</label>
+            <label for="newServiceAmount">Amount *</label>
             <input 
               type="number" 
-              id="amount{{i}}"
-              [(ngModel)]="service.amount" 
-              name="amount{{i}}"
+              id="newServiceAmount"
+              [(ngModel)]="newService.amount" 
+              name="newServiceAmount"
               min="0"
               step="0.01"
+              placeholder="0"
               class="form-control"
-              (input)="onAmountChange()">
+              (focus)="onAmountFocus($event)">
           </div>
           <div class="form-group">
-            <label for="notes{{i}}">Notes (Optional)</label>
+            <label for="newServiceNotes">Notes (Optional)</label>
             <input 
               type="text" 
-              id="notes{{i}}"
-              [(ngModel)]="service.notes" 
-              name="notes{{i}}"
+              id="newServiceNotes"
+              [(ngModel)]="newService.notes" 
+              name="newServiceNotes"
               placeholder="e.g., Including challan fees"
               class="form-control">
           </div>
         </div>
-      </div>
 
-      <button type="button" class="add-service-btn" (click)="addServiceDetail()">
-        + Add Another Service
-      </button>
+        <button 
+          type="button" 
+          class="add-service-btn" 
+          (click)="addServiceToList()"
+          [disabled]="!canAddService()">
+          + Add Service
+        </button>
+      </div>
     </div>
 
     <!-- Payment Summary -->
@@ -301,22 +321,55 @@
       <h3>💰 Payment Summary</h3>
       
       <div class="payment-summary">
+        <h4>Payment Details</h4>
+        
         <div class="summary-row">
           <span class="label">Total Amount:</span>
           <span class="amount">₹{{invoice.totalAmount | number:'1.2-2'}}</span>
         </div>
         
-        <div class="form-group">
-          <label for="advanceReceived">Advance Received</label>
-          <input 
-            type="number" 
-            id="advanceReceived"
-            [(ngModel)]="invoice.advanceReceived" 
-            name="advanceReceived"
-            min="0"
-            step="0.01"
-            class="form-control"
-            (input)="onAdvanceChange()">
+        <div class="payment-section">
+          <div class="form-group">
+            <label for="advanceReceived">Advance Received</label>
+            <input 
+              type="number" 
+              id="advanceReceived"
+              [(ngModel)]="invoice.advanceReceived" 
+              name="advanceReceived"
+              min="0"
+              step="0.01"
+              placeholder="0"
+              class="form-control"
+              (input)="onAmountChange()"
+              (focus)="onAmountFocus($event)">
+          </div>
+
+          <!-- Payment Type - enabled only if advance > 0 -->
+          <div class="form-group">
+            <label for="paymentType">Payment Type</label>
+            <select 
+              id="paymentType" 
+              [(ngModel)]="invoice.paymentType" 
+              name="paymentType" 
+              class="form-control"
+              [disabled]="!invoice.advanceReceived || invoice.advanceReceived <= 0">
+              <option value="">Select Payment Type</option>
+              <option *ngFor="let type of paymentTypeOptions" [value]="type">{{ type }}</option>
+            </select>
+          </div>
+
+          <!-- Payment Notes -->
+          <div class="form-group">
+            <label for="paymentNotes">Payment Notes</label>
+            <textarea 
+              id="paymentNotes"
+              [(ngModel)]="invoice.paymentNotes" 
+              name="paymentNotes"
+              placeholder="Enter payment details, reference number, etc."
+              class="form-control"
+              rows="2">
+            </textarea>
+          </div>
         </div>
         
         <div class="summary-row total">
@@ -339,11 +392,98 @@
     </div>
 
     <!-- Action Buttons -->
-    <div class="form-actions">
+    <div class="action-buttons">
       <button type="button" class="cancel-btn" (click)="goBack()">Cancel</button>
-      <button type="button" class="save-btn" (click)="previewInvoice()">
-        {{ isEditMode ? 'Preview Changes' : 'Preview Invoice' }}
+      <button type="button" class="preview-btn" (click)="saveInvoice()">
+        {{ isEditMode ? 'Update Invoice' : 'Preview Invoice' }}
       </button>
     </div>
   </form>
 </div>
+
+<!-- Preview Section -->
+<div *ngIf="showPreview" class="preview-section">
+    <div class="preview-header">
+      <h2>Invoice Preview</h2>
+      <div class="preview-actions">
+        <button type="button" class="cancel-btn" (click)="cancelInvoice()">Cancel</button>
+        <button type="button" class="return-btn" (click)="returnToForm()">Return to Form</button>
+      </div>
+    </div>
+
+    <div class="invoice-preview">
+      <div class="invoice-header-preview">
+        <h3>Invoice #{{ invoice.invoiceNumber }}</h3>
+        <p>Date: {{ invoice.invoiceDate }}</p>
+      </div>
+
+      <div class="customer-details-preview">
+        <h4>Bill To:</h4>
+        <div *ngIf="invoice.customer">
+          <p><strong>{{ invoice.customer.prefix }} {{ invoice.customer.firstName }} {{ invoice.customer.lastName }}</strong></p>
+          <p>{{ invoice.customer.mobile }}</p>
+          <p *ngIf="invoice.customer.email">{{ invoice.customer.email }}</p>
+          <p>{{ invoice.customer.address }}</p>
+          <p>{{ invoice.customer.city }}, {{ invoice.customer.state }} - {{ invoice.customer.pincode }}</p>
+        </div>
+        <div *ngIf="invoice.customerType === 'new'">
+          <p><strong>{{ newCustomer.prefix }} {{ newCustomer.firstName }} {{ newCustomer.lastName || newCustomer.companyName }}</strong></p>
+          <p>{{ newCustomer.mobile }}</p>
+          <p *ngIf="newCustomer.email">{{ newCustomer.email }}</p>
+          <p>{{ newCustomer.addressLine1 }}</p>
+          <p>{{ newCustomer.district }}, {{ newCustomer.taluka }} - {{ newCustomer.pinCode }}</p>
+        </div>
+      </div>
+
+      <div class="services-preview">
+        <h4>Services:</h4>
+        <table class="services-table">
+          <thead>
+            <tr>
+              <th>Service Description</th>
+              <th>Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let service of invoice.serviceDetails">
+              <td>{{ service.customDescription || service.description }}</td>
+              <td>₹{{ service.amount | number:'1.2-2' }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="payment-summary-preview">
+        <div class="summary-row">
+          <span>Total Amount:</span>
+          <span>₹{{ invoice.totalAmount | number:'1.2-2' }}</span>
+        </div>
+        <div class="summary-row">
+          <span>Advance Received:</span>
+          <span>₹{{ invoice.advanceReceived | number:'1.2-2' }}</span>
+        </div>
+        <div class="summary-row total">
+          <span>Balance Payable:</span>
+          <span>₹{{ invoice.balancePayable | number:'1.2-2' }}</span>
+        </div>
+      </div>
+
+      <div class="bank-details-preview" *ngIf="invoice.selectedBank">
+        <h4>Payment Details:</h4>
+        <p><strong>Bank:</strong> {{ invoice.selectedBank }}</p>
+        <p><strong>Payment Type:</strong> {{ invoice.paymentType }}</p>
+        <p *ngIf="invoice.paymentNotes"><strong>Notes:</strong> {{ invoice.paymentNotes }}</p>
+      </div>
+    </div>
+
+    <div class="preview-footer-actions">
+      <button type="button" class="print-btn" (click)="printInvoice()" [disabled]="!savedInvoiceId">
+        <i class="fas fa-print"></i>
+        Print Invoice
+      </button>
+      <button type="button" class="whatsapp-btn" (click)="shareViaWhatsApp()" [disabled]="!savedInvoiceId">
+        <i class="fab fa-whatsapp"></i>
+        Share via WhatsApp
+      </button>
+    </div>
+  </div>

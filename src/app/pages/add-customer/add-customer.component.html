@@ -1,7 +1,7 @@
 <div class="add-customer">
   <div class="header">
-    <button class="back-btn" (click)="goBack()">← Back to Dashboard</button>
     <h2>Add New Customer</h2>
+    <button class="back-btn" (click)="goBack()">← Back to Dashboard</button>
   </div>
 
   <div class="form-container">
@@ -23,9 +23,19 @@
 
       <!-- Individual Customer Name -->
       <div *ngIf="newCustomer.customerType === 'individual'" class="form-group">
-        <label>Customer Name *</label>
+        <label>Salutation & Name *</label>
         <div class="name-input-group">
-          <input id="prefix" type="text" [(ngModel)]="newCustomer.prefix" name="prefix" placeholder="Prefix" class="prefix-input" />
+          <select [(ngModel)]="newCustomer.prefix" name="prefix" class="prefix-select">
+            <option value="">Prefix</option>
+            <option value="Mr.">Mr.</option>
+            <option value="Mrs.">Mrs.</option>
+            <option value="Ms.">Ms.</option>
+            <option value="Dr.">Dr.</option>
+            <option value="Prof.">Prof.</option>
+            <option value="Er.">Er.</option>
+            <option value="Adv.">Adv.</option>
+            <option value="CA.">CA.</option>
+          </select>
           <input id="firstName" type="text" [(ngModel)]="newCustomer.firstName" name="firstName" placeholder="First Name" class="name-input" required />
         </div>
       </div>

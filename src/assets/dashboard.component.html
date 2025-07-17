@@ -13,20 +13,18 @@
     <!-- Customers Section -->
     <div class="accordion-item">
       <button class="accordion-header" (click)="toggleCategory('customers')" [class.active]="activeCategory === 'customers'">
-        <div class="header-content">
-          <i class="fas fa-users"></i>
-          <span>Customers</span>
-        </div>
+        <i class="fas fa-users"></i>
+        <span>Customers</span>
         <i class="fas fa-chevron-down accordion-icon" [class.rotated]="activeCategory === 'customers'"></i>
       </button>
       <div class="accordion-content" [class.expanded]="activeCategory === 'customers'">
         <div class="sub-functions">
           <h3>Customer Management</h3>
           <div class="actions">
-            <button (click)="navigateToAddCustomer()">
+            <button routerLink="/add-customer">
               <i class="fas fa-user-plus"></i> Add Customer
             </button>
-            <button (click)="navigateToViewCustomers()">
+            <button routerLink="/view-customer">
               <i class="fas fa-users"></i> View Customers
             </button>
           </div>
@@ -37,20 +35,18 @@
     <!-- Invoices Section -->
     <div class="accordion-item">
       <button class="accordion-header" (click)="toggleCategory('invoices')" [class.active]="activeCategory === 'invoices'">
-        <div class="header-content">
-          <i class="fas fa-file-invoice"></i>
-          <span>Invoices</span>
-        </div>
+        <i class="fas fa-file-invoice"></i>
+        <span>Invoices</span>
         <i class="fas fa-chevron-down accordion-icon" [class.rotated]="activeCategory === 'invoices'"></i>
       </button>
       <div class="accordion-content" [class.expanded]="activeCategory === 'invoices'">
         <div class="sub-functions">
           <h3>Invoice Management</h3>
           <div class="actions">
-            <button (click)="navigateToCreateInvoice()">
+            <button routerLink="/create-invoice">
               <i class="fas fa-plus-circle"></i> Create Invoice
             </button>
-            <button (click)="navigateToViewInvoices()">
+            <button routerLink="/view-invoices">
               <i class="fas fa-file-invoice-dollar"></i> View Invoices
             </button>
           </div>
@@ -61,10 +57,8 @@
     <!-- Revenue Dashboard Section -->
     <div class="accordion-item">
       <button class="accordion-header" (click)="toggleCategory('revenue')" [class.active]="activeCategory === 'revenue'">
-        <div class="header-content">
-          <i class="fas fa-chart-line"></i>
-          <span>Revenue Dashboard</span>
-        </div>
+        <i class="fas fa-chart-line"></i>
+        <span>Revenue Dashboard</span>
         <i class="fas fa-chevron-down accordion-icon" [class.rotated]="activeCategory === 'revenue'"></i>
       </button>
       <div class="accordion-content" [class.expanded]="activeCategory === 'revenue'">
@@ -86,81 +80,24 @@
     </div>
   </div>
 
-  <!-- Quick Stats Section (keeping from improvements) -->
-  <div class="quick-stats">
-    <h3 class="stats-title">Quick Stats</h3>
-    <div class="stats-grid">
-      <div class="stat-card total-revenue">
-        <div class="stat-icon">
-          <i class="fas fa-rupee-sign"></i>
-        </div>
-        <div class="stat-content">
-          <h4>Total Revenue</h4>
-          <p class="stat-value">₹{{ totalRevenue | number:'1.2-2' }}</p>
-        </div>
-      </div>
-
-      <div class="stat-card outstanding-amount">
-        <div class="stat-icon">
-          <i class="fas fa-clock"></i>
-        </div>
-        <div class="stat-content">
-          <h4>Outstanding Amount</h4>
-          <p class="stat-value">₹{{ outstandingAmount | number:'1.2-2' }}</p>
-        </div>
-      </div>
-
-      <div class="stat-card collection-rate">
-        <div class="stat-icon">
-          <i class="fas fa-percentage"></i>
-        </div>
-        <div class="stat-content">
-          <h4>Collection Rate</h4>
-          <p class="stat-value">{{ collectionRate | number:'1.1-1' }}%</p>
-        </div>
-      </div>
-
-      <div class="stat-card total-customers">
-        <div class="stat-icon">
-          <i class="fas fa-users"></i>
-        </div>
-        <div class="stat-content">
-          <h4>Total Customers</h4>
-          <p class="stat-value">{{ totalCustomers }}</p>
-        </div>
-      </div>
-
-      <div class="stat-card total-invoices">
-        <div class="stat-icon">
-          <i class="fas fa-file-invoice-dollar"></i>
-        </div>
-        <div class="stat-content">
-          <h4>Total Invoices</h4>
-          <p class="stat-value">{{ totalInvoices }}</p>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Revenue Sections (from original) -->
   <!-- Monthly Revenue Section -->
   <div *ngIf="activeCategory === 'revenue' && activeSection === 'monthlyRevenue'" class="section-container">
     <h3>Monthly Revenue Overview</h3>
     <div class="revenue-cards">
       <div class="revenue-card">
         <h4>This Month</h4>
-        <div class="revenue-amount">₹{{ totalRevenue | number:'1.2-2' }}</div>
-        <div class="revenue-trend positive">Current period</div>
+        <div class="revenue-amount">₹{{getCurrentMonthRevenue() | number:'1.2-2'}}</div>
+        <div class="revenue-trend positive">+12% from last month</div>
       </div>
       <div class="revenue-card">
-        <h4>Outstanding</h4>
-        <div class="revenue-amount">₹{{ outstandingAmount | number:'1.2-2' }}</div>
-        <div class="revenue-trend">Pending collection</div>
+        <h4>Last Month</h4>
+        <div class="revenue-amount">₹{{getLastMonthRevenue() | number:'1.2-2'}}</div>
+        <div class="revenue-trend">Previous period</div>
       </div>
       <div class="revenue-card">
-        <h4>Collection Rate</h4>
-        <div class="revenue-amount">{{ collectionRate | number:'1.1-1' }}%</div>
-        <div class="revenue-trend">Efficiency rate</div>
+        <h4>Average Monthly</h4>
+        <div class="revenue-amount">₹{{getAverageMonthlyRevenue() | number:'1.2-2'}}</div>
+        <div class="revenue-trend">6-month average</div>
       </div>
     </div>
     <div class="chart-container">
@@ -182,11 +119,13 @@
         <span>Invoices</span>
         <span>Outstanding</span>
       </div>
-      <div class="customer-revenue-row" *ngFor="let customer of customers">
-        <span class="customer-name">{{ customer.name }}</span>
-        <span class="revenue-amount">₹0.00</span>
-        <span class="invoice-count">0</span>
-        <span class="outstanding paid">₹0.00</span>
+      <div *ngFor="let customer of getCustomerRevenueData()" class="customer-revenue-row">
+        <span class="customer-name">{{customer.name}}</span>
+        <span class="revenue-amount">₹{{customer.totalRevenue | number:'1.2-2'}}</span>
+        <span class="invoice-count">{{customer.invoiceCount}}</span>
+        <span class="outstanding" [class.paid]="customer.outstanding === 0">
+          ₹{{customer.outstanding | number:'1.2-2'}}
+        </span>
       </div>
     </div>
   </div>
@@ -198,22 +137,43 @@
       <div class="report-card">
         <h4>📊 Income Statement</h4>
         <p>Detailed breakdown of revenue, expenses, and profit</p>
-        <button class="report-btn">Generate Report</button>
+        <button class="report-btn" (click)="generateIncomeStatement()">Generate Report</button>
       </div>
       <div class="report-card">
         <h4>📈 Revenue Growth</h4>
         <p>Year-over-year and month-over-month growth analysis</p>
-        <button class="report-btn">Generate Report</button>
+        <button class="report-btn" (click)="generateGrowthReport()">Generate Report</button>
       </div>
       <div class="report-card">
         <h4>💰 Payment Analytics</h4>
         <p>Payment patterns, collection efficiency, and aging analysis</p>
-        <button class="report-btn">Generate Report</button>
+        <button class="report-btn" (click)="generatePaymentReport()">Generate Report</button>
       </div>
       <div class="report-card">
         <h4>📋 Tax Summary</h4>
         <p>GST and tax summaries for compliance reporting</p>
-        <button class="report-btn">Generate Report</button>
+        <button class="report-btn" (click)="generateTaxReport()">Generate Report</button>
+      </div>
+    </div>
+    <div class="quick-stats">
+      <h4>Quick Statistics</h4>
+      <div class="stats-grid">
+        <div class="stat-item">
+          <span class="stat-label">Total Revenue (YTD)</span>
+          <span class="stat-value">₹{{getYearToDateRevenue() | number:'1.2-2'}}</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Total Outstanding</span>
+          <span class="stat-value">₹{{getTotalOutstanding() | number:'1.2-2'}}</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Collection Rate</span>
+          <span class="stat-value">{{getCollectionRate()}}%</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Active Customers</span>
+          <span class="stat-value">{{getActiveCustomersCount()}}</span>
+        </div>
       </div>
     </div>
   </div>
