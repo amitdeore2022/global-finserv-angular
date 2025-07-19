@@ -11,9 +11,8 @@ export class FirestoreSetupService {
     try {
       console.log('🔥 Initializing Firestore collections...');
       
-      // Check if collections exist and create sample data if empty
-      await this.createSampleCustomerIfNeeded();
-      // Remove automatic sample invoice creation to avoid number conflicts
+      // Disable automatic sample data creation to prevent unwanted test customers
+      // await this.createSampleCustomerIfNeeded();
       // await this.createSampleInvoiceIfNeeded();
       
       console.log('✅ Firestore collections initialized successfully');
