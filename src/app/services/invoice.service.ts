@@ -70,6 +70,17 @@ export class InvoiceService {
     }
   }
 
+  // Get invoice by ID
+  async getInvoiceById(invoiceId: string): Promise<Invoice | null> {
+    try {
+      const invoices = await this.getInvoices();
+      return invoices.find(invoice => invoice.id === invoiceId) || null;
+    } catch (error) {
+      console.error('Error getting invoice by ID:', error);
+      throw error;
+    }
+  }
+
   // Update an invoice
   async updateInvoice(invoiceId: string, invoiceData: Partial<Invoice>): Promise<void> {
     try {
@@ -142,6 +153,65 @@ export class InvoiceService {
     } catch (error) {
       console.error('Error getting pending amount:', error);
       return 0;
+    }
+  }
+
+  // Generate next invoice number
+  async generateNextInvoiceNumber(invoiceDate: string): Promise<string> {
+    try {
+      console.log('🔢 Generating invoice number for date:', invoiceDate);
+      
+      const invoices = await this.getInvoices();
+      const currentDate = new Date(invoiceDate);
+      const year = currentDate.getFullYear();
+      const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+      const yearMonth = `${year}${month}`;
+      
+      console.log('📅 Year-Month:', yearMonth);
+      console.log('📋 Total invoices found:', invoices.length);
+      
+      // Filter invoices for the current year-month
+      const currentMonthInvoices = invoices.filter(invoice => {
+        const invoiceDateParts = invoice.invoiceDate.split('-');
+        const invoiceYear = invoiceDateParts[0];
+        const invoiceMonth = invoiceDateParts[1];
+        const invoiceYearMonth = `${invoiceYear}${invoiceMonth}`;
+        return invoiceYearMonth === yearMonth;
+      });
+      
+      console.log('📅 Current month invoices:', currentMonthInvoices.length);
+      
+      // Find the highest sequence number for this month
+      let maxSequence = 0;
+      currentMonthInvoices.forEach(invoice => {
+        console.log('🔍 Checking invoice number:', invoice.invoiceNumber);
+        const match = invoice.invoiceNumber.match(/INV-\d{6}-(\d{4})/);
+        if (match) {
+          const sequence = parseInt(match[1], 10);
+          console.log('📊 Found sequence:', sequence);
+          maxSequence = Math.max(maxSequence, sequence);
+        }
+      });
+      
+      // Generate next sequence number
+      const nextSequence = maxSequence + 1;
+      const sequenceStr = String(nextSequence).padStart(4, '0');
+      const newInvoiceNumber = `INV-${yearMonth}-${sequenceStr}`;
+      
+      console.log('🎯 Max sequence found:', maxSequence);
+      console.log('✨ Generated invoice number:', newInvoiceNumber);
+      
+      return newInvoiceNumber;
+    } catch (error) {
+      console.error('❌ Error generating invoice number:', error);
+      // Fallback to basic format with timestamp to ensure uniqueness
+      const currentDate = new Date(invoiceDate);
+      const year = currentDate.getFullYear();
+      const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+      const timestamp = Date.now().toString().slice(-4); // Last 4 digits of timestamp
+      const fallbackNumber = `INV-${year}${month}-${timestamp}`;
+      console.log('🔄 Fallback invoice number:', fallbackNumber);
+      return fallbackNumber;
     }
   }
 }

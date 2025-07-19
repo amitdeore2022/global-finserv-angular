@@ -2,6 +2,9 @@
   <div class="header">
     <button class="back-btn" (click)="goBack()">← Back to Dashboard</button>
     <h2>View Customers</h2>
+    <button class="refresh-btn" (click)="refreshData()" title="Refresh Data">
+      <i class="fas fa-sync-alt"></i> Refresh
+    </button>
   </div>
 
   <div *ngIf="isLoading" class="loading">
@@ -58,12 +61,6 @@
               <button class="action-btn ledger-btn" (click)="generateCustomerLedger(customer)" title="Download Customer Ledger">
                 <i class="fas fa-download"></i> Download Ledger
               </button>
-              <button class="show-details-btn" (click)="toggleCustomerCardExpansion(customer.id!)" 
-                     [title]="isCustomerCardExpanded(customer.id!) ? 'Hide Details' : 'Show Details'">
-                <i class="fas" [class.fa-chevron-down]="!isCustomerCardExpanded(customer.id!)" 
-                   [class.fa-chevron-up]="isCustomerCardExpanded(customer.id!)"></i>
-                {{isCustomerCardExpanded(customer.id!) ? 'Hide Details' : 'Show Details'}}
-              </button>
             </div>
           </div>
           
@@ -97,6 +94,16 @@
                 <span class="value">{{customer.invoiceCount}}</span>
               </div>
             </div>
+          </div>
+          
+          <!-- Show Details button placed below total invoices -->
+          <div class="show-details-container">
+            <button class="show-details-btn" (click)="toggleCustomerCardExpansion(customer.id!)" 
+                   [title]="isCustomerCardExpanded(customer.id!) ? 'Hide Details' : 'Show Details'">
+              <i class="fas" [class.fa-chevron-down]="!isCustomerCardExpanded(customer.id!)" 
+                 [class.fa-chevron-up]="isCustomerCardExpanded(customer.id!)"></i>
+              {{isCustomerCardExpanded(customer.id!) ? 'Hide Details' : 'Show Details'}}
+            </button>
           </div>
         </div>
         

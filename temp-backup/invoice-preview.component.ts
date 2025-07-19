@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
-import { InvoiceService, Invoice } from '../../services/invoice.service';
+import { LocalInvoiceService as InvoiceService, Invoice } from '../../services/local-invoice.service';
 import { PdfGenerationService } from '../../services/pdf-generation.service';
 
 @Component({
@@ -46,22 +46,12 @@ export class InvoicePreviewComponent implements OnInit {
   loadPreviewData() {
     try {
       const tempData = sessionStorage.getItem('tempInvoiceData');
-      console.log('Loading preview data from sessionStorage:', tempData);
-      
       if (tempData) {
         const data = JSON.parse(tempData);
-        console.log('Parsed preview data:', data);
-        
         this.invoice = data.invoiceData;
         this.formData = data.formData;
         this.isLoading = false;
-        
-        console.log('Preview loaded - Invoice:', this.invoice);
-        console.log('Preview loaded - Form data:', this.formData);
-        console.log('🔄 isPreviewMode:', this.isPreviewMode);
-        console.log('✅ invoiceCreated:', this.invoiceCreated);
       } else {
-        console.warn('No invoice data found for preview');
         alert('No invoice data found for preview!');
         this.router.navigate(['/create-invoice']);
       }
@@ -142,18 +132,11 @@ Thank you for your business! 🙏`;
   }
 
   async createInvoice() {
-    console.log('🚀 createInvoice() called');
-    console.log('📊 Current state - isPreviewMode:', this.isPreviewMode);
-    console.log('📊 Current state - invoice:', this.invoice);
-    console.log('📊 Current state - isCreating:', this.isCreating);
-    
     if (!this.isPreviewMode || !this.invoice || this.isCreating) {
-      console.warn('⚠️ createInvoice conditions not met');
       return;
     }
 
     this.isCreating = true;
-    console.log('💾 Starting invoice creation process...');
 
     try {
       let invoiceId: string;
@@ -165,9 +148,6 @@ Thank you for your business! 🙏`;
         invoiceId = this.formData.editInvoiceId;
         this.invoice.id = invoiceId;
       } else {
-        // Generate proper invoice number for new invoices
-        this.invoice.invoiceNumber = await this.invoiceService.generateNextInvoiceNumber(this.invoice.invoiceDate);
-        
         // Create new invoice
         invoiceId = await this.invoiceService.addInvoice(this.invoice);
         this.invoice.id = invoiceId;
@@ -194,54 +174,18 @@ Thank you for your business! 🙏`;
   editInvoice() {
     if (this.isPreviewMode) {
       // If in preview mode, restore the form data and go back to create invoice
-      // Store the current invoice data as form data for editing
-      const editData = {
-        isEditMode: true,
-        editInvoiceId: this.formData?.editInvoiceId || null,
-        invoiceData: this.invoice,
-        formData: this.formData
-      };
-      
-      // Store in sessionStorage so create-invoice can restore the form
-      sessionStorage.setItem('editInvoiceData', JSON.stringify(editData));
-      
-      this.router.navigate(['/create-invoice'], { queryParams: { mode: 'edit' } });
+      this.router.navigate(['/create-invoice']);
     } else if (this.invoice) {
-      // For saved invoices, navigate with edit parameter
       this.router.navigate(['/create-invoice'], { queryParams: { edit: this.invoice.id } });
     }
   }
 
   goBack() {
     if (this.isPreviewMode) {
-      // Store the current invoice data for form restoration
-      const restoreData = {
-        invoiceData: this.invoice,
-        formData: this.formData,
-        isEditMode: this.formData?.isEditMode || false,
-        editInvoiceId: this.formData?.editInvoiceId || null
-      };
-      
-      // Store data for form restoration
-      sessionStorage.setItem('editInvoiceData', JSON.stringify(restoreData));
-      
-      // Navigate back to create invoice with edit mode
-      this.router.navigate(['/create-invoice'], { queryParams: { mode: 'edit' } });
+      // Clear temporary data and go back to create invoice
+      sessionStorage.removeItem('tempInvoiceData');
+      this.router.navigate(['/create-invoice']);
     } else {
-      this.router.navigate(['/dashboard'], { queryParams: { category: 'invoices' } });
-    }
-  }
-
-  cancelInvoice() {
-    if (this.isPreviewMode) {
-      if (confirm('Are you sure you want to cancel this invoice? Any unsaved changes will be lost.')) {
-        // Clear temporary data and navigate back to dashboard
-        sessionStorage.removeItem('tempInvoiceData');
-        sessionStorage.removeItem('editInvoiceData');
-        this.router.navigate(['/dashboard'], { queryParams: { category: 'invoices' } });
-      }
-    } else {
-      // For saved invoices, just go back to dashboard
       this.router.navigate(['/dashboard'], { queryParams: { category: 'invoices' } });
     }
   }

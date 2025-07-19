@@ -1,9 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+                                                                                                                                                                                                                                                                                      import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
-import { LocalInvoiceService } from '../../services/local-invoice.service';
-import { LocalCustomerService, Customer as LocalCustomer } from '../../services/local-customer.service';
+import { InvoiceService } from '../../services/invoice.service';
+import { CustomerService, Customer as FirestoreCustomer } from '../../services/customer.service';
 
 interface Customer {
   id: string;
@@ -36,6 +36,8 @@ interface Invoice {
   advanceReceived: number;
   balancePayable: number;
   selectedBank: string;
+  paymentType: string;
+  paymentNotes: string;
 }
 
 @Component({
@@ -49,24 +51,30 @@ export class CreateInvoiceComponent implements OnInit {
   // Edit mode properties
   isEditMode = false;
   editInvoiceId: string | null = null;
+  
+  // Preview mode
+  showPreview = false;
+  savedInvoiceId: string | null = null;
 
   invoice: Invoice = {
-    invoiceNumber: this.generateInvoiceNumber(),
+    invoiceNumber: '',
     invoiceDate: this.getCurrentDate(),
     customer: null,
     customerType: 'existing',
     searchTerm: '',
-    serviceDetails: [{ description: '', amount: 0, notes: '' }],
+    serviceDetails: [],
     totalAmount: 0,
     advanceReceived: 0,
     balancePayable: 0,
-    selectedBank: ''
+    selectedBank: '',
+    paymentType: '',
+    paymentNotes: ''
   };
 
   // Sample existing customers (in real app, this would come from a service)
-  existingCustomers: LocalCustomer[] = [];
+  existingCustomers: FirestoreCustomer[] = [];
 
-  searchResults: LocalCustomer[] = [];
+  searchResults: FirestoreCustomer[] = [];
   showAddCustomerForm = false;
   showCustomerSearch = false;
 
@@ -118,20 +126,62 @@ export class CreateInvoiceComponent implements OnInit {
 
   companyTypeOptions = ['Private Limited', 'Public Limited', 'LLP', 'Partnership', 'Sole Proprietorship', 'OPC'];
 
+  // Payment type options
+  paymentTypeOptions = [
+    'Cash',
+    'UPI',
+    'Bank Transfer',
+    'Card Payment',
+    'Cheque',
+    'Online Payment',
+    'NEFT/RTGS',
+    'Other'
+  ];
+
+  // Prefix options for customer names
+  prefixOptions = [
+    'Mr.',
+    'Mrs.',
+    'Ms.',
+    'Dr.',
+    'Prof.',
+    'Er.',
+    'Adv.',
+    'CA.',
+    'M/s.'
+  ];
+
+  // New service input object
+  newService = {
+    description: '',
+    customDescription: '',
+    amount: null as number | null,
+    notes: ''
+  };
+
   constructor(
     private router: Router,
     private route: ActivatedRoute,
-    private invoiceService: LocalInvoiceService,
-    private customerService: LocalCustomerService
+    private invoiceService: InvoiceService,
+    private customerService: CustomerService
   ) {
     this.calculateTotals();
   }
 
-  ngOnInit() {
+  async ngOnInit() {
+    // Initialize invoice date to current date
+    this.invoice.invoiceDate = this.getCurrentDate();
+    
+    // Generate initial invoice number based on current date
+    this.invoice.invoiceNumber = await this.generateInvoiceNumber();
+    
+    // Initialize invoice
+    this.initializeInvoice();
+    
     // Load existing customers
     this.loadCustomers();
     
-    // Check if we're in edit mode
+    // Check if we're in edit mode or restoring from preview
     this.route.queryParams.subscribe(params => {
       if (params['edit']) {
         this.isEditMode = true;
@@ -139,8 +189,63 @@ export class CreateInvoiceComponent implements OnInit {
         if (this.editInvoiceId) {
           this.loadInvoiceForEdit(this.editInvoiceId);
         }
+      } else if (params['mode'] === 'edit') {
+        // Check if there's edit data from preview mode
+        this.restoreFromPreviewEdit();
       }
     });
+  }
+
+  private restoreFromPreviewEdit() {
+    try {
+      const editData = sessionStorage.getItem('editInvoiceData');
+      if (editData) {
+        const data = JSON.parse(editData);
+        console.log('Restoring from preview edit:', data);
+        
+        // Restore the invoice data
+        if (data.invoiceData) {
+          this.invoice = { ...data.invoiceData };
+          
+          // Ensure all required properties are set
+          this.invoice.customerType = this.invoice.customerType || 'existing';
+          this.invoice.invoiceDate = this.invoice.invoiceDate || this.getCurrentDate();
+          
+          // Ensure service details are properly formatted
+          if (this.invoice.serviceDetails && Array.isArray(this.invoice.serviceDetails)) {
+            this.invoice.serviceDetails = this.invoice.serviceDetails.map((service: any) => ({
+              description: service.description || '',
+              amount: Number(service.amount) || 0,
+              notes: service.notes || ''
+            }));
+          } else {
+            this.invoice.serviceDetails = [];
+          }
+          
+          // Restore edit mode information
+          this.isEditMode = data.isEditMode || false;
+          this.editInvoiceId = data.editInvoiceId || null;
+          
+          // Ensure customer data is properly set
+          if (this.invoice.customer) {
+            this.invoice.customerType = 'existing';
+          }
+          
+          console.log('Restored invoice:', this.invoice);
+          console.log('Edit mode:', this.isEditMode);
+          console.log('Edit ID:', this.editInvoiceId);
+          
+          // Clear the stored data after successful restoration
+          sessionStorage.removeItem('editInvoiceData');
+          
+          // Recalculate totals
+          this.calculateTotals();
+        }
+      }
+    } catch (error) {
+      console.error('Error restoring form from preview edit:', error);
+      alert(`Error restoring form data: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
   }
 
   async loadCustomers() {
@@ -197,7 +302,10 @@ export class CreateInvoiceComponent implements OnInit {
 
   async loadInvoiceForEdit(invoiceId: string) {
     try {
+      console.log('Loading invoice for edit, ID:', invoiceId);
       const invoice = await this.invoiceService.getInvoiceById(invoiceId);
+      console.log('Retrieved invoice:', invoice);
+      
       if (invoice) {
         // Populate the form with invoice data
         this.invoice.invoiceNumber = invoice.invoiceNumber;
@@ -208,41 +316,74 @@ export class CreateInvoiceComponent implements OnInit {
         this.invoice.selectedBank = invoice.selectedBank;
 
         // Set customer type and data
-        this.invoice.customerType = 'existing';
-        this.invoice.customer = {
-          id: invoice.customer.name,
-          prefix: '',
-          firstName: invoice.customer.name.split(' ')[0] || '',
-          lastName: invoice.customer.name.split(' ').slice(1).join(' ') || '',
-          mobile: invoice.customer.mobile,
-          email: invoice.customer.email,
-          address: invoice.customer.address.split(',')[0] || '',
-          city: '',
-          state: '',
-          pincode: ''
-        };
+        if (invoice.customer) {
+          this.invoice.customerType = 'existing';
+          const customerName = invoice.customer.name || '';
+          const customerAddress = invoice.customer.address || '';
+          
+          this.invoice.customer = {
+            id: customerName,
+            prefix: '',
+            firstName: customerName.split(' ')[0] || '',
+            lastName: customerName.split(' ').slice(1).join(' ') || '',
+            mobile: invoice.customer.mobile || '',
+            email: invoice.customer.email || '',
+            address: customerAddress.split(',')[0] || '',
+            city: '',
+            state: '',
+            pincode: ''
+          };
+        }
 
         // Map service details back to form format
-        this.invoice.serviceDetails = invoice.serviceDetails.map((service: any) => ({
-          description: service.description,
-          amount: service.amount,
-          notes: ''
-        }));
+        if (invoice.serviceDetails && Array.isArray(invoice.serviceDetails)) {
+          this.invoice.serviceDetails = invoice.serviceDetails.map((service: any) => ({
+            description: service.description || '',
+            amount: Number(service.amount) || 0,
+            notes: service.notes || ''
+          }));
+          console.log('Mapped service details:', this.invoice.serviceDetails);
+        } else {
+          console.warn('No service details found or invalid format');
+          this.invoice.serviceDetails = [];
+        }
 
         this.calculateTotals();
+        console.log('Invoice form populated successfully');
+      } else {
+        throw new Error('Invoice not found');
       }
     } catch (error) {
       console.error('Error loading invoice for edit:', error);
-      alert('Error loading invoice data');
+      alert(`Error loading invoice data: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }
 
-  generateInvoiceNumber(): string {
-    const date = new Date();
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
-    return `INV-${year}${month}-${random}`;
+  // Auto-generate invoice number based on existing invoices and selected date
+  async generateInvoiceNumber(): Promise<string> {
+    return await this.invoiceService.generateNextInvoiceNumber(this.invoice.invoiceDate);
+  }
+
+  // Handle invoice date change - regenerate invoice number
+  async onInvoiceDateChange() {
+    // Validate that the selected date is not in the future
+    const selectedDate = new Date(this.invoice.invoiceDate);
+    const today = new Date();
+    
+    // Set time to start of day for comparison
+    selectedDate.setHours(0, 0, 0, 0);
+    today.setHours(0, 0, 0, 0);
+    
+    if (selectedDate > today) {
+      alert('Future dates are not allowed. Please select today\'s date or an earlier date.');
+      this.invoice.invoiceDate = this.getCurrentDate();
+      return;
+    }
+
+    // Only regenerate invoice number if not in edit mode
+    if (!this.isEditMode) {
+      this.invoice.invoiceNumber = await this.generateInvoiceNumber();
+    }
   }
 
   getCurrentDate(): string {
@@ -271,8 +412,8 @@ export class CreateInvoiceComponent implements OnInit {
     );
   }
 
-  selectCustomer(customer: LocalCustomer): void {
-    // Convert LocalCustomer to the format needed by the form
+  selectCustomer(customer: FirestoreCustomer): void {
+    // Convert FirestoreCustomer to the format needed by the form
     this.invoice.customer = {
       id: customer.id!,
       prefix: '',
@@ -289,7 +430,14 @@ export class CreateInvoiceComponent implements OnInit {
     this.invoice.searchTerm = `${customer.name} (${customer.mobile})`;
   }
 
+  clearSelectedCustomer(): void {
+    this.invoice.customer = null;
+    this.invoice.searchTerm = '';
+    this.searchResults = [];
+  }
+
   showAddNewCustomer(): void {
+    this.invoice.customerType = 'new'; // Automatically switch to New Customer radio button
     this.showAddCustomerForm = true;
   }
 
@@ -317,8 +465,8 @@ export class CreateInvoiceComponent implements OnInit {
         const fullMobile = `${this.newCustomer.countryCode} ${this.newCustomer.mobile}`;
         const fullAddress = `${this.newCustomer.addressLine1}, ${this.newCustomer.village}${this.newCustomer.taluka ? ', ' + this.newCustomer.taluka : ''}, ${this.newCustomer.district}${this.newCustomer.pinCode ? ', ' + this.newCustomer.pinCode : ''}`;
         
-        // Create LocalCustomer object for the service
-        const customerData: Omit<LocalCustomer, 'id'> = {
+        // Create FirestoreCustomer object for the service
+        const customerData: Omit<FirestoreCustomer, 'id'> = {
           name: fullName,
           mobile: fullMobile,
           email: this.newCustomer.email || '',
@@ -331,14 +479,19 @@ export class CreateInvoiceComponent implements OnInit {
         const customerId = await this.customerService.addCustomer(customerData);
         
         // Create the full customer object for local use
-        const newCustomer: LocalCustomer = {
+        const newCustomer: FirestoreCustomer = {
           id: customerId,
           ...customerData
         };
         
-        // Add to local array and set as selected
-        this.existingCustomers.push(newCustomer);
-        this.selectCustomer(newCustomer);
+        // Reload customers from Firestore to ensure consistency
+        await this.loadCustomers();
+        
+        // Find and select the newly added customer
+        const addedCustomer = this.existingCustomers.find(c => c.id === customerId);
+        if (addedCustomer) {
+          this.selectCustomer(addedCustomer);
+        }
         
         this.showAddCustomerForm = false;
           // Reset new customer form
@@ -395,55 +548,123 @@ export class CreateInvoiceComponent implements OnInit {
     this.calculateTotals();
   }
 
-  previewInvoice(): void {
+  async previewInvoice(): Promise<void> {
     if (this.validateInvoice()) {
-      // Prepare invoice data for preview
-      const invoiceData = this.prepareInvoiceData();
-      
-      // Store the invoice data temporarily in sessionStorage for preview
-      sessionStorage.setItem('tempInvoiceData', JSON.stringify({
-        invoiceData,
-        formData: {
-          invoice: this.invoice,
-          newCustomer: this.newCustomer,
-          isEditMode: this.isEditMode,
-          editInvoiceId: this.editInvoiceId
-        }
-      }));
-      
-      // Navigate to preview page with a special parameter to indicate it's unsaved
-      this.router.navigate(['/invoice-preview'], { queryParams: { mode: 'preview' } });
+      try {
+        // Prepare invoice data for preview
+        const invoiceData = await this.prepareInvoiceData();
+        
+        // Store the invoice data temporarily in sessionStorage for preview
+        sessionStorage.setItem('tempInvoiceData', JSON.stringify({
+          invoiceData,
+          formData: {
+            invoice: this.invoice,
+            newCustomer: this.newCustomer,
+            isEditMode: this.isEditMode,
+            editInvoiceId: this.editInvoiceId
+          }
+        }));
+        
+        // Navigate to preview page with a special parameter to indicate it's unsaved
+        this.router.navigate(['/invoice-preview'], { queryParams: { mode: 'preview' } });
+      } catch (error) {
+        console.error('Error preparing invoice data:', error);
+        alert('Error preparing invoice data. Please try again.');
+      }
     } else {
       console.log('Validation failed');
     }
   }
 
-  private prepareInvoiceData() {
-    // Map the form data to match LocalInvoiceService interface
-    const customerData = this.invoice.customerType === 'new' ? {
-      name: this.newCustomer.customerType === 'company' ? 
-        this.newCustomer.companyName : 
-        `${this.newCustomer.prefix} ${this.newCustomer.firstName} ${this.newCustomer.middleName ? this.newCustomer.middleName + ' ' : ''}${this.newCustomer.lastName}`.trim(),
-      mobile: this.newCustomer.mobile,
-      email: this.newCustomer.email,
-      address: `${this.newCustomer.addressLine1}, ${this.newCustomer.village}, ${this.newCustomer.taluka}, ${this.newCustomer.district} - ${this.newCustomer.pinCode}`.trim(),
-      gst: this.newCustomer.gst
-    } : {
-      name: this.invoice.customer!.firstName ? 
-        `${this.invoice.customer!.prefix} ${this.invoice.customer!.firstName} ${this.invoice.customer!.lastName}`.trim() :
-        this.invoice.customer!.id,
-      mobile: this.invoice.customer!.mobile,
-      email: this.invoice.customer!.email,
-      address: `${this.invoice.customer!.address}, ${this.invoice.customer!.city}, ${this.invoice.customer!.state} - ${this.invoice.customer!.pincode}`,
-      gst: ''
-    };
+  async updateAndPreview(): Promise<void> {
+    if (this.validateInvoice()) {
+      try {
+        // Prepare updated invoice data for preview
+        const invoiceData = await this.prepareInvoiceData();
+        
+        // Store the updated invoice data temporarily in sessionStorage for preview
+        sessionStorage.setItem('tempInvoiceData', JSON.stringify({
+          invoiceData,
+          formData: {
+            invoice: this.invoice,
+            newCustomer: this.newCustomer,
+            isEditMode: this.isEditMode,
+            editInvoiceId: this.editInvoiceId
+          }
+        }));
+        
+        // Navigate to preview page with edit mode
+        this.router.navigate(['/invoice-preview'], { queryParams: { mode: 'preview' } });
+      } catch (error) {
+        console.error('Error preparing invoice data:', error);
+        alert('Error preparing invoice data. Please try again.');
+      }
+    } else {
+      console.log('Validation failed');
+    }
+  }
 
-    // Map service details to match LocalInvoiceService interface  
+  private async prepareInvoiceData() {
+    let customerData;
+    
+    if (this.invoice.customerType === 'new') {
+      // First, save the new customer to Firestore if not already saved
+      try {
+        const fullName = this.newCustomer.customerType === 'company' ? 
+          this.newCustomer.companyName : 
+          `${this.newCustomer.prefix} ${this.newCustomer.firstName} ${this.newCustomer.middleName ? this.newCustomer.middleName + ' ' : ''}${this.newCustomer.lastName}`.trim();
+        
+        const fullMobile = `${this.newCustomer.countryCode} ${this.newCustomer.mobile}`;
+        const fullAddress = `${this.newCustomer.addressLine1}, ${this.newCustomer.village}, ${this.newCustomer.taluka}, ${this.newCustomer.district} - ${this.newCustomer.pinCode}`.trim();
+        
+        // Create FirestoreCustomer object
+        const newCustomerData: Omit<FirestoreCustomer, 'id'> = {
+          name: fullName,
+          mobile: fullMobile,
+          email: this.newCustomer.email || '',
+          address: fullAddress,
+          gst: this.newCustomer.gst || '',
+          dueAmount: 0
+        };
+        
+        // Save customer to Firestore and get the ID
+        const customerId = await this.customerService.addCustomer(newCustomerData);
+        console.log('✅ New customer saved to Firestore with ID:', customerId);
+        
+        // Use the saved customer data for the invoice
+        customerData = {
+          id: customerId,
+          name: fullName,
+          mobile: fullMobile,
+          email: this.newCustomer.email || '',
+          address: fullAddress,
+          gst: this.newCustomer.gst || ''
+        };
+      } catch (error) {
+        console.error('❌ Error saving new customer:', error);
+        throw new Error('Failed to save customer. Please try again.');
+      }
+    } else {
+      // Use existing customer data
+      customerData = {
+        id: this.invoice.customer!.id,
+        name: this.invoice.customer!.firstName ? 
+          `${this.invoice.customer!.prefix} ${this.invoice.customer!.firstName} ${this.invoice.customer!.lastName}`.trim() :
+          this.invoice.customer!.id,
+        mobile: this.invoice.customer!.mobile,
+        email: this.invoice.customer!.email,
+        address: `${this.invoice.customer!.address}, ${this.invoice.customer!.city}, ${this.invoice.customer!.state} - ${this.invoice.customer!.pincode}`,
+        gst: ''
+      };
+    }
+
+    // Map service details to match InvoiceService interface  
     const mappedServiceDetails = this.invoice.serviceDetails.map(service => ({
       description: service.description,
       quantity: 1, // Default quantity since original doesn't have it
       rate: service.amount,
-      amount: service.amount
+      amount: service.amount,
+      notes: service.notes || ''
     }));
 
     return {
@@ -464,22 +685,21 @@ export class CreateInvoiceComponent implements OnInit {
   async saveInvoice(): Promise<void> {
     if (this.validateInvoice()) {
       try {
-        const invoiceData = this.prepareInvoiceData();
+        const invoiceData = await this.prepareInvoiceData();
 
         // Save or update invoice
         if (this.isEditMode && this.editInvoiceId) {
           // Update existing invoice
           await this.invoiceService.updateInvoice(this.editInvoiceId, invoiceData);
-          
-          // Navigate back to preview page
-          this.router.navigate(['/invoice-preview', this.editInvoiceId]);
+          this.savedInvoiceId = this.editInvoiceId;
         } else {
           // Create new invoice
           const invoiceId = await this.invoiceService.addInvoice(invoiceData);
-          
-          // Navigate to preview page
-          this.router.navigate(['/invoice-preview', invoiceId]);
+          this.savedInvoiceId = invoiceId;
         }
+        
+        // Show preview mode
+        this.showPreview = true;
       } catch (error) {
         console.error('Error saving invoice:', error);
         alert(this.isEditMode ? 'Error updating invoice. Please try again.' : 'Error creating invoice. Please try again.');
@@ -523,6 +743,20 @@ export class CreateInvoiceComponent implements OnInit {
     return true;
   }
 
+  // Handle amount input focus to clear default 0
+  onAmountFocus(event: any) {
+    if (event.target.value === '0' || event.target.value === 0) {
+      event.target.value = '';
+    }
+  }
+
+  // Handle custom description focus to auto-select text
+  onCustomDescriptionFocus(event: any) {
+    setTimeout(() => {
+      event.target.select();
+    }, 0);
+  }
+
   // Service dropdown methods
   onServiceDescriptionChange(index: number, event: any): void {
     const selectedValue = event.target.value;
@@ -537,19 +771,100 @@ export class CreateInvoiceComponent implements OnInit {
     }
   }
 
-  onCustomDescriptionBlur(index: number): void {
-    const serviceDetail = this.invoice.serviceDetails[index];
-    if (serviceDetail.customDescription && serviceDetail.customDescription.trim()) {
-      // Use the custom description as the main description
-      serviceDetail.description = serviceDetail.customDescription.trim();
-      delete serviceDetail.customDescription;
-    } else {
-      // If custom description is empty, reset to empty
-      serviceDetail.description = '';
+  // Handle new service description change
+  onNewServiceDescriptionChange(event: any) {
+    const value = event.target.value;
+    this.newService.description = value;
+    
+    if (value !== 'custom') {
+      this.newService.customDescription = '';
     }
+  }
+
+  // Check if service can be added
+  canAddService(): boolean {
+    const hasDescription = this.newService.description && 
+      (this.newService.description !== 'custom' || 
+       (this.newService.description === 'custom' && this.newService.customDescription && this.newService.customDescription.trim().length > 0));
+    const hasAmount = this.newService.amount !== null && this.newService.amount > 0;
+    
+    return !!hasDescription && hasAmount;
+  }
+
+  // Add service to the list
+  addServiceToList() {
+    if (this.canAddService()) {
+      const serviceToAdd = {
+        description: this.newService.description,
+        customDescription: this.newService.customDescription,
+        amount: this.newService.amount || 0,
+        notes: this.newService.notes
+      };
+      
+      this.invoice.serviceDetails.push(serviceToAdd);
+      this.onAmountChange(); // Recalculate totals
+      
+      // Reset the form
+      this.newService = {
+        description: '',
+        customDescription: '',
+        amount: null,
+        notes: ''
+      };
+    }
+  }
+
+  // Remove service from list
+  removeServiceFromList(index: number) {
+    this.invoice.serviceDetails.splice(index, 1);
+    this.onAmountChange(); // Recalculate totals
+  }
+
+  // Initialize invoice with empty service details array
+  initializeInvoice() {
+    if (!this.invoice.serviceDetails || this.invoice.serviceDetails.length === 0) {
+      this.invoice.serviceDetails = [];
+    }
+  }
+
+  // Get display name for service
+  getServiceDisplayName(service: any) {
+    if (service.description === 'custom') {
+      return service.customDescription || 'Custom Service';
+    }
+    return service.description;
   }
 
   goBack(): void {
     this.router.navigate(['/dashboard'], { queryParams: { category: 'invoices' } });
+  }
+
+  // Preview mode methods
+  returnToForm(): void {
+    this.showPreview = false;
+  }
+
+  cancelInvoice(): void {
+    // Clear any temporary data
+    sessionStorage.removeItem('tempInvoiceData');
+    sessionStorage.removeItem('editInvoiceData');
+    
+    // Navigate back to dashboard
+    this.router.navigate(['/dashboard'], { queryParams: { category: 'invoices' } });
+  }
+
+  printInvoice(): void {
+    if (this.savedInvoiceId) {
+      // Open print dialog
+      window.print();
+    }
+  }
+
+  shareViaWhatsApp(): void {
+    if (this.savedInvoiceId && this.invoice.customer) {
+      const message = `Invoice ${this.invoice.invoiceNumber} for amount ₹${this.invoice.totalAmount} has been generated. Balance amount: ₹${this.invoice.balancePayable}`;
+      const whatsappUrl = `https://wa.me/91${this.invoice.customer.mobile}?text=${encodeURIComponent(message)}`;
+      window.open(whatsappUrl, '_blank');
+    }
   }
 }

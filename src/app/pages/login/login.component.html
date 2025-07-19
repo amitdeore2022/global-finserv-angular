@@ -1,9 +1,4 @@
 <div class="login-container">
-  <div class="logo-section">
-    <img src="logo.jpg" alt="CA India Logo" class="app-logo" />
-    <h1 class="app-title">Global Financial Services</h1>
-  </div>
-  
   <!-- PWA Install Button -->
   <div *ngIf="showInstallButton" class="install-prompt">
     <button type="button" class="install-btn" (click)="installApp()">
@@ -12,8 +7,14 @@
     </button>
   </div>
   
-  <h2>Login</h2>
   <form (ngSubmit)="login()">
+    <div class="logo-section">
+      <img src="logo.jpg" alt="CA India Logo" class="app-logo" />
+      <h1 class="app-title">Global Financial Services</h1>
+    </div>
+    
+    <h2>Login</h2>
+    
     <div class="form-group">
       <label for="email">Username</label>
       <input id="email" type="email" [(ngModel)]="email" name="email" placeholder="Type your username" required />

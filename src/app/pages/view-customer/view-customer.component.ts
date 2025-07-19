@@ -2,8 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
-import { LocalCustomerService, Customer } from '../../services/local-customer.service';
-import { LocalInvoiceService as InvoiceService, Invoice } from '../../services/local-invoice.service';
+import { CustomerService, Customer } from '../../services/customer.service';
+import { InvoiceService, Invoice } from '../../services/invoice.service';
 import { PdfGenerationService } from '../../services/pdf-generation.service';
 import { SimpleLedgerService } from '../../services/simple-ledger.service';
 
@@ -34,7 +34,7 @@ export class ViewCustomerComponent implements OnInit {
 
   constructor(
     private router: Router,
-    private customerService: LocalCustomerService,
+    private customerService: CustomerService,
     private invoiceService: InvoiceService,
     private pdfService: PdfGenerationService,
     private ledgerService: SimpleLedgerService
@@ -47,10 +47,14 @@ export class ViewCustomerComponent implements OnInit {
   async loadCustomersWithStats() {
     try {
       this.isLoading = true;
+      console.log('Loading customers and invoices from Firestore...');
       
       // Load customers and invoices
       const customers = await this.customerService.getCustomers();
+      console.log('Loaded customers:', customers);
+      
       this.allInvoices = await this.invoiceService.getInvoices();
+      console.log('Loaded invoices:', this.allInvoices);
       
       // Calculate stats for each customer
       this.customers = customers.map(customer => {
@@ -82,6 +86,12 @@ export class ViewCustomerComponent implements OnInit {
     } finally {
       this.isLoading = false;
     }
+  }
+
+  // Method to refresh data
+  async refreshData() {
+    console.log('Refreshing customer data...');
+    await this.loadCustomersWithStats();
   }
 
   // Calculated totals for filtered customers
@@ -170,14 +180,37 @@ export class ViewCustomerComponent implements OnInit {
   }
 
   filterCustomers() {
+    const searchTerm = this.customerSearchTerm.trim();
+    
+    // If search term is empty, show all customers
+    if (!searchTerm) {
+      this.filteredCustomers = [...this.customers];
+      return;
+    }
+    
+    const searchLower = searchTerm.toLowerCase();
+    
     this.filteredCustomers = this.customers.filter(customer => {
-      const searchTerm = this.customerSearchTerm.toLowerCase();
-      return !searchTerm || 
-        customer.name.toLowerCase().includes(searchTerm) ||
-        customer.mobile.includes(searchTerm) ||
-        (customer.email && customer.email.toLowerCase().includes(searchTerm)) ||
-        (customer.address && customer.address.toLowerCase().includes(searchTerm)) ||
-        (customer.gst && customer.gst.toLowerCase().includes(searchTerm));
+      // For name search: require at least 3 letters
+      const nameMatch = searchTerm.length >= 3 && 
+        customer.name.toLowerCase().includes(searchLower);
+      
+      // For mobile search: require at least 4 digits (extract only digits)
+      const searchDigits = searchTerm.replace(/\D/g, ''); // Remove non-digits
+      const mobileMatch = searchDigits.length >= 4 && 
+        customer.mobile.replace(/\D/g, '').includes(searchDigits);
+      
+      // For other fields: immediate search
+      const emailMatch = customer.email && 
+        customer.email.toLowerCase().includes(searchLower);
+      
+      const addressMatch = customer.address && 
+        customer.address.toLowerCase().includes(searchLower);
+      
+      const gstMatch = customer.gst && 
+        customer.gst.toLowerCase().includes(searchLower);
+      
+      return nameMatch || mobileMatch || emailMatch || addressMatch || gstMatch;
     });
   }
 
@@ -202,13 +235,44 @@ export class ViewCustomerComponent implements OnInit {
   }
 
   async deleteCustomer(customerId: string) {
-    if (confirm('Are you sure you want to delete this customer?')) {
-      try {
-        await this.customerService.deleteCustomer(customerId);
-        await this.loadCustomersWithStats(); // Reload the list
-      } catch (error) {
-        console.error('Error deleting customer:', error);
-        alert('Error deleting customer. Please try again.');
+    const customer = this.customers.find(c => c.id === customerId);
+    if (!customer) {
+      alert('Customer not found!');
+      return;
+    }
+
+    // Create detailed warning message
+    const warningMessage = `⚠️ DELETE CUSTOMER WARNING ⚠️
+
+Are you absolutely sure you want to delete this customer?
+
+Customer: ${customer.name}
+Mobile: ${customer.mobile}
+${customer.email ? 'Email: ' + customer.email : ''}
+
+This action will permanently delete:
+• Customer profile and contact information
+• ${customer.invoiceCount} invoice(s) worth ₹${customer.totalTransactionAmount.toLocaleString('en-IN')}
+• Outstanding dues of ₹${customer.totalDueAmount.toLocaleString('en-IN')}
+• All transaction history and records
+
+⚠️ THIS ACTION CANNOT BE UNDONE! ⚠️
+
+Type "DELETE" in the prompt below to confirm deletion.`;
+
+    if (confirm(warningMessage)) {
+      const userInput = prompt('Type "DELETE" to confirm permanent deletion:');
+      if (userInput === 'DELETE') {
+        try {
+          await this.customerService.deleteCustomer(customerId);
+          await this.loadCustomersWithStats(); // Reload the list
+          alert(`Customer "${customer.name}" and all associated data have been permanently deleted.`);
+        } catch (error) {
+          console.error('Error deleting customer:', error);
+          alert('Error deleting customer. Please try again.');
+        }
+      } else if (userInput !== null) {
+        alert('Deletion cancelled. You must type "DELETE" exactly to confirm.');
       }
     }
   }

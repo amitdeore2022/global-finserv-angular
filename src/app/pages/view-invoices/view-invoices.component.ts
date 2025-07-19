@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule, ActivatedRoute } from '@angular/router';
-import { LocalInvoiceService as InvoiceService, Invoice } from '../../services/local-invoice.service';
+import { InvoiceService, Invoice } from '../../services/invoice.service';
 import { PdfGenerationService } from '../../services/pdf-generation.service';
 
 @Component({
@@ -28,6 +28,19 @@ export class ViewInvoicesComponent implements OnInit {
   // Track expanded cards
   expandedCards: Set<string> = new Set();
 
+  // Payment Modal Properties
+  showPaymentModal: boolean = false;
+  selectedInvoiceForPayment: Invoice | null = null;
+  isProcessingPayment: boolean = false;
+  paymentForm = {
+    amount: 0,
+    paymentType: 'Cash',
+    paymentDate: '',
+    notes: '',
+    reference: ''
+  };
+  paymentTypes = ['Cash', 'Bank Transfer', 'UPI', 'Cheque', 'Card', 'Online'];
+
   constructor(
     private invoiceService: InvoiceService,
     private router: Router,
@@ -39,20 +52,14 @@ export class ViewInvoicesComponent implements OnInit {
     // Check for customer filter from query params
     this.route.queryParams.subscribe(params => {
       this.customerFilter = params['customer'] || '';
-      if (this.customerFilter) {
-        this.invoiceSearchTerm = this.customerFilter;
-      }
+      console.log('Customer filter from query params:', this.customerFilter);
     });
     
     this.debugInvoices(); // Debug localStorage
     this.loadInvoices().then(() => {
-      // If no invoices exist, create a sample one for testing
-      if (this.invoices.length === 0) {
-        this.createSampleInvoice();
-      }
-      // Apply filter after loading
+      // Apply customer filter after loading if provided
       if (this.customerFilter) {
-        this.filterInvoices();
+        this.applyCustomerFilter();
       }
     });
   }
@@ -99,6 +106,31 @@ export class ViewInvoicesComponent implements OnInit {
 
       return matchesSearch && matchesStatus;
     });
+    
+    // Recalculate statistics based on filtered results
+    this.calculateFilteredStatistics();
+  }
+
+  applyCustomerFilter() {
+    // Filter invoices to show only those from the specific customer
+    console.log('Applying customer filter for mobile:', this.customerFilter);
+    this.filteredInvoices = this.invoices.filter(invoice => 
+      invoice.customer.mobile === this.customerFilter
+    );
+    console.log('Filtered invoices for customer:', this.filteredInvoices);
+    
+    // Set the search term to show the customer mobile in the search box
+    this.invoiceSearchTerm = this.customerFilter;
+    
+    // Recalculate statistics for filtered invoices only
+    this.calculateFilteredStatistics();
+  }
+
+  calculateFilteredStatistics() {
+    // Calculate statistics specifically for filtered invoices (customer-specific)
+    this.totalInvoiceAmount = this.filteredInvoices.reduce((sum, invoice) => sum + invoice.totalAmount, 0);
+    this.totalPendingAmount = this.filteredInvoices.reduce((sum, invoice) => sum + invoice.balancePayable, 0);
+    this.paidInvoicesCount = this.filteredInvoices.filter(invoice => invoice.status === 'PAID').length;
   }
 
   async printInvoice(invoiceId: string) {
@@ -255,24 +287,90 @@ Thank you for your business! 🙏`;
       return;
     }
 
-    const paymentAmount = prompt(`Enter payment amount (Remaining: ₹${remainingAmount.toLocaleString('en-IN')}):`, remainingAmount.toString());
-    
-    if (paymentAmount === null) return; // User cancelled
-    
-    const amount = parseFloat(paymentAmount);
-    
-    if (isNaN(amount) || amount <= 0) {
-      alert('Please enter a valid payment amount!');
+    // Prevent opening modal if already open
+    if (this.showPaymentModal) {
       return;
     }
 
-    if (amount > remainingAmount) {
-      alert('Payment amount cannot exceed the remaining balance!');
+    // Set up the payment modal
+    this.selectedInvoiceForPayment = invoice;
+    this.paymentForm = {
+      amount: remainingAmount, // Pre-fill with remaining amount
+      paymentType: 'Cash',
+      paymentDate: new Date().toISOString().split('T')[0], // Today's date
+      notes: '',
+      reference: ''
+    };
+    this.showPaymentModal = true;
+
+    console.log('Payment modal opened for invoice:', invoice.invoiceNumber, 'Amount:', remainingAmount);
+  }
+
+  closePaymentModal() {
+    this.showPaymentModal = false;
+    this.selectedInvoiceForPayment = null;
+    this.isProcessingPayment = false;
+    this.resetPaymentForm();
+    console.log('Payment modal closed and form reset');
+  }
+
+  resetPaymentForm() {
+    this.paymentForm = {
+      amount: 0,
+      paymentType: 'Cash',
+      paymentDate: '',
+      notes: '',
+      reference: ''
+    };
+  }
+
+  async submitPayment() {
+    if (!this.selectedInvoiceForPayment) {
+      alert('No invoice selected for payment!');
       return;
     }
+
+    // Prevent multiple submissions
+    if (this.isProcessingPayment) {
+      return;
+    }
+
+    // Enhanced validation
+    if (!this.paymentForm.amount || this.paymentForm.amount <= 0) {
+      alert('Please enter a valid payment amount greater than 0!');
+      return;
+    }
+
+    if (this.paymentForm.amount > this.selectedInvoiceForPayment.balancePayable) {
+      alert(`Payment amount cannot exceed the remaining balance of ₹${this.selectedInvoiceForPayment.balancePayable.toLocaleString('en-IN')}!`);
+      return;
+    }
+
+    if (!this.paymentForm.paymentDate) {
+      alert('Please select a payment date!');
+      return;
+    }
+
+    // Check if invoice is already fully paid
+    if (this.selectedInvoiceForPayment.balancePayable <= 0) {
+      alert('This invoice is already fully paid!');
+      this.closePaymentModal();
+      return;
+    }
+
+    this.isProcessingPayment = true;
 
     try {
-      const newAdvanceReceived = invoice.advanceReceived + amount;
+      const invoice = this.selectedInvoiceForPayment;
+      const paymentAmount = Number(this.paymentForm.amount);
+      
+      // Double-check the payment amount is valid
+      if (isNaN(paymentAmount) || paymentAmount <= 0) {
+        alert('Invalid payment amount entered!');
+        return;
+      }
+
+      const newAdvanceReceived = invoice.advanceReceived + paymentAmount;
       const newBalancePayable = invoice.totalAmount - newAdvanceReceived;
       let newStatus: 'PENDING' | 'PAID' | 'PARTIAL' = 'PARTIAL';
       
@@ -282,17 +380,28 @@ Thank you for your business! 🙏`;
         newStatus = 'PENDING';
       }
 
-      this.invoiceService.updateInvoice(invoiceId, {
+      // Create payment record note
+      const paymentNote = `Payment: ₹${paymentAmount.toLocaleString('en-IN')} via ${this.paymentForm.paymentType} on ${this.paymentForm.paymentDate}${this.paymentForm.reference ? ` (Ref: ${this.paymentForm.reference})` : ''}${this.paymentForm.notes ? ` - ${this.paymentForm.notes}` : ''}`;
+
+      await this.invoiceService.updateInvoice(invoice.id!, {
         advanceReceived: newAdvanceReceived,
         balancePayable: newBalancePayable,
         status: newStatus
-      }).then(() => {
-        this.loadInvoices();
-        alert(`Payment of ₹${amount.toLocaleString('en-IN')} added successfully!`);
       });
+
+      // Store the payment amount for success message before closing modal
+      const recordedAmount = paymentAmount;
+      
+      // Close modal and refresh data
+      this.closePaymentModal();
+      await this.loadInvoices();
+      
+      alert(`Payment of ₹${recordedAmount.toLocaleString('en-IN')} recorded successfully!`);
     } catch (error) {
       console.error('Error adding payment:', error);
       alert('Error adding payment. Please try again.');
+    } finally {
+      this.isProcessingPayment = false;
     }
   }
 
@@ -312,49 +421,6 @@ Thank you for your business! 🙏`;
     this.router.navigate(['/dashboard'], { queryParams: { category: 'invoices' } });
   }
 
-  // Method to create sample invoice for testing
-  async createSampleInvoice() {
-    const sampleInvoice = {
-      invoiceNumber: 'INV-001',
-      invoiceDate: new Date().toISOString().split('T')[0],
-      customer: {
-        name: 'Sample Customer',
-        mobile: '9876543210',
-        email: 'sample@email.com',
-        address: 'Sample Address, City - 123456',
-        gst: 'GST123456789'
-      },
-      serviceDetails: [
-        {
-          description: 'Financial Consultation',
-          quantity: 1,
-          rate: 5000,
-          amount: 5000
-        },
-        {
-          description: 'Tax Filing Service',
-          quantity: 1,
-          rate: 2000,
-          amount: 2000
-        }
-      ],
-      totalAmount: 7000,
-      advanceReceived: 2000,
-      balancePayable: 5000,
-      selectedBank: 'HDFC Bank, Thatte Nagar Branch - A/c No: 50200107802130, IFSC: HDFC0000064',
-      createdAt: new Date(),
-      status: 'PENDING' as 'PENDING'
-    };
-
-    try {
-      await this.invoiceService.addInvoice(sampleInvoice);
-      await this.loadInvoices();
-      alert('Sample invoice created successfully!');
-    } catch (error) {
-      console.error('Error creating sample invoice:', error);
-    }
-  }
-
   // Debug method to check localStorage
   debugInvoices() {
     const stored = localStorage.getItem('globalfinserv_invoices');
@@ -367,8 +433,17 @@ Thank you for your business! 🙏`;
   clearCustomerFilter() {
     this.customerFilter = '';
     this.invoiceSearchTerm = '';
-    this.filterInvoices();
+    this.filteredInvoices = [...this.invoices];
+    this.calculateStatistics(); // Recalculate for all invoices
     // Update URL to remove customer query param
     this.router.navigate(['/view-invoices']);
+  }
+
+  getCustomerNameFromFilter(): string {
+    if (!this.customerFilter || this.filteredInvoices.length === 0) {
+      return this.customerFilter;
+    }
+    // Get customer name from the first filtered invoice
+    return this.filteredInvoices[0].customer.name;
   }
 }

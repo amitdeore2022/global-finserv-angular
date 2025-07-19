@@ -3,10 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule, ActivatedRoute } from '@angular/router';
 import { PdfGenerationService } from '../../services/pdf-generation.service';
-// import { CustomerService, Customer } from '../../services/customer.service';
-import { LocalCustomerService as CustomerService, Customer } from '../../services/local-customer.service';
-// import { InvoiceService, Invoice } from '../../services/invoice.service';
-import { LocalInvoiceService as InvoiceService, Invoice } from '../../services/local-invoice.service';
+import { CustomerService, Customer } from '../../services/customer.service';
+import { InvoiceService, Invoice } from '../../services/invoice.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -18,6 +16,18 @@ import { LocalInvoiceService as InvoiceService, Invoice } from '../../services/l
 export class DashboardComponent implements OnInit {
   activeCategory: string | null = null;
   activeSection: string | null = null;
+  isRevenueMode = false;
+  
+  // Coming Soon Popup properties
+  showComingSoonPopup = false;
+  comingSoonFeature = '';
+  
+  // Stats properties
+  totalRevenue = 0;
+  outstandingAmount = 0;
+  collectionRate = 0;
+  totalCustomers = 0;
+  totalInvoices = 0;
   
   // Enhanced customer model to match the add-customer component
   newCustomer = {
@@ -62,7 +72,7 @@ export class DashboardComponent implements OnInit {
 
   // Invoice-related properties
   invoice = {
-    invoiceNumber: this.generateInvoiceNumber(),
+    invoiceNumber: '', // Will be generated asynchronously
     invoiceDate: this.getCurrentDate(),
     customer: null as any,
     customerType: 'existing',
@@ -154,6 +164,10 @@ export class DashboardComponent implements OnInit {
     
     await this.loadCustomers();
     await this.loadInvoices();
+    this.calculateStats();
+    
+    // Generate initial invoice number for dashboard invoice form
+    this.invoice.invoiceNumber = await this.invoiceService.generateNextInvoiceNumber(this.invoice.invoiceDate);
   }
 
   async loadCustomers() {
@@ -188,7 +202,22 @@ export class DashboardComponent implements OnInit {
   }
 
   setActiveSection(section: string | null) {
-    this.activeSection = section;
+    // Show coming soon popup for revenue dashboard features
+    const featureNames: { [key: string]: string } = {
+      'monthlyRevenue': 'Monthly Revenue Analytics',
+      'customerRevenue': 'Customer Revenue Analysis', 
+      'revenueReports': 'Revenue Reports & Analytics'
+    };
+    
+    if (section && featureNames[section]) {
+      this.comingSoonFeature = featureNames[section];
+      this.showComingSoonPopup = true;
+    }
+  }
+
+  closeComingSoonPopup() {
+    this.showComingSoonPopup = false;
+    this.comingSoonFeature = '';
   }
 
   get totalDueAmount(): number {
@@ -274,12 +303,8 @@ export class DashboardComponent implements OnInit {
   }
 
   // Invoice-related methods
-  generateInvoiceNumber(): string {
-    const date = new Date();
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
-    return `INV-${year}${month}-${random}`;
+  async generateInvoiceNumber(): Promise<string> {
+    return await this.invoiceService.generateNextInvoiceNumber(this.invoice.invoiceDate);
   }
 
   getCurrentDate(): string {
@@ -490,7 +515,7 @@ export class DashboardComponent implements OnInit {
         alert('Invoice created successfully!');
         
         // Reset invoice form
-        this.resetInvoiceForm();
+        await this.resetInvoiceForm();
         
       } catch (error) {
         console.error('Error saving invoice:', error);
@@ -499,9 +524,9 @@ export class DashboardComponent implements OnInit {
     }
   }
 
-  private resetInvoiceForm(): void {
+  private async resetInvoiceForm(): Promise<void> {
     this.invoice = {
-      invoiceNumber: this.generateInvoiceNumber(),
+      invoiceNumber: await this.generateInvoiceNumber(),
       invoiceDate: this.getCurrentDate(),
       customer: null,
       customerType: 'existing',
@@ -793,5 +818,51 @@ export class DashboardComponent implements OnInit {
     
     // Navigate to login page
     this.router.navigate(['/login']);
+  }
+
+  // Navigation methods for new dashboard
+  navigateToAddCustomer() {
+    this.router.navigate(['/add-customer']);
+  }
+
+  navigateToViewCustomers() {
+    this.router.navigate(['/view-customer']);
+  }
+
+  navigateToCreateInvoice() {
+    this.router.navigate(['/create-invoice']);
+  }
+
+  navigateToViewInvoices() {
+    this.router.navigate(['/view-invoices']);
+  }
+
+  // Keep old methods for backward compatibility
+  navigateToCustomers() {
+    this.router.navigate(['/view-customer']);
+  }
+
+  navigateToInvoices() {
+    this.router.navigate(['/view-invoices']);
+  }
+
+  toggleRevenueMode() {
+    this.isRevenueMode = !this.isRevenueMode;
+  }
+
+  // Calculate stats
+  private calculateStats() {
+    this.totalCustomers = this.customers.length;
+    this.totalInvoices = this.invoices.length;
+    
+    this.totalRevenue = this.invoices.reduce((sum, invoice) => 
+      sum + invoice.totalAmount, 0);
+    
+    this.outstandingAmount = this.invoices.reduce((sum, invoice) => 
+      sum + invoice.balancePayable, 0);
+    
+    const paidAmount = this.totalRevenue - this.outstandingAmount;
+    this.collectionRate = this.totalRevenue > 0 ? 
+      (paidAmount / this.totalRevenue) * 100 : 0;
   }
 }

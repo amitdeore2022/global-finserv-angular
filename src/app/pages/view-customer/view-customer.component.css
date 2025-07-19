@@ -1,6 +1,6 @@
 :host {
   display: block;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #f8f9fa;
   min-height: calc(100vh - 120px);
 }
 
@@ -12,10 +12,42 @@
 
 .header {
   margin-bottom: 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.refresh-btn {
+  background: #667eea;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 15px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.refresh-btn:hover {
+  background: #5a6fd8;
+  transform: translateY(-1px);
+}
+
+.refresh-btn i {
+  transition: transform 0.3s ease;
+}
+
+.refresh-btn:hover i {
+  transform: rotate(180deg);
 }
 
 .back-btn {
-  background: rgba(255, 255, 255, 0.2);
+  background: #6c757d;
   color: white;
   border: none;
   border-radius: 8px;
@@ -27,22 +59,22 @@
 }
 
 .back-btn:hover {
-  background: rgba(255, 255, 255, 0.3);
+  background: #5a6268;
 }
 
 .header h2 {
-  color: white;
+  color: #333;
   font-size: 32px;
   margin: 0;
   font-weight: 600;
 }
 
 .customers-container {
-  background: rgba(255, 255, 255, 0.95);
+  background: white;
   border-radius: 20px;
   padding: 30px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e9ecef;
 }
 
 .customer-stats {
@@ -414,6 +446,18 @@
   justify-content: flex-start;
 }
 
+.customer-basic-info {
+  margin-top: 15px;
+}
+
+.show-details-container {
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid #e9ecef;
+  display: flex;
+  justify-content: center;
+}
+
 .show-details-btn {
   background: #6c757d;
   color: white;
@@ -431,10 +475,6 @@
 .show-details-btn:hover {
   background: #545862;
   transform: translateY(-1px);
-}
-
-.customer-basic-info {
-  margin-top: 15px;
 }
 
 .detailed-info {
@@ -460,7 +500,12 @@
     flex-direction: column;
   }
   
+  .show-details-container {
+    order: 1; /* Ensure show details is always at bottom on mobile */
+  }
+  
   .show-details-btn {
-    order: -1; /* Put show details button first on mobile */
+    width: 100%;
+    justify-content: center;
   }
 }
