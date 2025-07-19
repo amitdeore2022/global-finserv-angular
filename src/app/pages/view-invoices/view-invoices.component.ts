@@ -31,6 +31,7 @@ export class ViewInvoicesComponent implements OnInit {
   // Payment Modal Properties
   showPaymentModal: boolean = false;
   selectedInvoiceForPayment: Invoice | null = null;
+  isProcessingPayment: boolean = false;
   paymentForm = {
     amount: 0,
     paymentType: 'Cash',
@@ -286,6 +287,11 @@ Thank you for your business! 🙏`;
       return;
     }
 
+    // Prevent opening modal if already open
+    if (this.showPaymentModal) {
+      return;
+    }
+
     // Set up the payment modal
     this.selectedInvoiceForPayment = invoice;
     this.paymentForm = {
@@ -296,12 +302,16 @@ Thank you for your business! 🙏`;
       reference: ''
     };
     this.showPaymentModal = true;
+
+    console.log('Payment modal opened for invoice:', invoice.invoiceNumber, 'Amount:', remainingAmount);
   }
 
   closePaymentModal() {
     this.showPaymentModal = false;
     this.selectedInvoiceForPayment = null;
+    this.isProcessingPayment = false;
     this.resetPaymentForm();
+    console.log('Payment modal closed and form reset');
   }
 
   resetPaymentForm() {
@@ -315,16 +325,24 @@ Thank you for your business! 🙏`;
   }
 
   async submitPayment() {
-    if (!this.selectedInvoiceForPayment) return;
+    if (!this.selectedInvoiceForPayment) {
+      alert('No invoice selected for payment!');
+      return;
+    }
 
-    // Validation
+    // Prevent multiple submissions
+    if (this.isProcessingPayment) {
+      return;
+    }
+
+    // Enhanced validation
     if (!this.paymentForm.amount || this.paymentForm.amount <= 0) {
-      alert('Please enter a valid payment amount!');
+      alert('Please enter a valid payment amount greater than 0!');
       return;
     }
 
     if (this.paymentForm.amount > this.selectedInvoiceForPayment.balancePayable) {
-      alert('Payment amount cannot exceed the remaining balance!');
+      alert(`Payment amount cannot exceed the remaining balance of ₹${this.selectedInvoiceForPayment.balancePayable.toLocaleString('en-IN')}!`);
       return;
     }
 
@@ -333,9 +351,26 @@ Thank you for your business! 🙏`;
       return;
     }
 
+    // Check if invoice is already fully paid
+    if (this.selectedInvoiceForPayment.balancePayable <= 0) {
+      alert('This invoice is already fully paid!');
+      this.closePaymentModal();
+      return;
+    }
+
+    this.isProcessingPayment = true;
+
     try {
       const invoice = this.selectedInvoiceForPayment;
-      const newAdvanceReceived = invoice.advanceReceived + this.paymentForm.amount;
+      const paymentAmount = Number(this.paymentForm.amount);
+      
+      // Double-check the payment amount is valid
+      if (isNaN(paymentAmount) || paymentAmount <= 0) {
+        alert('Invalid payment amount entered!');
+        return;
+      }
+
+      const newAdvanceReceived = invoice.advanceReceived + paymentAmount;
       const newBalancePayable = invoice.totalAmount - newAdvanceReceived;
       let newStatus: 'PENDING' | 'PAID' | 'PARTIAL' = 'PARTIAL';
       
@@ -346,7 +381,7 @@ Thank you for your business! 🙏`;
       }
 
       // Create payment record note
-      const paymentNote = `Payment: ₹${this.paymentForm.amount.toLocaleString('en-IN')} via ${this.paymentForm.paymentType} on ${this.paymentForm.paymentDate}${this.paymentForm.reference ? ` (Ref: ${this.paymentForm.reference})` : ''}${this.paymentForm.notes ? ` - ${this.paymentForm.notes}` : ''}`;
+      const paymentNote = `Payment: ₹${paymentAmount.toLocaleString('en-IN')} via ${this.paymentForm.paymentType} on ${this.paymentForm.paymentDate}${this.paymentForm.reference ? ` (Ref: ${this.paymentForm.reference})` : ''}${this.paymentForm.notes ? ` - ${this.paymentForm.notes}` : ''}`;
 
       await this.invoiceService.updateInvoice(invoice.id!, {
         advanceReceived: newAdvanceReceived,
@@ -354,14 +389,19 @@ Thank you for your business! 🙏`;
         status: newStatus
       });
 
+      // Store the payment amount for success message before closing modal
+      const recordedAmount = paymentAmount;
+      
       // Close modal and refresh data
       this.closePaymentModal();
       await this.loadInvoices();
       
-      alert(`Payment of ₹${this.paymentForm.amount.toLocaleString('en-IN')} recorded successfully!`);
+      alert(`Payment of ₹${recordedAmount.toLocaleString('en-IN')} recorded successfully!`);
     } catch (error) {
       console.error('Error adding payment:', error);
       alert('Error adding payment. Please try again.');
+    } finally {
+      this.isProcessingPayment = false;
     }
   }
 

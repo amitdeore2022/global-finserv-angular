@@ -322,9 +322,11 @@
         </div>
 
         <div class="payment-modal-actions">
-          <button type="button" class="cancel-btn" (click)="closePaymentModal()">Cancel</button>
-          <button type="submit" class="submit-payment-btn">
-            <i class="fas fa-check"></i> Record Payment
+          <button type="button" class="cancel-btn" (click)="closePaymentModal()" [disabled]="isProcessingPayment">Cancel</button>
+          <button type="submit" class="submit-payment-btn" [disabled]="isProcessingPayment">
+            <i class="fas fa-spinner fa-spin" *ngIf="isProcessingPayment"></i>
+            <i class="fas fa-check" *ngIf="!isProcessingPayment"></i>
+            {{ isProcessingPayment ? 'Processing...' : 'Record Payment' }}
           </button>
         </div>
       </form>

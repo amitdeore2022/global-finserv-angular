@@ -248,6 +248,24 @@ tr:hover {
   box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
 }
 
+/* Make Total Customers and Total Invoices stat cards clickable */
+.stat-card.total-customers,
+.stat-card.total-invoices {
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.stat-card.total-customers:hover,
+.stat-card.total-invoices:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 15px 30px rgba(102, 126, 234, 0.4);
+}
+
+.stat-card.total-customers:active,
+.stat-card.total-invoices:active {
+  transform: translateY(-1px);
+}
+
 .stat-card h4 {
   margin: 0 0 10px 0;
   font-size: 16px;
