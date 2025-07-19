@@ -17,16 +17,16 @@
         <button 
           (click)="printInvoice()" 
           class="print-btn"
-          [disabled]="isPreviewMode && !invoiceCreated">
+          [disabled]="isPreviewMode && !invoiceCreated"
+          title="Download PDF">
           <i class="fas fa-download"></i>
-          Download
         </button>
         <button 
           (click)="shareOnWhatsApp()" 
           class="whatsapp-btn"
-          [disabled]="isPreviewMode && !invoiceCreated">
+          [disabled]="isPreviewMode && !invoiceCreated"
+          title="Share on WhatsApp">
           <i class="fab fa-whatsapp"></i>
-          WhatsApp
         </button>
         <button (click)="editInvoice()" class="edit-btn">
           <i class="fas fa-edit"></i>
@@ -112,7 +112,7 @@
           <tbody>
             <tr *ngFor="let service of invoice.serviceDetails; let i = index">
               <td>{{i + 1}}</td>
-              <td>{{service.description}}</td>
+              <td>{{getServiceDescription(service)}}</td>
               <td class="amount">{{service.amount | number:'1.2-2'}}</td>
             </tr>
             <!-- Empty rows to match PDF format -->

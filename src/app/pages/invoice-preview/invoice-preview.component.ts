@@ -245,4 +245,11 @@ Thank you for your business! 🙏`;
       this.router.navigate(['/dashboard'], { queryParams: { category: 'invoices' } });
     }
   }
+
+  getServiceDescription(service: any): string {
+    if (service.description === 'custom' && service.customDescription) {
+      return service.customDescription;
+    }
+    return service.description;
+  }
 }

@@ -202,21 +202,10 @@
           <!-- Payment Actions -->
           <div class="payment-actions">
             <button 
+              *ngIf="invoice.balancePayable > 0"
               class="payment-btn add-payment-btn" 
               (click)="addPayment(invoice.id!)">
               <i class="fas fa-plus"></i> Add Payment
-            </button>
-            <button 
-              *ngIf="invoice.status !== 'PENDING'"
-              class="payment-btn pending-btn" 
-              (click)="updateInvoiceStatus(invoice.id!, 'PENDING')">
-              <i class="fas fa-clock"></i> Mark as Pending
-            </button>
-            <button 
-              *ngIf="invoice.status !== 'PAID'"
-              class="payment-btn paid-btn" 
-              (click)="updateInvoiceStatus(invoice.id!, 'PAID')">
-              <i class="fas fa-check"></i> Mark as Paid
             </button>
           </div>
         </div>
@@ -247,20 +236,19 @@
     </div>
 
     <div class="payment-modal-content" *ngIf="selectedInvoiceForPayment">
-      <!-- Invoice Details -->
+      <!-- Compact Invoice Details -->
       <div class="payment-invoice-details">
-        <h4>Invoice: {{selectedInvoiceForPayment.invoiceNumber}}</h4>
-        <p><strong>Customer:</strong> {{selectedInvoiceForPayment.customer.name}}</p>
-        <p><strong>Total Amount:</strong> ₹{{selectedInvoiceForPayment.totalAmount | number:'1.2-2'}}</p>
-        <p><strong>Already Paid:</strong> ₹{{selectedInvoiceForPayment.advanceReceived | number:'1.2-2'}}</p>
-        <p class="remaining-amount"><strong>Remaining:</strong> ₹{{selectedInvoiceForPayment.balancePayable | number:'1.2-2'}}</p>
+        <div class="invoice-summary">
+          <span class="invoice-info">{{selectedInvoiceForPayment.invoiceNumber}} - {{selectedInvoiceForPayment.customer.name}}</span>
+          <span class="remaining-amount">Balance: ₹{{selectedInvoiceForPayment.balancePayable | number:'1.2-2'}}</span>
+        </div>
       </div>
 
-      <!-- Payment Form -->
+      <!-- Compact Payment Form -->
       <form class="payment-form" (ngSubmit)="submitPayment()">
-        <div class="form-row">
+        <div class="compact-form-row">
           <div class="form-group">
-            <label for="paymentAmount">Payment Amount *</label>
+            <label for="paymentAmount">Amount *</label>
             <input 
               type="number" 
               id="paymentAmount"
@@ -269,12 +257,12 @@
               min="0.01"
               [max]="selectedInvoiceForPayment.balancePayable"
               step="0.01"
-              placeholder="Enter amount"
+              placeholder="₹0.00"
               class="form-control"
               required>
           </div>
           <div class="form-group">
-            <label for="paymentType">Payment Method *</label>
+            <label for="paymentType">Method *</label>
             <select 
               id="paymentType" 
               [(ngModel)]="paymentForm.paymentType" 
@@ -284,11 +272,8 @@
               <option *ngFor="let type of paymentTypes" [value]="type">{{type}}</option>
             </select>
           </div>
-        </div>
-
-        <div class="form-row">
           <div class="form-group">
-            <label for="paymentDate">Payment Date *</label>
+            <label for="paymentDate">Date *</label>
             <input 
               type="date" 
               id="paymentDate"
@@ -297,28 +282,6 @@
               class="form-control"
               required>
           </div>
-          <div class="form-group">
-            <label for="paymentReference">Reference/Transaction ID</label>
-            <input 
-              type="text" 
-              id="paymentReference"
-              [(ngModel)]="paymentForm.reference"
-              name="paymentReference"
-              placeholder="e.g., UPI Ref, Cheque No."
-              class="form-control">
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label for="paymentNotes">Notes (Optional)</label>
-          <textarea 
-            id="paymentNotes"
-            [(ngModel)]="paymentForm.notes"
-            name="paymentNotes"
-            placeholder="Additional notes about this payment..."
-            class="form-control"
-            rows="3">
-          </textarea>
         </div>
 
         <div class="payment-modal-actions">

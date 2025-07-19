@@ -140,8 +140,15 @@ export class PdfGenerationService {
       doc.text((index + 1).toString(), 25, currentY + 8);
       
       // Particulars column - left aligned with proper text wrapping (adjusted width)
-      const description = service.description + (service.notes ? ` (${service.notes})` : '');
-      const maxWidth = 105; // Reduced from 115 to fit new column width
+      let description = service.description;
+      
+      // Handle custom services properly
+      if (service.description === 'custom' && (service as any).customDescription) {
+        description = (service as any).customDescription;
+      }
+      
+      description = description + (service.notes ? ` (${service.notes})` : '');
+      const maxWidth = 100; // Reduced width to fix amount column boundary
       const descriptionLines = doc.splitTextToSize(description, maxWidth);
       
       if (descriptionLines.length === 1) {
@@ -154,10 +161,10 @@ export class PdfGenerationService {
         }
       }
       
-      // Amount column - right aligned with proper padding (adjusted for new column width)
+      // Amount column - right aligned with proper padding (fixed boundary)
       const amountText = '₹' + this.formatAmount(service.amount);
       const amountWidth = doc.getTextWidth(amountText);
-      const rightEdge = 193; // Right edge of amount column
+      const rightEdge = 190; // Adjusted to fix column boundary
       doc.text(amountText, rightEdge - amountWidth, currentY + 8);
       
       currentY += rowHeight;
@@ -407,8 +414,15 @@ export class PdfGenerationService {
         doc.text((index + 1).toString(), 25, currentY + 8);
         
         // Particulars column - left aligned with padding
-        const description = service.description + (service.notes ? ` (${service.notes})` : '');
-        const maxWidth = 115; // Maximum width for particulars column
+        let description = service.description;
+        
+        // Handle custom services properly
+        if (service.description === 'custom' && (service as any).customDescription) {
+          description = (service as any).customDescription;
+        }
+        
+        description = description + (service.notes ? ` (${service.notes})` : '');
+        const maxWidth = 110; // Reduced width to fix amount column boundary
         const descriptionLines = doc.splitTextToSize(description, maxWidth);
         
         if (descriptionLines.length === 1) {
@@ -421,10 +435,10 @@ export class PdfGenerationService {
           }
         }
         
-        // Amount column - right aligned
+        // Amount column - right aligned with fixed boundary
         const amountText = '₹' + this.formatAmount(service.amount);
         const amountWidth = doc.getTextWidth(amountText);
-        doc.text(amountText, 192 - amountWidth, currentY + 8);
+        doc.text(amountText, 190 - amountWidth, currentY + 8);
         
         currentY += rowHeight;
       });
