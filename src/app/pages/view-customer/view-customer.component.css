@@ -1,6 +1,6 @@
 :host {
   display: block;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #f8f9fa;
   min-height: calc(100vh - 120px);
 }
 
@@ -20,7 +20,7 @@
 }
 
 .refresh-btn {
-  background: rgba(255, 255, 255, 0.2);
+  background: #667eea;
   color: white;
   border: none;
   border-radius: 8px;
@@ -34,7 +34,7 @@
 }
 
 .refresh-btn:hover {
-  background: rgba(255, 255, 255, 0.3);
+  background: #5a6fd8;
   transform: translateY(-1px);
 }
 
@@ -47,7 +47,7 @@
 }
 
 .back-btn {
-  background: rgba(255, 255, 255, 0.2);
+  background: #6c757d;
   color: white;
   border: none;
   border-radius: 8px;
@@ -59,22 +59,22 @@
 }
 
 .back-btn:hover {
-  background: rgba(255, 255, 255, 0.3);
+  background: #5a6268;
 }
 
 .header h2 {
-  color: white;
+  color: #333;
   font-size: 32px;
   margin: 0;
   font-weight: 600;
 }
 
 .customers-container {
-  background: rgba(255, 255, 255, 0.95);
+  background: white;
   border-radius: 20px;
   padding: 30px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e9ecef;
 }
 
 .customer-stats {
