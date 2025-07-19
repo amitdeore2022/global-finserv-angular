@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { CustomerService, Customer } from '../../services/customer.service';
 
 @Component({
   selector: 'app-add-customer',
@@ -43,9 +44,12 @@ export class AddCustomerComponent {
     { code: '+971', country: 'UAE' }
   ];
 
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    private customerService: CustomerService
+  ) {}
 
-  addCustomer() {
+  async addCustomer() {
     // Validate mandatory fields based on customer type
     let isValid = false;
     let fullName = '';
@@ -65,42 +69,53 @@ export class AddCustomerComponent {
     }
 
     if (isValid) {
-      const fullMobile = `${this.newCustomer.countryCode} ${this.newCustomer.mobile}`;
-      const fullAddress = `${this.newCustomer.addressLine1}, ${this.newCustomer.village}${this.newCustomer.taluka ? ', ' + this.newCustomer.taluka : ''}, ${this.newCustomer.district}${this.newCustomer.pinCode ? ', ' + this.newCustomer.pinCode : ''}`;
-      
-      const customerData = {
-        name: fullName,
-        mobile: fullMobile,
-        gst: this.newCustomer.gst || '', // Optional field
-        email: this.newCustomer.email || '', // Optional field
-        address: fullAddress
-      };
-      
-      // Here you can add logic to save the customer to a service or database
-      console.log('Customer added:', customerData);
-      
-      // Reset form
-      this.newCustomer = { 
-        customerType: 'individual',
-        prefix: 'Mr.', 
-        firstName: '', 
-        middleName: '', 
-        lastName: '',
-        companyName: '',
-        companyType: '',
-        countryCode: '+91',
-        mobile: '', 
-        gst: '', 
-        email: '',
-        addressLine1: '',
-        village: '',
-        taluka: '',
-        district: '',
-        pinCode: ''
-      };
-      
-      // Navigate back to dashboard
-      this.router.navigate(['/dashboard']);
+      try {
+        const fullMobile = `${this.newCustomer.countryCode} ${this.newCustomer.mobile}`;
+        const fullAddress = `${this.newCustomer.addressLine1}, ${this.newCustomer.village}${this.newCustomer.taluka ? ', ' + this.newCustomer.taluka : ''}, ${this.newCustomer.district}${this.newCustomer.pinCode ? ', ' + this.newCustomer.pinCode : ''}`;
+        
+        const customerData: Omit<Customer, 'id'> = {
+          name: fullName,
+          mobile: fullMobile,
+          gst: this.newCustomer.gst || '', // Optional field
+          email: this.newCustomer.email || '', // Optional field
+          address: fullAddress,
+          dueAmount: 0
+        };
+        
+        // Save customer to Firestore
+        console.log('💾 Saving customer to Firestore:', customerData);
+        const customerId = await this.customerService.addCustomer(customerData);
+        console.log('✅ Customer saved successfully with ID:', customerId);
+        
+        // Show success message
+        alert('Customer added successfully!');
+        
+        // Reset form
+        this.newCustomer = { 
+          customerType: 'individual',
+          prefix: 'Mr.', 
+          firstName: '', 
+          middleName: '', 
+          lastName: '',
+          companyName: '',
+          companyType: '',
+          countryCode: '+91',
+          mobile: '', 
+          gst: '', 
+          email: '',
+          addressLine1: '',
+          village: '',
+          taluka: '',
+          district: '',
+          pinCode: ''
+        };
+        
+        // Navigate back to dashboard
+        this.router.navigate(['/dashboard']);
+      } catch (error) {
+        console.error('❌ Error adding customer:', error);
+        alert('Error adding customer. Please try again.');
+      }
     } else {
       alert('Please fill in all mandatory fields');
     }
