@@ -548,78 +548,123 @@ export class CreateInvoiceComponent implements OnInit {
     this.calculateTotals();
   }
 
-  previewInvoice(): void {
+  async previewInvoice(): Promise<void> {
     if (this.validateInvoice()) {
-      // Prepare invoice data for preview
-      const invoiceData = this.prepareInvoiceData();
-      
-      // Store the invoice data temporarily in sessionStorage for preview
-      sessionStorage.setItem('tempInvoiceData', JSON.stringify({
-        invoiceData,
-        formData: {
-          invoice: this.invoice,
-          newCustomer: this.newCustomer,
-          isEditMode: this.isEditMode,
-          editInvoiceId: this.editInvoiceId
-        }
-      }));
-      
-      // Navigate to preview page with a special parameter to indicate it's unsaved
-      this.router.navigate(['/invoice-preview'], { queryParams: { mode: 'preview' } });
+      try {
+        // Prepare invoice data for preview
+        const invoiceData = await this.prepareInvoiceData();
+        
+        // Store the invoice data temporarily in sessionStorage for preview
+        sessionStorage.setItem('tempInvoiceData', JSON.stringify({
+          invoiceData,
+          formData: {
+            invoice: this.invoice,
+            newCustomer: this.newCustomer,
+            isEditMode: this.isEditMode,
+            editInvoiceId: this.editInvoiceId
+          }
+        }));
+        
+        // Navigate to preview page with a special parameter to indicate it's unsaved
+        this.router.navigate(['/invoice-preview'], { queryParams: { mode: 'preview' } });
+      } catch (error) {
+        console.error('Error preparing invoice data:', error);
+        alert('Error preparing invoice data. Please try again.');
+      }
     } else {
       console.log('Validation failed');
     }
   }
 
-  updateAndPreview(): void {
+  async updateAndPreview(): Promise<void> {
     if (this.validateInvoice()) {
-      // Prepare updated invoice data for preview
-      const invoiceData = this.prepareInvoiceData();
-      
-      // Store the updated invoice data temporarily in sessionStorage for preview
-      sessionStorage.setItem('tempInvoiceData', JSON.stringify({
-        invoiceData,
-        formData: {
-          invoice: this.invoice,
-          newCustomer: this.newCustomer,
-          isEditMode: this.isEditMode,
-          editInvoiceId: this.editInvoiceId
-        }
-      }));
-      
-      // Navigate to preview page with edit mode
-      this.router.navigate(['/invoice-preview'], { queryParams: { mode: 'preview' } });
+      try {
+        // Prepare updated invoice data for preview
+        const invoiceData = await this.prepareInvoiceData();
+        
+        // Store the updated invoice data temporarily in sessionStorage for preview
+        sessionStorage.setItem('tempInvoiceData', JSON.stringify({
+          invoiceData,
+          formData: {
+            invoice: this.invoice,
+            newCustomer: this.newCustomer,
+            isEditMode: this.isEditMode,
+            editInvoiceId: this.editInvoiceId
+          }
+        }));
+        
+        // Navigate to preview page with edit mode
+        this.router.navigate(['/invoice-preview'], { queryParams: { mode: 'preview' } });
+      } catch (error) {
+        console.error('Error preparing invoice data:', error);
+        alert('Error preparing invoice data. Please try again.');
+      }
     } else {
       console.log('Validation failed');
     }
   }
 
-  private prepareInvoiceData() {
-    // Map the form data to match LocalInvoiceService interface
-    const customerData = this.invoice.customerType === 'new' ? {
-      name: this.newCustomer.customerType === 'company' ? 
-        this.newCustomer.companyName : 
-        `${this.newCustomer.prefix} ${this.newCustomer.firstName} ${this.newCustomer.middleName ? this.newCustomer.middleName + ' ' : ''}${this.newCustomer.lastName}`.trim(),
-      mobile: this.newCustomer.mobile,
-      email: this.newCustomer.email,
-      address: `${this.newCustomer.addressLine1}, ${this.newCustomer.village}, ${this.newCustomer.taluka}, ${this.newCustomer.district} - ${this.newCustomer.pinCode}`.trim(),
-      gst: this.newCustomer.gst
-    } : {
-      name: this.invoice.customer!.firstName ? 
-        `${this.invoice.customer!.prefix} ${this.invoice.customer!.firstName} ${this.invoice.customer!.lastName}`.trim() :
-        this.invoice.customer!.id,
-      mobile: this.invoice.customer!.mobile,
-      email: this.invoice.customer!.email,
-      address: `${this.invoice.customer!.address}, ${this.invoice.customer!.city}, ${this.invoice.customer!.state} - ${this.invoice.customer!.pincode}`,
-      gst: ''
-    };
+  private async prepareInvoiceData() {
+    let customerData;
+    
+    if (this.invoice.customerType === 'new') {
+      // First, save the new customer to Firestore if not already saved
+      try {
+        const fullName = this.newCustomer.customerType === 'company' ? 
+          this.newCustomer.companyName : 
+          `${this.newCustomer.prefix} ${this.newCustomer.firstName} ${this.newCustomer.middleName ? this.newCustomer.middleName + ' ' : ''}${this.newCustomer.lastName}`.trim();
+        
+        const fullMobile = `${this.newCustomer.countryCode} ${this.newCustomer.mobile}`;
+        const fullAddress = `${this.newCustomer.addressLine1}, ${this.newCustomer.village}, ${this.newCustomer.taluka}, ${this.newCustomer.district} - ${this.newCustomer.pinCode}`.trim();
+        
+        // Create FirestoreCustomer object
+        const newCustomerData: Omit<FirestoreCustomer, 'id'> = {
+          name: fullName,
+          mobile: fullMobile,
+          email: this.newCustomer.email || '',
+          address: fullAddress,
+          gst: this.newCustomer.gst || '',
+          dueAmount: 0
+        };
+        
+        // Save customer to Firestore and get the ID
+        const customerId = await this.customerService.addCustomer(newCustomerData);
+        console.log('✅ New customer saved to Firestore with ID:', customerId);
+        
+        // Use the saved customer data for the invoice
+        customerData = {
+          id: customerId,
+          name: fullName,
+          mobile: fullMobile,
+          email: this.newCustomer.email || '',
+          address: fullAddress,
+          gst: this.newCustomer.gst || ''
+        };
+      } catch (error) {
+        console.error('❌ Error saving new customer:', error);
+        throw new Error('Failed to save customer. Please try again.');
+      }
+    } else {
+      // Use existing customer data
+      customerData = {
+        id: this.invoice.customer!.id,
+        name: this.invoice.customer!.firstName ? 
+          `${this.invoice.customer!.prefix} ${this.invoice.customer!.firstName} ${this.invoice.customer!.lastName}`.trim() :
+          this.invoice.customer!.id,
+        mobile: this.invoice.customer!.mobile,
+        email: this.invoice.customer!.email,
+        address: `${this.invoice.customer!.address}, ${this.invoice.customer!.city}, ${this.invoice.customer!.state} - ${this.invoice.customer!.pincode}`,
+        gst: ''
+      };
+    }
 
-    // Map service details to match LocalInvoiceService interface  
+    // Map service details to match InvoiceService interface  
     const mappedServiceDetails = this.invoice.serviceDetails.map(service => ({
       description: service.description,
       quantity: 1, // Default quantity since original doesn't have it
       rate: service.amount,
-      amount: service.amount
+      amount: service.amount,
+      notes: service.notes || ''
     }));
 
     return {
@@ -640,7 +685,7 @@ export class CreateInvoiceComponent implements OnInit {
   async saveInvoice(): Promise<void> {
     if (this.validateInvoice()) {
       try {
-        const invoiceData = this.prepareInvoiceData();
+        const invoiceData = await this.prepareInvoiceData();
 
         // Save or update invoice
         if (this.isEditMode && this.editInvoiceId) {
