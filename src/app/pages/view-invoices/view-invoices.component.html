@@ -11,7 +11,7 @@
   <div *ngIf="customerFilter" class="customer-filter-indicator">
     <div class="filter-info">
       <i class="fas fa-filter"></i>
-      <span>Showing invoices for customer: {{customerFilter}}</span>
+      <span>Showing invoices for: <strong>{{getCustomerNameFromFilter()}}</strong> ({{customerFilter}})</span>
       <button class="clear-filter-btn" (click)="clearCustomerFilter()">
         <i class="fas fa-times"></i> Clear Filter
       </button>
@@ -51,7 +51,7 @@
   <div class="invoice-stats">
     <div class="stat-card">
       <h4>Total Invoices</h4>
-      <p class="stat-number">{{invoices.length}}</p>
+      <p class="stat-number">{{customerFilter ? filteredInvoices.length : invoices.length}}</p>
     </div>
     <div class="stat-card">
       <h4>Total Amount</h4>

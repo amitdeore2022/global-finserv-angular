@@ -414,6 +414,18 @@
   justify-content: flex-start;
 }
 
+.customer-basic-info {
+  margin-top: 15px;
+}
+
+.show-details-container {
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid #e9ecef;
+  display: flex;
+  justify-content: center;
+}
+
 .show-details-btn {
   background: #6c757d;
   color: white;
@@ -431,10 +443,6 @@
 .show-details-btn:hover {
   background: #545862;
   transform: translateY(-1px);
-}
-
-.customer-basic-info {
-  margin-top: 15px;
 }
 
 .detailed-info {
@@ -460,7 +468,12 @@
     flex-direction: column;
   }
   
+  .show-details-container {
+    order: 1; /* Ensure show details is always at bottom on mobile */
+  }
+  
   .show-details-btn {
-    order: -1; /* Put show details button first on mobile */
+    width: 100%;
+    justify-content: center;
   }
 }

@@ -39,16 +39,14 @@ export class ViewInvoicesComponent implements OnInit {
     // Check for customer filter from query params
     this.route.queryParams.subscribe(params => {
       this.customerFilter = params['customer'] || '';
-      if (this.customerFilter) {
-        this.invoiceSearchTerm = this.customerFilter;
-      }
+      console.log('Customer filter from query params:', this.customerFilter);
     });
     
     this.debugInvoices(); // Debug localStorage
     this.loadInvoices().then(() => {
-      // Apply filter after loading
+      // Apply customer filter after loading if provided
       if (this.customerFilter) {
-        this.filterInvoices();
+        this.applyCustomerFilter();
       }
     });
   }
@@ -95,6 +93,31 @@ export class ViewInvoicesComponent implements OnInit {
 
       return matchesSearch && matchesStatus;
     });
+    
+    // Recalculate statistics based on filtered results
+    this.calculateFilteredStatistics();
+  }
+
+  applyCustomerFilter() {
+    // Filter invoices to show only those from the specific customer
+    console.log('Applying customer filter for mobile:', this.customerFilter);
+    this.filteredInvoices = this.invoices.filter(invoice => 
+      invoice.customer.mobile === this.customerFilter
+    );
+    console.log('Filtered invoices for customer:', this.filteredInvoices);
+    
+    // Set the search term to show the customer mobile in the search box
+    this.invoiceSearchTerm = this.customerFilter;
+    
+    // Recalculate statistics for filtered invoices only
+    this.calculateFilteredStatistics();
+  }
+
+  calculateFilteredStatistics() {
+    // Calculate statistics specifically for filtered invoices (customer-specific)
+    this.totalInvoiceAmount = this.filteredInvoices.reduce((sum, invoice) => sum + invoice.totalAmount, 0);
+    this.totalPendingAmount = this.filteredInvoices.reduce((sum, invoice) => sum + invoice.balancePayable, 0);
+    this.paidInvoicesCount = this.filteredInvoices.filter(invoice => invoice.status === 'PAID').length;
   }
 
   async printInvoice(invoiceId: string) {
@@ -320,8 +343,17 @@ Thank you for your business! 🙏`;
   clearCustomerFilter() {
     this.customerFilter = '';
     this.invoiceSearchTerm = '';
-    this.filterInvoices();
+    this.filteredInvoices = [...this.invoices];
+    this.calculateStatistics(); // Recalculate for all invoices
     // Update URL to remove customer query param
     this.router.navigate(['/view-invoices']);
+  }
+
+  getCustomerNameFromFilter(): string {
+    if (!this.customerFilter || this.filteredInvoices.length === 0) {
+      return this.customerFilter;
+    }
+    // Get customer name from the first filtered invoice
+    return this.filteredInvoices[0].customer.name;
   }
 }

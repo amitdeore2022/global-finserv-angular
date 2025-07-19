@@ -58,12 +58,6 @@
               <button class="action-btn ledger-btn" (click)="generateCustomerLedger(customer)" title="Download Customer Ledger">
                 <i class="fas fa-download"></i> Download Ledger
               </button>
-              <button class="show-details-btn" (click)="toggleCustomerCardExpansion(customer.id!)" 
-                     [title]="isCustomerCardExpanded(customer.id!) ? 'Hide Details' : 'Show Details'">
-                <i class="fas" [class.fa-chevron-down]="!isCustomerCardExpanded(customer.id!)" 
-                   [class.fa-chevron-up]="isCustomerCardExpanded(customer.id!)"></i>
-                {{isCustomerCardExpanded(customer.id!) ? 'Hide Details' : 'Show Details'}}
-              </button>
             </div>
           </div>
           
@@ -97,6 +91,16 @@
                 <span class="value">{{customer.invoiceCount}}</span>
               </div>
             </div>
+          </div>
+          
+          <!-- Show Details button placed below total invoices -->
+          <div class="show-details-container">
+            <button class="show-details-btn" (click)="toggleCustomerCardExpansion(customer.id!)" 
+                   [title]="isCustomerCardExpanded(customer.id!) ? 'Hide Details' : 'Show Details'">
+              <i class="fas" [class.fa-chevron-down]="!isCustomerCardExpanded(customer.id!)" 
+                 [class.fa-chevron-up]="isCustomerCardExpanded(customer.id!)"></i>
+              {{isCustomerCardExpanded(customer.id!) ? 'Hide Details' : 'Show Details'}}
+            </button>
           </div>
         </div>
         

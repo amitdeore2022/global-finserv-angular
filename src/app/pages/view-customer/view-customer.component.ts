@@ -225,13 +225,44 @@ export class ViewCustomerComponent implements OnInit {
   }
 
   async deleteCustomer(customerId: string) {
-    if (confirm('Are you sure you want to delete this customer?')) {
-      try {
-        await this.customerService.deleteCustomer(customerId);
-        await this.loadCustomersWithStats(); // Reload the list
-      } catch (error) {
-        console.error('Error deleting customer:', error);
-        alert('Error deleting customer. Please try again.');
+    const customer = this.customers.find(c => c.id === customerId);
+    if (!customer) {
+      alert('Customer not found!');
+      return;
+    }
+
+    // Create detailed warning message
+    const warningMessage = `⚠️ DELETE CUSTOMER WARNING ⚠️
+
+Are you absolutely sure you want to delete this customer?
+
+Customer: ${customer.name}
+Mobile: ${customer.mobile}
+${customer.email ? 'Email: ' + customer.email : ''}
+
+This action will permanently delete:
+• Customer profile and contact information
+• ${customer.invoiceCount} invoice(s) worth ₹${customer.totalTransactionAmount.toLocaleString('en-IN')}
+• Outstanding dues of ₹${customer.totalDueAmount.toLocaleString('en-IN')}
+• All transaction history and records
+
+⚠️ THIS ACTION CANNOT BE UNDONE! ⚠️
+
+Type "DELETE" in the prompt below to confirm deletion.`;
+
+    if (confirm(warningMessage)) {
+      const userInput = prompt('Type "DELETE" to confirm permanent deletion:');
+      if (userInput === 'DELETE') {
+        try {
+          await this.customerService.deleteCustomer(customerId);
+          await this.loadCustomersWithStats(); // Reload the list
+          alert(`Customer "${customer.name}" and all associated data have been permanently deleted.`);
+        } catch (error) {
+          console.error('Error deleting customer:', error);
+          alert('Error deleting customer. Please try again.');
+        }
+      } else if (userInput !== null) {
+        alert('Deletion cancelled. You must type "DELETE" exactly to confirm.');
       }
     }
   }
