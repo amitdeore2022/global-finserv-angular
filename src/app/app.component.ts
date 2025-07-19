@@ -73,4 +73,10 @@ export class AppComponent implements OnInit {
     const currentUrl = this.router.url;
     return currentUrl !== '/login' && currentUrl !== '/dashboard' && currentUrl !== '/' && currentUrl !== '';
   }
+
+  isLoginPage(): boolean {
+    // Check if current route is login page
+    const currentUrl = this.router.url;
+    return currentUrl === '/login' || currentUrl === '/' || currentUrl === '';
+  }
 }
