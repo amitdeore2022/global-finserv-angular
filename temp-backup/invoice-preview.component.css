@@ -131,24 +131,6 @@
   transform: none;
 }
 
-.invoice-saved-indicator {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: #d4edda;
-  color: #155724;
-  padding: 12px 16px;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 600;
-  border: 1px solid #c3e6cb;
-}
-
-.invoice-saved-indicator i {
-  color: #28a745;
-  font-size: 16px;
-}
-
 /* Invoice Document */
 .invoice-document {
   background: white;
@@ -458,61 +440,6 @@
 
 /* Mobile Responsiveness for Create Invoice Section */
 @media (max-width: 768px) {
-  .invoice-preview-container {
-    padding: 10px;
-  }
-  
-  .action-header {
-    flex-direction: column;
-    gap: 15px;
-    align-items: stretch;
-    padding: 15px;
-  }
-  
-  .action-buttons {
-    flex-wrap: wrap;
-    gap: 8px;
-  }
-  
-  .action-buttons button {
-    flex: 1;
-    min-width: 0;
-    padding: 10px 12px;
-    font-size: 13px;
-  }
-  
-  .invoice-document {
-    padding: 20px;
-  }
-  
-  .company-header h1 {
-    font-size: 24px;
-  }
-  
-  .company-header h2 {
-    font-size: 16px;
-  }
-  
-  .invoice-header-info {
-    grid-template-columns: 1fr;
-    gap: 20px;
-  }
-  
-  .services-table th,
-  .services-table td {
-    padding: 8px;
-    font-size: 13px;
-  }
-  
-  .invoice-footer {
-    grid-template-columns: 1fr;
-    gap: 20px;
-  }
-  
-  .signature-line {
-    width: 150px;
-  }
-  
   .create-invoice-container {
     padding: 20px;
   }
@@ -526,13 +453,5 @@
   .invoice-created-message {
     padding: 14px 20px;
     font-size: 16px;
-  }
-  
-  .invoice-saved-indicator {
-    flex-direction: column;
-    gap: 4px;
-    text-align: center;
-    padding: 8px 12px;
-    font-size: 12px;
   }
 }

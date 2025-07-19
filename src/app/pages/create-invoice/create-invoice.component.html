@@ -394,14 +394,15 @@
     <!-- Action Buttons -->
     <div class="action-buttons">
       <button type="button" class="cancel-btn" (click)="goBack()">Cancel</button>
-      <button type="button" class="preview-btn" (click)="saveInvoice()">
+      <button type="button" class="preview-btn" (click)="isEditMode ? saveInvoice() : previewInvoice()">
         {{ isEditMode ? 'Update Invoice' : 'Preview Invoice' }}
       </button>
     </div>
   </form>
 </div>
 
-<!-- Preview Section -->
+<!-- Preview Section - Using separate invoice-preview component instead -->
+<!-- 
 <div *ngIf="showPreview" class="preview-section">
     <div class="preview-header">
       <h2>Invoice Preview</h2>
@@ -487,3 +488,4 @@
       </button>
     </div>
   </div>
+-->

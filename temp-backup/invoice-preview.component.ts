@@ -148,9 +148,6 @@ Thank you for your business! 🙏`;
         invoiceId = this.formData.editInvoiceId;
         this.invoice.id = invoiceId;
       } else {
-        // Generate proper invoice number for new invoices
-        this.invoice.invoiceNumber = await this.invoiceService.generateNextInvoiceNumber();
-        
         // Create new invoice
         invoiceId = await this.invoiceService.addInvoice(this.invoice);
         this.invoice.id = invoiceId;
