@@ -198,25 +198,50 @@ export class CreateInvoiceComponent implements OnInit {
       const editData = sessionStorage.getItem('editInvoiceData');
       if (editData) {
         const data = JSON.parse(editData);
+        console.log('Restoring from preview edit:', data);
         
         // Restore the invoice data
-        this.invoice = { ...data.invoiceData };
-        this.isEditMode = data.isEditMode;
-        this.editInvoiceId = data.editInvoiceId;
-        
-        // Restore customer selection
-        if (data.invoiceData.customer) {
-          this.invoice.customer = data.invoiceData.customer;
-          this.invoice.customerType = 'existing';
+        if (data.invoiceData) {
+          this.invoice = { ...data.invoiceData };
+          
+          // Ensure all required properties are set
+          this.invoice.customerType = this.invoice.customerType || 'existing';
+          this.invoice.invoiceDate = this.invoice.invoiceDate || this.getCurrentDate();
+          
+          // Ensure service details are properly formatted
+          if (this.invoice.serviceDetails && Array.isArray(this.invoice.serviceDetails)) {
+            this.invoice.serviceDetails = this.invoice.serviceDetails.map((service: any) => ({
+              description: service.description || '',
+              amount: Number(service.amount) || 0,
+              notes: service.notes || ''
+            }));
+          } else {
+            this.invoice.serviceDetails = [];
+          }
+          
+          // Restore edit mode information
+          this.isEditMode = data.isEditMode || false;
+          this.editInvoiceId = data.editInvoiceId || null;
+          
+          // Ensure customer data is properly set
+          if (this.invoice.customer) {
+            this.invoice.customerType = 'existing';
+          }
+          
+          console.log('Restored invoice:', this.invoice);
+          console.log('Edit mode:', this.isEditMode);
+          console.log('Edit ID:', this.editInvoiceId);
+          
+          // Clear the stored data after successful restoration
+          sessionStorage.removeItem('editInvoiceData');
+          
+          // Recalculate totals
+          this.calculateTotals();
         }
-        
-        // Clear the stored data
-        sessionStorage.removeItem('editInvoiceData');
-        
-        console.log('Form restored from preview edit:', this.invoice);
       }
     } catch (error) {
       console.error('Error restoring form from preview edit:', error);
+      alert(`Error restoring form data: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }
 
@@ -274,7 +299,10 @@ export class CreateInvoiceComponent implements OnInit {
 
   async loadInvoiceForEdit(invoiceId: string) {
     try {
+      console.log('Loading invoice for edit, ID:', invoiceId);
       const invoice = await this.invoiceService.getInvoiceById(invoiceId);
+      console.log('Retrieved invoice:', invoice);
+      
       if (invoice) {
         // Populate the form with invoice data
         this.invoice.invoiceNumber = invoice.invoiceNumber;
@@ -283,36 +311,48 @@ export class CreateInvoiceComponent implements OnInit {
         this.invoice.advanceReceived = invoice.advanceReceived;
         this.invoice.balancePayable = invoice.balancePayable;
         this.invoice.selectedBank = invoice.selectedBank;
-        // this.invoice.paymentType = invoice.paymentType;
-        // this.invoice.paymentNotes = invoice.paymentNotes;
 
         // Set customer type and data
-        this.invoice.customerType = 'existing';
-        this.invoice.customer = {
-          id: invoice.customer.name,
-          prefix: '',
-          firstName: invoice.customer.name.split(' ')[0] || '',
-          lastName: invoice.customer.name.split(' ').slice(1).join(' ') || '',
-          mobile: invoice.customer.mobile,
-          email: invoice.customer.email,
-          address: invoice.customer.address.split(',')[0] || '',
-          city: '',
-          state: '',
-          pincode: ''
-        };
+        if (invoice.customer) {
+          this.invoice.customerType = 'existing';
+          const customerName = invoice.customer.name || '';
+          const customerAddress = invoice.customer.address || '';
+          
+          this.invoice.customer = {
+            id: customerName,
+            prefix: '',
+            firstName: customerName.split(' ')[0] || '',
+            lastName: customerName.split(' ').slice(1).join(' ') || '',
+            mobile: invoice.customer.mobile || '',
+            email: invoice.customer.email || '',
+            address: customerAddress.split(',')[0] || '',
+            city: '',
+            state: '',
+            pincode: ''
+          };
+        }
 
         // Map service details back to form format
-        this.invoice.serviceDetails = invoice.serviceDetails.map((service: any) => ({
-          description: service.description,
-          amount: service.amount,
-          notes: ''
-        }));
+        if (invoice.serviceDetails && Array.isArray(invoice.serviceDetails)) {
+          this.invoice.serviceDetails = invoice.serviceDetails.map((service: any) => ({
+            description: service.description || '',
+            amount: Number(service.amount) || 0,
+            notes: service.notes || ''
+          }));
+          console.log('Mapped service details:', this.invoice.serviceDetails);
+        } else {
+          console.warn('No service details found or invalid format');
+          this.invoice.serviceDetails = [];
+        }
 
         this.calculateTotals();
+        console.log('Invoice form populated successfully');
+      } else {
+        throw new Error('Invoice not found');
       }
     } catch (error) {
       console.error('Error loading invoice for edit:', error);
-      alert('Error loading invoice data');
+      alert(`Error loading invoice data: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }
 

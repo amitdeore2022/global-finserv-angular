@@ -46,12 +46,20 @@ export class InvoicePreviewComponent implements OnInit {
   loadPreviewData() {
     try {
       const tempData = sessionStorage.getItem('tempInvoiceData');
+      console.log('Loading preview data from sessionStorage:', tempData);
+      
       if (tempData) {
         const data = JSON.parse(tempData);
+        console.log('Parsed preview data:', data);
+        
         this.invoice = data.invoiceData;
         this.formData = data.formData;
         this.isLoading = false;
+        
+        console.log('Preview loaded - Invoice:', this.invoice);
+        console.log('Preview loaded - Form data:', this.formData);
       } else {
+        console.warn('No invoice data found for preview');
         alert('No invoice data found for preview!');
         this.router.navigate(['/create-invoice']);
       }
@@ -197,9 +205,19 @@ Thank you for your business! 🙏`;
 
   goBack() {
     if (this.isPreviewMode) {
-      // Clear temporary data and go back to create invoice
-      sessionStorage.removeItem('tempInvoiceData');
-      this.router.navigate(['/create-invoice']);
+      // Store the current invoice data for form restoration
+      const restoreData = {
+        invoiceData: this.invoice,
+        formData: this.formData,
+        isEditMode: this.formData?.isEditMode || false,
+        editInvoiceId: this.formData?.editInvoiceId || null
+      };
+      
+      // Store data for form restoration
+      sessionStorage.setItem('editInvoiceData', JSON.stringify(restoreData));
+      
+      // Navigate back to create invoice with edit mode
+      this.router.navigate(['/create-invoice'], { queryParams: { mode: 'edit' } });
     } else {
       this.router.navigate(['/dashboard'], { queryParams: { category: 'invoices' } });
     }
