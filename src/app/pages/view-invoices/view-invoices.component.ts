@@ -46,10 +46,6 @@ export class ViewInvoicesComponent implements OnInit {
     
     this.debugInvoices(); // Debug localStorage
     this.loadInvoices().then(() => {
-      // If no invoices exist, create a sample one for testing
-      if (this.invoices.length === 0) {
-        this.createSampleInvoice();
-      }
       // Apply filter after loading
       if (this.customerFilter) {
         this.filterInvoices();
@@ -310,49 +306,6 @@ Thank you for your business! 🙏`;
 
   goBackToDashboard() {
     this.router.navigate(['/dashboard'], { queryParams: { category: 'invoices' } });
-  }
-
-  // Method to create sample invoice for testing
-  async createSampleInvoice() {
-    const sampleInvoice = {
-      invoiceNumber: 'INV-001',
-      invoiceDate: new Date().toISOString().split('T')[0],
-      customer: {
-        name: 'Sample Customer',
-        mobile: '9876543210',
-        email: 'sample@email.com',
-        address: 'Sample Address, City - 123456',
-        gst: 'GST123456789'
-      },
-      serviceDetails: [
-        {
-          description: 'Financial Consultation',
-          quantity: 1,
-          rate: 5000,
-          amount: 5000
-        },
-        {
-          description: 'Tax Filing Service',
-          quantity: 1,
-          rate: 2000,
-          amount: 2000
-        }
-      ],
-      totalAmount: 7000,
-      advanceReceived: 2000,
-      balancePayable: 5000,
-      selectedBank: 'HDFC Bank, Thatte Nagar Branch - A/c No: 50200107802130, IFSC: HDFC0000064',
-      createdAt: new Date(),
-      status: 'PENDING' as 'PENDING'
-    };
-
-    try {
-      await this.invoiceService.addInvoice(sampleInvoice);
-      await this.loadInvoices();
-      alert('Sample invoice created successfully!');
-    } catch (error) {
-      console.error('Error creating sample invoice:', error);
-    }
   }
 
   // Debug method to check localStorage

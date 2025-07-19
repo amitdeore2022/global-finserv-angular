@@ -168,9 +168,9 @@ export class CreateInvoiceComponent implements OnInit {
     this.calculateTotals();
   }
 
-  ngOnInit() {
+  async ngOnInit() {
     // Generate initial invoice number
-    this.invoice.invoiceNumber = this.generateInvoiceNumber();
+    this.invoice.invoiceNumber = await this.generateInvoiceNumber();
     
     // Initialize invoice
     this.initializeInvoice();
@@ -286,19 +286,9 @@ export class CreateInvoiceComponent implements OnInit {
     }
   }
 
-  // Auto-generate invoice number based on date
-  generateInvoiceNumber(): string {
-    const date = new Date(this.invoice.invoiceDate || new Date());
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const yearMonth = `${year}${month}`;
-    
-    // In a real app, you'd get the next sequence number from the database
-    // For now, using a random 4-digit number
-    const sequence = Math.floor(Math.random() * 9999) + 1;
-    const sequenceStr = String(sequence).padStart(4, '0');
-    
-    return `INV-${yearMonth}-${sequenceStr}`;
+  // Auto-generate invoice number based on existing invoices
+  async generateInvoiceNumber(): Promise<string> {
+    return await this.invoiceService.generateNextInvoiceNumber();
   }
 
   getCurrentDate(): string {
@@ -671,8 +661,8 @@ export class CreateInvoiceComponent implements OnInit {
   }
 
   // Regenerate invoice number when date changes
-  onInvoiceDateChange() {
-    this.invoice.invoiceNumber = this.generateInvoiceNumber();
+  async onInvoiceDateChange() {
+    this.invoice.invoiceNumber = await this.generateInvoiceNumber();
   }
 
   goBack(): void {

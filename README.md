@@ -36,6 +36,57 @@ ng build
 
 This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
 
+## Automated Deployment
+
+This project includes automated deployment scripts for building and deploying to Firebase hosting with git integration.
+
+### Quick Deployment
+Run the deployment menu for guided deployment:
+```bash
+deploy-menu.bat
+```
+
+### Direct Script Execution
+
+**PowerShell (Recommended for Windows):**
+```powershell
+.\deploy.ps1
+```
+
+**Batch Script (Windows):**
+```cmd
+deploy.bat
+```
+
+**Shell Script (Linux/Mac/WSL):**
+```bash
+./deploy.sh
+```
+
+### What the deployment scripts do:
+1. Build the app for development (`ng build`)
+2. Build the app for production (`ng build --configuration production`)
+3. Deploy to Firebase hosting (`firebase deploy --only hosting`)
+4. Automatically commit and push changes to git (if deployment succeeds)
+
+See `DEPLOYMENT_GUIDE.md` for detailed documentation and troubleshooting.
+
+## Manual Building for Production
+
+For production build only:
+
+```bash
+ng build --configuration production
+```
+
+## Firebase Deployment
+
+Deploy to Firebase hosting:
+
+```bash
+firebase deploy --only hosting
+```
+
 ## Running unit tests
 
 To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:

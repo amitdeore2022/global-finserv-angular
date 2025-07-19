@@ -154,6 +154,48 @@ export class LocalInvoiceService {
     }
   }
 
+  // Generate next invoice number in format INV-YYYYMM-0001
+  async generateNextInvoiceNumber(): Promise<string> {
+    try {
+      const invoices = this.getInvoicesFromStorage();
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const yearMonth = `${year}${month}`;
+      const prefix = `INV-${yearMonth}-`;
+
+      // Filter invoices from current month and year
+      const currentMonthInvoices = invoices.filter(invoice => 
+        invoice.invoiceNumber.startsWith(prefix)
+      );
+
+      // Find the highest sequence number for current month
+      let maxSequence = 0;
+      currentMonthInvoices.forEach(invoice => {
+        const sequencePart = invoice.invoiceNumber.split('-')[2];
+        if (sequencePart) {
+          const sequence = parseInt(sequencePart, 10);
+          if (!isNaN(sequence) && sequence > maxSequence) {
+            maxSequence = sequence;
+          }
+        }
+      });
+
+      // Generate next sequence number (starting from 0001)
+      const nextSequence = maxSequence + 1;
+      const sequenceStr = String(nextSequence).padStart(4, '0');
+      
+      return `${prefix}${sequenceStr}`;
+    } catch (error) {
+      console.error('Error generating invoice number:', error);
+      // Fallback to simple format
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      return `INV-${year}${month}-0001`;
+    }
+  }
+
   private getInvoicesFromStorage(): Invoice[] {
     const stored = localStorage.getItem(this.storageKey);
     return stored ? JSON.parse(stored) : [];

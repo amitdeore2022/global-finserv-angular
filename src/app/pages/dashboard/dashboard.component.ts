@@ -70,7 +70,7 @@ export class DashboardComponent implements OnInit {
 
   // Invoice-related properties
   invoice = {
-    invoiceNumber: this.generateInvoiceNumber(),
+    invoiceNumber: '', // Will be generated asynchronously
     invoiceDate: this.getCurrentDate(),
     customer: null as any,
     customerType: 'existing',
@@ -163,6 +163,9 @@ export class DashboardComponent implements OnInit {
     await this.loadCustomers();
     await this.loadInvoices();
     this.calculateStats();
+    
+    // Generate initial invoice number for dashboard invoice form
+    this.invoice.invoiceNumber = await this.invoiceService.generateNextInvoiceNumber();
   }
 
   async loadCustomers() {
@@ -283,12 +286,8 @@ export class DashboardComponent implements OnInit {
   }
 
   // Invoice-related methods
-  generateInvoiceNumber(): string {
-    const date = new Date();
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
-    return `INV-${year}${month}-${random}`;
+  async generateInvoiceNumber(): Promise<string> {
+    return await this.invoiceService.generateNextInvoiceNumber();
   }
 
   getCurrentDate(): string {
@@ -499,7 +498,7 @@ export class DashboardComponent implements OnInit {
         alert('Invoice created successfully!');
         
         // Reset invoice form
-        this.resetInvoiceForm();
+        await this.resetInvoiceForm();
         
       } catch (error) {
         console.error('Error saving invoice:', error);
@@ -508,9 +507,9 @@ export class DashboardComponent implements OnInit {
     }
   }
 
-  private resetInvoiceForm(): void {
+  private async resetInvoiceForm(): Promise<void> {
     this.invoice = {
-      invoiceNumber: this.generateInvoiceNumber(),
+      invoiceNumber: await this.generateInvoiceNumber(),
       invoiceDate: this.getCurrentDate(),
       customer: null,
       customerType: 'existing',
