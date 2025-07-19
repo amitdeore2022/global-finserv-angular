@@ -246,8 +246,8 @@
         </div>
 
         <!-- Action Button Section -->
-        <div class="form-section action-section">
-          <button *ngIf="showAddCustomerForm" type="button" class="save-customer-btn" (click)="addNewCustomer()">
+        <div *ngIf="showAddCustomerForm" class="form-section action-section">
+          <button type="button" class="save-customer-btn" (click)="addNewCustomer()">
             💾 Save Customer
           </button>
         </div>
