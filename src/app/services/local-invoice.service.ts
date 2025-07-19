@@ -154,24 +154,26 @@ export class LocalInvoiceService {
     }
   }
 
-  // Generate next invoice number in format INV-YYYYMM-0001
-  async generateNextInvoiceNumber(): Promise<string> {
+  // Generate next invoice number in format INV-YYYYMM-0001 based on provided date
+  async generateNextInvoiceNumber(invoiceDate?: string): Promise<string> {
     try {
       const invoices = this.getInvoicesFromStorage();
-      const now = new Date();
-      const year = now.getFullYear();
-      const month = String(now.getMonth() + 1).padStart(2, '0');
+      
+      // Use provided date or current date
+      const dateToUse = invoiceDate ? new Date(invoiceDate) : new Date();
+      const year = dateToUse.getFullYear();
+      const month = String(dateToUse.getMonth() + 1).padStart(2, '0');
       const yearMonth = `${year}${month}`;
       const prefix = `INV-${yearMonth}-`;
 
-      // Filter invoices from current month and year
-      const currentMonthInvoices = invoices.filter(invoice => 
+      // Filter invoices from the specified month and year
+      const monthInvoices = invoices.filter(invoice => 
         invoice.invoiceNumber.startsWith(prefix)
       );
 
-      // Find the highest sequence number for current month
+      // Find the highest sequence number for the specified month
       let maxSequence = 0;
-      currentMonthInvoices.forEach(invoice => {
+      monthInvoices.forEach(invoice => {
         const sequencePart = invoice.invoiceNumber.split('-')[2];
         if (sequencePart) {
           const sequence = parseInt(sequencePart, 10);
@@ -189,9 +191,9 @@ export class LocalInvoiceService {
     } catch (error) {
       console.error('Error generating invoice number:', error);
       // Fallback to simple format
-      const now = new Date();
-      const year = now.getFullYear();
-      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const dateToUse = invoiceDate ? new Date(invoiceDate) : new Date();
+      const year = dateToUse.getFullYear();
+      const month = String(dateToUse.getMonth() + 1).padStart(2, '0');
       return `INV-${year}${month}-0001`;
     }
   }

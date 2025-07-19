@@ -169,7 +169,10 @@ export class CreateInvoiceComponent implements OnInit {
   }
 
   async ngOnInit() {
-    // Generate initial invoice number
+    // Initialize invoice date to current date
+    this.invoice.invoiceDate = this.getCurrentDate();
+    
+    // Generate initial invoice number based on current date
     this.invoice.invoiceNumber = await this.generateInvoiceNumber();
     
     // Initialize invoice
@@ -356,9 +359,31 @@ export class CreateInvoiceComponent implements OnInit {
     }
   }
 
-  // Auto-generate invoice number based on existing invoices
+  // Auto-generate invoice number based on existing invoices and selected date
   async generateInvoiceNumber(): Promise<string> {
-    return await this.invoiceService.generateNextInvoiceNumber();
+    return await this.invoiceService.generateNextInvoiceNumber(this.invoice.invoiceDate);
+  }
+
+  // Handle invoice date change - regenerate invoice number
+  async onInvoiceDateChange() {
+    // Validate that the selected date is not in the future
+    const selectedDate = new Date(this.invoice.invoiceDate);
+    const today = new Date();
+    
+    // Set time to start of day for comparison
+    selectedDate.setHours(0, 0, 0, 0);
+    today.setHours(0, 0, 0, 0);
+    
+    if (selectedDate > today) {
+      alert('Future dates are not allowed. Please select today\'s date or an earlier date.');
+      this.invoice.invoiceDate = this.getCurrentDate();
+      return;
+    }
+
+    // Only regenerate invoice number if not in edit mode
+    if (!this.isEditMode) {
+      this.invoice.invoiceNumber = await this.generateInvoiceNumber();
+    }
   }
 
   getCurrentDate(): string {
@@ -405,7 +430,14 @@ export class CreateInvoiceComponent implements OnInit {
     this.invoice.searchTerm = `${customer.name} (${customer.mobile})`;
   }
 
+  clearSelectedCustomer(): void {
+    this.invoice.customer = null;
+    this.invoice.searchTerm = '';
+    this.searchResults = [];
+  }
+
   showAddNewCustomer(): void {
+    this.invoice.customerType = 'new'; // Automatically switch to New Customer radio button
     this.showAddCustomerForm = true;
   }
 
@@ -751,11 +783,6 @@ export class CreateInvoiceComponent implements OnInit {
       return service.customDescription || 'Custom Service';
     }
     return service.description;
-  }
-
-  // Regenerate invoice number when date changes
-  async onInvoiceDateChange() {
-    this.invoice.invoiceNumber = await this.generateInvoiceNumber();
   }
 
   goBack(): void {

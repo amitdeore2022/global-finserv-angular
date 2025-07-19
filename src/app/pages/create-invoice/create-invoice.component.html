@@ -16,7 +16,9 @@
             id="invoiceNumber" 
             [(ngModel)]="invoice.invoiceNumber" 
             name="invoiceNumber"
-            class="form-control">
+            class="form-control"
+            readonly
+            title="Invoice number is auto-generated based on selected date">
         </div>
         <div class="form-group">
           <label for="invoiceDate">Invoice Date</label>
@@ -26,6 +28,7 @@
             [(ngModel)]="invoice.invoiceDate" 
             name="invoiceDate"
             class="form-control"
+            [max]="getCurrentDate()"
             (change)="onInvoiceDateChange()">
         </div>
       </div>
@@ -87,7 +90,16 @@
 
         <!-- Selected Customer Display -->
         <div *ngIf="invoice.customer" class="selected-customer">
-          <h4>Selected Customer:</h4>
+          <div class="selected-customer-header">
+            <h4>Selected Customer:</h4>
+            <button 
+              type="button" 
+              class="clear-customer-btn"
+              (click)="clearSelectedCustomer()"
+              title="Clear selected customer">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
           <div class="customer-card selected">
             <p><strong>{{invoice.customer.firstName ? (invoice.customer.prefix + ' ' + invoice.customer.firstName + ' ' + invoice.customer.lastName) : invoice.customer.id}}</strong></p>
             <p>Mobile: {{invoice.customer.mobile}}</p>
@@ -96,13 +108,23 @@
           </div>
         </div>
 
-        <!-- Add New Customer Button -->
+        <!-- No results message when searching but no customer selected -->
+        <div 
+          *ngIf="invoice.searchTerm && searchResults.length === 0 && !invoice.customer" 
+          class="no-results-message">
+          <i class="fas fa-search"></i>
+          <p>No customer found with "<strong>{{invoice.searchTerm}}</strong>"</p>
+          <p class="help-text">You can add this as a new customer using the button below.</p>
+        </div>
+
+        <!-- Add New Customer Button - Only show when no customer is selected and no search results -->
         <button 
-          *ngIf="invoice.searchTerm && searchResults.length === 0" 
+          *ngIf="invoice.searchTerm && searchResults.length === 0 && !invoice.customer" 
           type="button" 
           class="add-customer-btn"
           (click)="showAddNewCustomer()">
-          + Add New Customer
+          <i class="fas fa-user-plus"></i>
+          Add New Customer
         </button>
       </div>
 
