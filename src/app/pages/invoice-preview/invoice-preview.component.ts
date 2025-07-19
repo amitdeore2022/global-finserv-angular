@@ -177,8 +177,20 @@ Thank you for your business! 🙏`;
   editInvoice() {
     if (this.isPreviewMode) {
       // If in preview mode, restore the form data and go back to create invoice
-      this.router.navigate(['/create-invoice']);
+      // Store the current invoice data as form data for editing
+      const editData = {
+        isEditMode: true,
+        editInvoiceId: this.formData?.editInvoiceId || null,
+        invoiceData: this.invoice,
+        formData: this.formData
+      };
+      
+      // Store in sessionStorage so create-invoice can restore the form
+      sessionStorage.setItem('editInvoiceData', JSON.stringify(editData));
+      
+      this.router.navigate(['/create-invoice'], { queryParams: { mode: 'edit' } });
     } else if (this.invoice) {
+      // For saved invoices, navigate with edit parameter
       this.router.navigate(['/create-invoice'], { queryParams: { edit: this.invoice.id } });
     }
   }
@@ -189,6 +201,20 @@ Thank you for your business! 🙏`;
       sessionStorage.removeItem('tempInvoiceData');
       this.router.navigate(['/create-invoice']);
     } else {
+      this.router.navigate(['/dashboard'], { queryParams: { category: 'invoices' } });
+    }
+  }
+
+  cancelInvoice() {
+    if (this.isPreviewMode) {
+      if (confirm('Are you sure you want to cancel this invoice? Any unsaved changes will be lost.')) {
+        // Clear temporary data and navigate back to dashboard
+        sessionStorage.removeItem('tempInvoiceData');
+        sessionStorage.removeItem('editInvoiceData');
+        this.router.navigate(['/dashboard'], { queryParams: { category: 'invoices' } });
+      }
+    } else {
+      // For saved invoices, just go back to dashboard
       this.router.navigate(['/dashboard'], { queryParams: { category: 'invoices' } });
     }
   }

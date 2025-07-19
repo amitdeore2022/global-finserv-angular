@@ -394,7 +394,7 @@
     <!-- Action Buttons -->
     <div class="action-buttons">
       <button type="button" class="cancel-btn" (click)="goBack()">Cancel</button>
-      <button type="button" class="preview-btn" (click)="isEditMode ? saveInvoice() : previewInvoice()">
+      <button type="button" class="preview-btn" (click)="isEditMode ? updateAndPreview() : previewInvoice()">
         {{ isEditMode ? 'Update Invoice' : 'Preview Invoice' }}
       </button>
     </div>

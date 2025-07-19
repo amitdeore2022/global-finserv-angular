@@ -178,7 +178,7 @@ export class CreateInvoiceComponent implements OnInit {
     // Load existing customers
     this.loadCustomers();
     
-    // Check if we're in edit mode
+    // Check if we're in edit mode or restoring from preview
     this.route.queryParams.subscribe(params => {
       if (params['edit']) {
         this.isEditMode = true;
@@ -186,8 +186,38 @@ export class CreateInvoiceComponent implements OnInit {
         if (this.editInvoiceId) {
           this.loadInvoiceForEdit(this.editInvoiceId);
         }
+      } else if (params['mode'] === 'edit') {
+        // Check if there's edit data from preview mode
+        this.restoreFromPreviewEdit();
       }
     });
+  }
+
+  private restoreFromPreviewEdit() {
+    try {
+      const editData = sessionStorage.getItem('editInvoiceData');
+      if (editData) {
+        const data = JSON.parse(editData);
+        
+        // Restore the invoice data
+        this.invoice = { ...data.invoiceData };
+        this.isEditMode = data.isEditMode;
+        this.editInvoiceId = data.editInvoiceId;
+        
+        // Restore customer selection
+        if (data.invoiceData.customer) {
+          this.invoice.customer = data.invoiceData.customer;
+          this.invoice.customerType = 'existing';
+        }
+        
+        // Clear the stored data
+        sessionStorage.removeItem('editInvoiceData');
+        
+        console.log('Form restored from preview edit:', this.invoice);
+      }
+    } catch (error) {
+      console.error('Error restoring form from preview edit:', error);
+    }
   }
 
   async loadCustomers() {
@@ -464,6 +494,29 @@ export class CreateInvoiceComponent implements OnInit {
     }
   }
 
+  updateAndPreview(): void {
+    if (this.validateInvoice()) {
+      // Prepare updated invoice data for preview
+      const invoiceData = this.prepareInvoiceData();
+      
+      // Store the updated invoice data temporarily in sessionStorage for preview
+      sessionStorage.setItem('tempInvoiceData', JSON.stringify({
+        invoiceData,
+        formData: {
+          invoice: this.invoice,
+          newCustomer: this.newCustomer,
+          isEditMode: this.isEditMode,
+          editInvoiceId: this.editInvoiceId
+        }
+      }));
+      
+      // Navigate to preview page with edit mode
+      this.router.navigate(['/invoice-preview'], { queryParams: { mode: 'preview' } });
+    } else {
+      console.log('Validation failed');
+    }
+  }
+
   private prepareInvoiceData() {
     // Map the form data to match LocalInvoiceService interface
     const customerData = this.invoice.customerType === 'new' ? {
@@ -675,7 +728,12 @@ export class CreateInvoiceComponent implements OnInit {
   }
 
   cancelInvoice(): void {
-    this.router.navigate(['/dashboard']);
+    // Clear any temporary data
+    sessionStorage.removeItem('tempInvoiceData');
+    sessionStorage.removeItem('editInvoiceData');
+    
+    // Navigate back to dashboard
+    this.router.navigate(['/dashboard'], { queryParams: { category: 'invoices' } });
   }
 
   printInvoice(): void {
