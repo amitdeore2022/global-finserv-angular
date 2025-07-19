@@ -1204,6 +1204,10 @@
     padding: 15px;
   }
   
+  .customer-form-container {
+    padding: 15px;
+  }
+  
   .invoice-header {
     flex-direction: column;
     gap: 15px;
@@ -1242,6 +1246,10 @@
     padding: 10px;
   }
   
+  .customer-form-container {
+    padding: 10px;
+  }
+  
   .form-section {
     padding: 15px 10px;
   }
@@ -1253,4 +1261,139 @@
   .payment-summary {
     padding: 15px;
   }
+}
+
+/* New Customer Form Styling - Unified with Main Form */
+.new-customer-form {
+  margin-top: 20px;
+}
+
+.customer-form-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.customer-info-section {
+  background: #ffffff;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e9ecef;
+}
+
+.customer-info-section h3 {
+  color: #2c3e50;
+  margin: 0 0 20px 0;
+  font-size: 1.3rem;
+  font-weight: 600;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #f8f9fa;
+}
+
+.address-info-section {
+  background: #ffffff;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e9ecef;
+}
+
+.address-info-section h3 {
+  color: #2c3e50;
+  margin: 0 0 20px 0;
+  font-size: 1.3rem;
+  font-weight: 600;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #f8f9fa;
+}
+
+.action-section {
+  background: #ffffff;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e9ecef;
+  text-align: center;
+}
+
+.save-customer-btn {
+  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+  min-width: 180px;
+}
+
+.save-customer-btn:hover {
+  background: linear-gradient(135deg, #218838 0%, #1da88a 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(40, 167, 69, 0.4);
+}
+
+.save-customer-btn:active {
+  transform: translateY(0);
+}
+
+/* Form controls within customer sections - inherit main form styling */
+.customer-info-section .form-control,
+.address-info-section .form-control {
+  padding: 14px 16px;
+  border: 2px solid #e9ecef;
+  border-radius: 12px;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.customer-info-section .form-control:focus,
+.address-info-section .form-control:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 4px rgba(0, 123, 255, 0.1);
+  transform: translateY(-1px);
+}
+
+.customer-info-section .form-control:hover,
+.address-info-section .form-control:hover {
+  border-color: #b3d7ff;
+}
+
+.customer-info-section label,
+.address-info-section label {
+  font-weight: 500;
+  color: #495057;
+  margin-bottom: 6px;
+  font-size: 14px;
+}
+
+.customer-info-section .form-group,
+.address-info-section .form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 15px;
+}
+
+.customer-info-section .form-row,
+.address-info-section .form-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+.customer-info-section .form-group.small,
+.address-info-section .form-group.small {
+  max-width: 120px;
 }

@@ -128,90 +128,94 @@
 
       <!-- New Customer Form -->
       <div *ngIf="invoice.customerType === 'new' || showAddCustomerForm" class="new-customer-form">
-        <h4>Add Customer Details</h4>
-        
-        <!-- Customer Type Selection -->
-        <div class="form-group">
-          <label>Customer Type *</label>
-          <div class="radio-group-horizontal">
-            <label class="radio-option">
-              <input type="radio" name="newCustomerType" value="individual" [(ngModel)]="newCustomer.customerType" />
-              Individual
-            </label>
-            <label class="radio-option">
-              <input type="radio" name="newCustomerType" value="company" [(ngModel)]="newCustomer.customerType" />
-              Company
-            </label>
+        <div class="customer-form-container">
+          
+          <!-- Customer Information Section -->
+          <div class="form-section customer-info-section">
+            <h3>👤 Customer Information</h3>
+          
+          <!-- Customer Type Selection -->
+          <div class="form-group">
+            <label>Customer Type *</label>
+            <div class="radio-group">
+              <label class="radio-option">
+                <input type="radio" name="newCustomerType" value="individual" [(ngModel)]="newCustomer.customerType" />
+                <span class="radio-text">Individual</span>
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="newCustomerType" value="company" [(ngModel)]="newCustomer.customerType" />
+                <span class="radio-text">Company</span>
+              </label>
+            </div>
           </div>
-        </div>
 
-        <!-- Individual Customer Name -->
-        <div *ngIf="newCustomer.customerType === 'individual'" class="form-group">
-          <label>Customer Name *</label>
-          <div class="form-row">
+          <!-- Individual Customer Name -->
+          <div *ngIf="newCustomer.customerType === 'individual'" class="form-row">
             <div class="form-group small">
-              <input type="text" [(ngModel)]="newCustomer.prefix" name="prefix" placeholder="Prefix" class="form-control" />
+              <label for="prefix">Prefix</label>
+              <input type="text" [(ngModel)]="newCustomer.prefix" name="prefix" placeholder="Mr./Ms./Dr." class="form-control" />
             </div>
             <div class="form-group">
-              <input type="text" [(ngModel)]="newCustomer.firstName" name="firstName" placeholder="First Name" class="form-control" required />
+              <label for="firstName">First Name *</label>
+              <input type="text" [(ngModel)]="newCustomer.firstName" name="firstName" placeholder="Enter first name" class="form-control" required />
             </div>
           </div>
-        </div>
-        
-        <div *ngIf="newCustomer.customerType === 'individual'" class="form-group">
-          <label for="middleName">Middle Name</label>
-          <input type="text" [(ngModel)]="newCustomer.middleName" name="middleName" placeholder="Enter middle name" class="form-control" />
-        </div>
-        
-        <div *ngIf="newCustomer.customerType === 'individual'" class="form-group">
-          <label for="lastName">Last Name *</label>
-          <input type="text" [(ngModel)]="newCustomer.lastName" name="lastName" placeholder="Enter last name" class="form-control" required />
-        </div>
+          
+          <div *ngIf="newCustomer.customerType === 'individual'" class="form-group">
+            <label for="middleName">Middle Name</label>
+            <input type="text" [(ngModel)]="newCustomer.middleName" name="middleName" placeholder="Enter middle name" class="form-control" />
+          </div>
+          
+          <div *ngIf="newCustomer.customerType === 'individual'" class="form-group">
+            <label for="lastName">Last Name *</label>
+            <input type="text" [(ngModel)]="newCustomer.lastName" name="lastName" placeholder="Enter last name" class="form-control" required />
+          </div>
 
-        <!-- Company Customer Name -->
-        <div *ngIf="newCustomer.customerType === 'company'" class="form-group">
-          <label for="companyName">Company Name *</label>
-          <input type="text" [(ngModel)]="newCustomer.companyName" name="companyName" placeholder="Enter company name" class="form-control" required />
-        </div>
-        
-        <div *ngIf="newCustomer.customerType === 'company'" class="form-group">
-          <label for="companyType">Company Type *</label>
-          <select [(ngModel)]="newCustomer.companyType" name="companyType" class="form-control" required>
-            <option value="">Select Company Type</option>
-            <option *ngFor="let type of companyTypeOptions" [value]="type">{{type}}</option>
-          </select>
-        </div>
+          <!-- Company Customer Name -->
+          <div *ngIf="newCustomer.customerType === 'company'" class="form-group">
+            <label for="companyName">Company Name *</label>
+            <input type="text" [(ngModel)]="newCustomer.companyName" name="companyName" placeholder="Enter company name" class="form-control" required />
+          </div>
+          
+          <div *ngIf="newCustomer.customerType === 'company'" class="form-group">
+            <label for="companyType">Company Type *</label>
+            <select [(ngModel)]="newCustomer.companyType" name="companyType" class="form-control" required>
+              <option value="">Select Company Type</option>
+              <option *ngFor="let type of companyTypeOptions" [value]="type">{{type}}</option>
+            </select>
+          </div>
 
-        <!-- Mobile Number -->
-        <div class="form-group">
-          <label>Mobile Number *</label>
+          <!-- Mobile Number -->
+          <div class="form-group">
+            <label>Mobile Number *</label>
+            <div class="form-row">
+              <div class="form-group small">
+                <select [(ngModel)]="newCustomer.countryCode" name="countryCode" class="form-control">
+                  <option *ngFor="let country of countryCodeOptions" [value]="country.code">{{country.code}} {{country.country}}</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <input type="tel" [(ngModel)]="newCustomer.mobile" name="mobile" placeholder="Enter mobile number" class="form-control" required />
+              </div>
+            </div>
+          </div>
+
+          <!-- GST and Email -->
           <div class="form-row">
-            <div class="form-group small">
-              <select [(ngModel)]="newCustomer.countryCode" name="countryCode" class="form-control">
-                <option *ngFor="let country of countryCodeOptions" [value]="country.code">{{country.code}} {{country.country}}</option>
-              </select>
+            <div class="form-group">
+              <label for="gst">GST Number</label>
+              <input type="text" [(ngModel)]="newCustomer.gst" name="gst" placeholder="Enter GST number" class="form-control" />
             </div>
             <div class="form-group">
-              <input type="tel" [(ngModel)]="newCustomer.mobile" name="mobile" placeholder="Enter mobile number" class="form-control" required />
+              <label for="email">Email Address</label>
+              <input type="email" [(ngModel)]="newCustomer.email" name="email" placeholder="Enter email address" class="form-control" />
             </div>
           </div>
         </div>
 
-        <!-- GST and Email -->
-        <div class="form-row">
-          <div class="form-group">
-            <label for="gst">GST Number</label>
-            <input type="text" [(ngModel)]="newCustomer.gst" name="gst" placeholder="Enter GST number" class="form-control" />
-          </div>
-          <div class="form-group">
-            <label for="email">Email Address</label>
-            <input type="email" [(ngModel)]="newCustomer.email" name="email" placeholder="Enter email address" class="form-control" />
-          </div>
-        </div>
-
-        <!-- Address Section -->
-        <div class="address-section">
-          <h5>Address Information</h5>
+        <!-- Address Information Section -->
+        <div class="form-section address-info-section">
+          <h3>📍 Address Information</h3>
           
           <div class="form-group">
             <label for="addressLine1">Address Line 1 *</label>
@@ -241,9 +245,14 @@
           </div>
         </div>
 
-        <button *ngIf="showAddCustomerForm" type="button" class="save-customer-btn" (click)="addNewCustomer()">
-          Save Customer
-        </button>
+        <!-- Action Button Section -->
+        <div class="form-section action-section">
+          <button *ngIf="showAddCustomerForm" type="button" class="save-customer-btn" (click)="addNewCustomer()">
+            💾 Save Customer
+          </button>
+        </div>
+        
+        </div> <!-- End customer-form-container -->
       </div>
     </div>
 
