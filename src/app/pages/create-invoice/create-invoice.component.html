@@ -83,7 +83,6 @@
             <div class="customer-info">
               <span class="customer-name">{{customer.name}}</span>
               <span class="customer-mobile">{{customer.mobile}}</span>
-              <span class="customer-email">{{customer.email}}</span>
             </div>
           </div>
         </div>
@@ -103,7 +102,6 @@
           <div class="customer-card selected">
             <p><strong>{{invoice.customer.firstName ? (invoice.customer.prefix + ' ' + invoice.customer.firstName + ' ' + invoice.customer.lastName) : invoice.customer.id}}</strong></p>
             <p>Mobile: {{invoice.customer.mobile}}</p>
-            <p>Email: {{invoice.customer.email}}</p>
             <p>Address: {{invoice.customer.address}}</p>
           </div>
         </div>
@@ -333,25 +331,29 @@
           class="add-service-btn" 
           (click)="addServiceToList()"
           [disabled]="!canAddService()">
-          + Add Service
+          Add Service
         </button>
       </div>
     </div>
 
     <!-- Payment Summary -->
-    <div class="form-section">
-      <h3>💰 Payment Summary</h3>
+    <div class="form-section payment-summary-section">
+      <h3 class="section-title">💰 Payment Summary</h3>
       
       <div class="payment-summary">
-        <h4>Payment Details</h4>
+        <div class="payment-header">
+          <h4>Payment Details</h4>
+        </div>
         
-        <div class="summary-row">
-          <span class="label">Total Amount:</span>
-          <span class="amount">₹{{invoice.totalAmount | number:'1.2-2'}}</span>
+        <div class="amount-display">
+          <div class="summary-row total-amount">
+            <span class="label">Total Amount:</span>
+            <span class="amount primary">₹{{invoice.totalAmount | number:'1.2-2'}}</span>
+          </div>
         </div>
         
         <div class="payment-section">
-          <div class="form-group">
+          <div class="form-group compact">
             <label for="advanceReceived">Advance Received</label>
             <input 
               type="number" 
@@ -367,7 +369,7 @@
           </div>
 
           <!-- Payment Type - enabled only if advance > 0 -->
-          <div class="form-group">
+          <div class="form-group compact">
             <label for="paymentType">Payment Type</label>
             <select 
               id="paymentType" 
@@ -381,7 +383,7 @@
           </div>
 
           <!-- Payment Notes -->
-          <div class="form-group">
+          <div class="form-group compact">
             <label for="paymentNotes">Payment Notes</label>
             <textarea 
               id="paymentNotes"
@@ -394,9 +396,11 @@
           </div>
         </div>
         
-        <div class="summary-row total">
-          <span class="label">Balance / Net Payable:</span>
-          <span class="amount">₹{{invoice.balancePayable | number:'1.2-2'}}</span>
+        <div class="balance-section">
+          <div class="summary-row balance-payable">
+            <span class="label">Balance / Net Payable:</span>
+            <span class="amount highlight">₹{{invoice.balancePayable | number:'1.2-2'}}</span>
+          </div>
         </div>
       </div>
     </div>
