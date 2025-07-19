@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
-import { LocalInvoiceService as InvoiceService, Invoice } from '../../services/local-invoice.service';
+import { InvoiceService, Invoice } from '../../services/invoice.service';
 import { PdfGenerationService } from '../../services/pdf-generation.service';
 
 @Component({
@@ -58,6 +58,8 @@ export class InvoicePreviewComponent implements OnInit {
         
         console.log('Preview loaded - Invoice:', this.invoice);
         console.log('Preview loaded - Form data:', this.formData);
+        console.log('🔄 isPreviewMode:', this.isPreviewMode);
+        console.log('✅ invoiceCreated:', this.invoiceCreated);
       } else {
         console.warn('No invoice data found for preview');
         alert('No invoice data found for preview!');
@@ -140,11 +142,18 @@ Thank you for your business! 🙏`;
   }
 
   async createInvoice() {
+    console.log('🚀 createInvoice() called');
+    console.log('📊 Current state - isPreviewMode:', this.isPreviewMode);
+    console.log('📊 Current state - invoice:', this.invoice);
+    console.log('📊 Current state - isCreating:', this.isCreating);
+    
     if (!this.isPreviewMode || !this.invoice || this.isCreating) {
+      console.warn('⚠️ createInvoice conditions not met');
       return;
     }
 
     this.isCreating = true;
+    console.log('💾 Starting invoice creation process...');
 
     try {
       let invoiceId: string;
@@ -157,7 +166,7 @@ Thank you for your business! 🙏`;
         this.invoice.id = invoiceId;
       } else {
         // Generate proper invoice number for new invoices
-        this.invoice.invoiceNumber = await this.invoiceService.generateNextInvoiceNumber();
+        this.invoice.invoiceNumber = await this.invoiceService.generateNextInvoiceNumber(this.invoice.invoiceDate);
         
         // Create new invoice
         invoiceId = await this.invoiceService.addInvoice(this.invoice);

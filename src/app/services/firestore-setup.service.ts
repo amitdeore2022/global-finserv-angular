@@ -1,11 +1,11 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Firestore, collection, addDoc, getDocs, doc, setDoc } from '@angular/fire/firestore';
 
 @Injectable({
   providedIn: 'root'
 })
 export class FirestoreSetupService {
-  constructor(private firestore: Firestore) {}
+  private firestore = inject(Firestore);
 
   async initializeCollections(): Promise<void> {
     try {
@@ -13,7 +13,8 @@ export class FirestoreSetupService {
       
       // Check if collections exist and create sample data if empty
       await this.createSampleCustomerIfNeeded();
-      await this.createSampleInvoiceIfNeeded();
+      // Remove automatic sample invoice creation to avoid number conflicts
+      // await this.createSampleInvoiceIfNeeded();
       
       console.log('✅ Firestore collections initialized successfully');
     } catch (error) {
