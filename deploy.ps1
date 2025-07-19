@@ -9,32 +9,32 @@ Write-Host ""
 function Test-LastCommand {
     param($Message)
     if ($LASTEXITCODE -ne 0) {
-        Write-Host "❌ $Message failed!" -ForegroundColor Red
+        Write-Host "ERROR: $Message failed!" -ForegroundColor Red
         Write-Host "Exiting script due to error." -ForegroundColor Red
         exit 1
     } else {
-        Write-Host "✅ $Message completed successfully!" -ForegroundColor Green
+        Write-Host "SUCCESS: $Message completed successfully!" -ForegroundColor Green
         Write-Host ""
     }
 }
 
 # Step 1: Development Build
-Write-Host "📦 Step 1: Building Angular app (development)..." -ForegroundColor Yellow
+Write-Host "Step 1: Building Angular app (development)..." -ForegroundColor Yellow
 ng build
 Test-LastCommand "Development build"
 
 # Step 2: Production Build
-Write-Host "🚀 Step 2: Building Angular app (production)..." -ForegroundColor Yellow
+Write-Host "Step 2: Building Angular app (production)..." -ForegroundColor Yellow
 ng build --configuration production
 Test-LastCommand "Production build"
 
 # Step 3: Firebase Deploy
-Write-Host "☁️ Step 3: Deploying to Firebase hosting..." -ForegroundColor Yellow
+Write-Host "Step 3: Deploying to Firebase hosting..." -ForegroundColor Yellow
 firebase deploy --only hosting
 Test-LastCommand "Firebase deployment"
 
 # Step 4: Git Operations
-Write-Host "📝 Step 4: Committing changes to git..." -ForegroundColor Yellow
+Write-Host "Step 4: Committing changes to git..." -ForegroundColor Yellow
 
 # Check if there are any changes to commit
 $gitStatus = git status --porcelain
@@ -52,19 +52,30 @@ if ($gitStatus) {
     Test-LastCommand "Git commit"
     
     Write-Host "Pushing changes to remote repository..." -ForegroundColor Cyan
-    git push
-    Test-LastCommand "Git push"
+    
+    # Check if upstream is set, if not set it
+    $currentBranch = git rev-parse --abbrev-ref HEAD
+    $upstream = git rev-parse --abbrev-ref --symbolic-full-name "@{u}" 2>$null
+    
+    if (-not $upstream) {
+        Write-Host "Setting upstream for branch: $currentBranch" -ForegroundColor Yellow
+        git push --set-upstream origin $currentBranch
+        Test-LastCommand "Git push with upstream setup"
+    } else {
+        git push
+        Test-LastCommand "Git push"
+    }
 } else {
     Write-Host "No changes detected in git. Skipping commit." -ForegroundColor Yellow
 }
 
 # Success message
 Write-Host ""
-Write-Host "🎉 SUCCESS! All operations completed successfully!" -ForegroundColor Green
-Write-Host "✅ Development build completed" -ForegroundColor Green
-Write-Host "✅ Production build completed" -ForegroundColor Green
-Write-Host "✅ Firebase deployment completed" -ForegroundColor Green
-Write-Host "✅ Git operations completed" -ForegroundColor Green
+Write-Host "SUCCESS! All operations completed successfully!" -ForegroundColor Green
+Write-Host "- Development build completed" -ForegroundColor Green
+Write-Host "- Production build completed" -ForegroundColor Green
+Write-Host "- Firebase deployment completed" -ForegroundColor Green
+Write-Host "- Git operations completed" -ForegroundColor Green
 Write-Host ""
 Write-Host "Your application has been successfully built, deployed, and committed to git!" -ForegroundColor Cyan
 Write-Host "=== Deployment Complete ===" -ForegroundColor Cyan

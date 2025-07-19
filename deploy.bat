@@ -71,11 +71,25 @@ if %size% gtr 0 (
     )
     
     echo Pushing changes to remote repository...
-    git push
+    
+    :: Check if current branch has upstream
+    git rev-parse --abbrev-ref --symbolic-full-name @{u} >nul 2>&1
     if errorlevel 1 (
-        echo ERROR: Git push failed!
-        pause
-        exit /b 1
+        echo Setting upstream for current branch...
+        for /f "tokens=*" %%i in ('git rev-parse --abbrev-ref HEAD') do set current_branch=%%i
+        git push --set-upstream origin %current_branch%
+        if errorlevel 1 (
+            echo ERROR: Git push with upstream setup failed!
+            pause
+            exit /b 1
+        )
+    ) else (
+        git push
+        if errorlevel 1 (
+            echo ERROR: Git push failed!
+            pause
+            exit /b 1
+        )
     )
     echo SUCCESS: Git operations completed!
 ) else (
