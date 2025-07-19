@@ -1,7 +1,8 @@
 // src/app/app.component.ts
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { RouterOutlet, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { MigrationService } from './services/migration.service';
 
 @Component({
   selector: 'app-root',
@@ -10,8 +11,30 @@ import { CommonModule } from '@angular/common';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent {
-  constructor(private router: Router) {}
+export class AppComponent implements OnInit {
+  constructor(
+    private router: Router,
+    private migrationService: MigrationService
+  ) {}
+
+  ngOnInit() {
+    // Clear local storage to ensure we're using Firestore
+    this.clearLegacyData();
+  }
+
+  private clearLegacyData(): void {
+    try {
+      // Clear any legacy local storage data
+      localStorage.removeItem('customers');
+      localStorage.removeItem('invoices');
+      localStorage.removeItem('invoiceCounter');
+      localStorage.removeItem('lastInvoiceNumber');
+      
+      console.log('✅ Legacy local storage data cleared - now using Firestore');
+    } catch (error) {
+      console.warn('Warning: Could not clear local storage:', error);
+    }
+  }
 
   navigateToHome(): void {
     this.router.navigate(['/dashboard']);
