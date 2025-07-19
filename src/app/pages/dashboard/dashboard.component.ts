@@ -18,6 +18,10 @@ export class DashboardComponent implements OnInit {
   activeSection: string | null = null;
   isRevenueMode = false;
   
+  // Coming Soon Popup properties
+  showComingSoonPopup = false;
+  comingSoonFeature = '';
+  
   // Stats properties
   totalRevenue = 0;
   outstandingAmount = 0;
@@ -198,7 +202,22 @@ export class DashboardComponent implements OnInit {
   }
 
   setActiveSection(section: string | null) {
-    this.activeSection = section;
+    // Show coming soon popup for revenue dashboard features
+    const featureNames: { [key: string]: string } = {
+      'monthlyRevenue': 'Monthly Revenue Analytics',
+      'customerRevenue': 'Customer Revenue Analysis', 
+      'revenueReports': 'Revenue Reports & Analytics'
+    };
+    
+    if (section && featureNames[section]) {
+      this.comingSoonFeature = featureNames[section];
+      this.showComingSoonPopup = true;
+    }
+  }
+
+  closeComingSoonPopup() {
+    this.showComingSoonPopup = false;
+    this.comingSoonFeature = '';
   }
 
   get totalDueAmount(): number {

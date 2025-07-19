@@ -218,3 +218,50 @@
     </div>
   </div>
 </div>
+
+<!-- Coming Soon Popup Modal -->
+<div *ngIf="showComingSoonPopup" class="coming-soon-overlay" (click)="closeComingSoonPopup()">
+  <div class="coming-soon-modal" (click)="$event.stopPropagation()">
+    <div class="coming-soon-header">
+      <div class="coming-soon-icon">
+        <i class="fas fa-rocket"></i>
+      </div>
+      <button class="close-btn" (click)="closeComingSoonPopup()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="coming-soon-content">
+      <h2>Coming Soon!</h2>
+      <h3>{{ comingSoonFeature }}</h3>
+      <p>We're working hard to bring you this exciting feature. It will include:</p>
+      <ul class="feature-list">
+        <li *ngIf="comingSoonFeature.includes('Monthly')">
+          <i class="fas fa-chart-line"></i> Interactive monthly revenue charts
+        </li>
+        <li *ngIf="comingSoonFeature.includes('Monthly')">
+          <i class="fas fa-calendar-alt"></i> Year-over-year comparisons
+        </li>
+        <li *ngIf="comingSoonFeature.includes('Customer')">
+          <i class="fas fa-users"></i> Customer-wise revenue breakdown
+        </li>
+        <li *ngIf="comingSoonFeature.includes('Customer')">
+          <i class="fas fa-crown"></i> Top customer analytics
+        </li>
+        <li *ngIf="comingSoonFeature.includes('Reports')">
+          <i class="fas fa-file-download"></i> Downloadable PDF reports
+        </li>
+        <li *ngIf="comingSoonFeature.includes('Reports')">
+          <i class="fas fa-filter"></i> Advanced filtering options
+        </li>
+        <li><i class="fas fa-mobile-alt"></i> Mobile-optimized interface</li>
+        <li><i class="fas fa-clock"></i> Real-time data updates</li>
+      </ul>
+      <div class="coming-soon-footer">
+        <p class="timeline">Expected release: <strong>Next Update</strong></p>
+        <button class="notify-btn" (click)="closeComingSoonPopup()">
+          <i class="fas fa-bell"></i> Got it!
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

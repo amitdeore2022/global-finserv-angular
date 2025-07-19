@@ -235,3 +235,99 @@
     </div>
   </div>
 </div>
+
+<!-- Payment Modal -->
+<div *ngIf="showPaymentModal" class="payment-modal-overlay" (click)="closePaymentModal()">
+  <div class="payment-modal" (click)="$event.stopPropagation()">
+    <div class="payment-modal-header">
+      <h3>💰 Record Payment</h3>
+      <button class="close-modal-btn" (click)="closePaymentModal()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+
+    <div class="payment-modal-content" *ngIf="selectedInvoiceForPayment">
+      <!-- Invoice Details -->
+      <div class="payment-invoice-details">
+        <h4>Invoice: {{selectedInvoiceForPayment.invoiceNumber}}</h4>
+        <p><strong>Customer:</strong> {{selectedInvoiceForPayment.customer.name}}</p>
+        <p><strong>Total Amount:</strong> ₹{{selectedInvoiceForPayment.totalAmount | number:'1.2-2'}}</p>
+        <p><strong>Already Paid:</strong> ₹{{selectedInvoiceForPayment.advanceReceived | number:'1.2-2'}}</p>
+        <p class="remaining-amount"><strong>Remaining:</strong> ₹{{selectedInvoiceForPayment.balancePayable | number:'1.2-2'}}</p>
+      </div>
+
+      <!-- Payment Form -->
+      <form class="payment-form" (ngSubmit)="submitPayment()">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="paymentAmount">Payment Amount *</label>
+            <input 
+              type="number" 
+              id="paymentAmount"
+              [(ngModel)]="paymentForm.amount"
+              name="paymentAmount"
+              min="0.01"
+              [max]="selectedInvoiceForPayment.balancePayable"
+              step="0.01"
+              placeholder="Enter amount"
+              class="form-control"
+              required>
+          </div>
+          <div class="form-group">
+            <label for="paymentType">Payment Method *</label>
+            <select 
+              id="paymentType" 
+              [(ngModel)]="paymentForm.paymentType" 
+              name="paymentType"
+              class="form-control"
+              required>
+              <option *ngFor="let type of paymentTypes" [value]="type">{{type}}</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="paymentDate">Payment Date *</label>
+            <input 
+              type="date" 
+              id="paymentDate"
+              [(ngModel)]="paymentForm.paymentDate"
+              name="paymentDate"
+              class="form-control"
+              required>
+          </div>
+          <div class="form-group">
+            <label for="paymentReference">Reference/Transaction ID</label>
+            <input 
+              type="text" 
+              id="paymentReference"
+              [(ngModel)]="paymentForm.reference"
+              name="paymentReference"
+              placeholder="e.g., UPI Ref, Cheque No."
+              class="form-control">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="paymentNotes">Notes (Optional)</label>
+          <textarea 
+            id="paymentNotes"
+            [(ngModel)]="paymentForm.notes"
+            name="paymentNotes"
+            placeholder="Additional notes about this payment..."
+            class="form-control"
+            rows="3">
+          </textarea>
+        </div>
+
+        <div class="payment-modal-actions">
+          <button type="button" class="cancel-btn" (click)="closePaymentModal()">Cancel</button>
+          <button type="submit" class="submit-payment-btn">
+            <i class="fas fa-check"></i> Record Payment
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

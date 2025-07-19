@@ -28,6 +28,18 @@ export class ViewInvoicesComponent implements OnInit {
   // Track expanded cards
   expandedCards: Set<string> = new Set();
 
+  // Payment Modal Properties
+  showPaymentModal: boolean = false;
+  selectedInvoiceForPayment: Invoice | null = null;
+  paymentForm = {
+    amount: 0,
+    paymentType: 'Cash',
+    paymentDate: '',
+    notes: '',
+    reference: ''
+  };
+  paymentTypes = ['Cash', 'Bank Transfer', 'UPI', 'Cheque', 'Card', 'Online'];
+
   constructor(
     private invoiceService: InvoiceService,
     private router: Router,
@@ -274,24 +286,56 @@ Thank you for your business! 🙏`;
       return;
     }
 
-    const paymentAmount = prompt(`Enter payment amount (Remaining: ₹${remainingAmount.toLocaleString('en-IN')}):`, remainingAmount.toString());
-    
-    if (paymentAmount === null) return; // User cancelled
-    
-    const amount = parseFloat(paymentAmount);
-    
-    if (isNaN(amount) || amount <= 0) {
+    // Set up the payment modal
+    this.selectedInvoiceForPayment = invoice;
+    this.paymentForm = {
+      amount: remainingAmount, // Pre-fill with remaining amount
+      paymentType: 'Cash',
+      paymentDate: new Date().toISOString().split('T')[0], // Today's date
+      notes: '',
+      reference: ''
+    };
+    this.showPaymentModal = true;
+  }
+
+  closePaymentModal() {
+    this.showPaymentModal = false;
+    this.selectedInvoiceForPayment = null;
+    this.resetPaymentForm();
+  }
+
+  resetPaymentForm() {
+    this.paymentForm = {
+      amount: 0,
+      paymentType: 'Cash',
+      paymentDate: '',
+      notes: '',
+      reference: ''
+    };
+  }
+
+  async submitPayment() {
+    if (!this.selectedInvoiceForPayment) return;
+
+    // Validation
+    if (!this.paymentForm.amount || this.paymentForm.amount <= 0) {
       alert('Please enter a valid payment amount!');
       return;
     }
 
-    if (amount > remainingAmount) {
+    if (this.paymentForm.amount > this.selectedInvoiceForPayment.balancePayable) {
       alert('Payment amount cannot exceed the remaining balance!');
       return;
     }
 
+    if (!this.paymentForm.paymentDate) {
+      alert('Please select a payment date!');
+      return;
+    }
+
     try {
-      const newAdvanceReceived = invoice.advanceReceived + amount;
+      const invoice = this.selectedInvoiceForPayment;
+      const newAdvanceReceived = invoice.advanceReceived + this.paymentForm.amount;
       const newBalancePayable = invoice.totalAmount - newAdvanceReceived;
       let newStatus: 'PENDING' | 'PAID' | 'PARTIAL' = 'PARTIAL';
       
@@ -301,14 +345,20 @@ Thank you for your business! 🙏`;
         newStatus = 'PENDING';
       }
 
-      this.invoiceService.updateInvoice(invoiceId, {
+      // Create payment record note
+      const paymentNote = `Payment: ₹${this.paymentForm.amount.toLocaleString('en-IN')} via ${this.paymentForm.paymentType} on ${this.paymentForm.paymentDate}${this.paymentForm.reference ? ` (Ref: ${this.paymentForm.reference})` : ''}${this.paymentForm.notes ? ` - ${this.paymentForm.notes}` : ''}`;
+
+      await this.invoiceService.updateInvoice(invoice.id!, {
         advanceReceived: newAdvanceReceived,
         balancePayable: newBalancePayable,
         status: newStatus
-      }).then(() => {
-        this.loadInvoices();
-        alert(`Payment of ₹${amount.toLocaleString('en-IN')} added successfully!`);
       });
+
+      // Close modal and refresh data
+      this.closePaymentModal();
+      await this.loadInvoices();
+      
+      alert(`Payment of ₹${this.paymentForm.amount.toLocaleString('en-IN')} recorded successfully!`);
     } catch (error) {
       console.error('Error adding payment:', error);
       alert('Error adding payment. Please try again.');
