@@ -2,8 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
-import { LocalCustomerService, Customer } from '../../services/local-customer.service';
-import { LocalInvoiceService as InvoiceService, Invoice } from '../../services/local-invoice.service';
+import { CustomerService, Customer } from '../../services/customer.service';
+import { InvoiceService, Invoice } from '../../services/invoice.service';
 import { PdfGenerationService } from '../../services/pdf-generation.service';
 import { SimpleLedgerService } from '../../services/simple-ledger.service';
 
@@ -34,7 +34,7 @@ export class ViewCustomerComponent implements OnInit {
 
   constructor(
     private router: Router,
-    private customerService: LocalCustomerService,
+    private customerService: CustomerService,
     private invoiceService: InvoiceService,
     private pdfService: PdfGenerationService,
     private ledgerService: SimpleLedgerService
@@ -47,10 +47,14 @@ export class ViewCustomerComponent implements OnInit {
   async loadCustomersWithStats() {
     try {
       this.isLoading = true;
+      console.log('Loading customers and invoices from Firestore...');
       
       // Load customers and invoices
       const customers = await this.customerService.getCustomers();
+      console.log('Loaded customers:', customers);
+      
       this.allInvoices = await this.invoiceService.getInvoices();
+      console.log('Loaded invoices:', this.allInvoices);
       
       // Calculate stats for each customer
       this.customers = customers.map(customer => {
@@ -82,6 +86,12 @@ export class ViewCustomerComponent implements OnInit {
     } finally {
       this.isLoading = false;
     }
+  }
+
+  // Method to refresh data
+  async refreshData() {
+    console.log('Refreshing customer data...');
+    await this.loadCustomersWithStats();
   }
 
   // Calculated totals for filtered customers

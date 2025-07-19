@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule, ActivatedRoute } from '@angular/router';
-import { LocalInvoiceService as InvoiceService, Invoice } from '../../services/local-invoice.service';
+import { InvoiceService, Invoice } from '../../services/invoice.service';
 import { PdfGenerationService } from '../../services/pdf-generation.service';
 
 @Component({

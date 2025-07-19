@@ -1,9 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+                                                                                                                                                                                                                                                                                      import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
-import { LocalInvoiceService } from '../../services/local-invoice.service';
-import { LocalCustomerService, Customer as LocalCustomer } from '../../services/local-customer.service';
+import { InvoiceService } from '../../services/invoice.service';
+import { CustomerService, Customer as FirestoreCustomer } from '../../services/customer.service';
 
 interface Customer {
   id: string;
@@ -72,9 +72,9 @@ export class CreateInvoiceComponent implements OnInit {
   };
 
   // Sample existing customers (in real app, this would come from a service)
-  existingCustomers: LocalCustomer[] = [];
+  existingCustomers: FirestoreCustomer[] = [];
 
-  searchResults: LocalCustomer[] = [];
+  searchResults: FirestoreCustomer[] = [];
   showAddCustomerForm = false;
   showCustomerSearch = false;
 
@@ -162,8 +162,8 @@ export class CreateInvoiceComponent implements OnInit {
   constructor(
     private router: Router,
     private route: ActivatedRoute,
-    private invoiceService: LocalInvoiceService,
-    private customerService: LocalCustomerService
+    private invoiceService: InvoiceService,
+    private customerService: CustomerService
   ) {
     this.calculateTotals();
   }
@@ -412,8 +412,8 @@ export class CreateInvoiceComponent implements OnInit {
     );
   }
 
-  selectCustomer(customer: LocalCustomer): void {
-    // Convert LocalCustomer to the format needed by the form
+  selectCustomer(customer: FirestoreCustomer): void {
+    // Convert FirestoreCustomer to the format needed by the form
     this.invoice.customer = {
       id: customer.id!,
       prefix: '',
@@ -465,8 +465,8 @@ export class CreateInvoiceComponent implements OnInit {
         const fullMobile = `${this.newCustomer.countryCode} ${this.newCustomer.mobile}`;
         const fullAddress = `${this.newCustomer.addressLine1}, ${this.newCustomer.village}${this.newCustomer.taluka ? ', ' + this.newCustomer.taluka : ''}, ${this.newCustomer.district}${this.newCustomer.pinCode ? ', ' + this.newCustomer.pinCode : ''}`;
         
-        // Create LocalCustomer object for the service
-        const customerData: Omit<LocalCustomer, 'id'> = {
+        // Create FirestoreCustomer object for the service
+        const customerData: Omit<FirestoreCustomer, 'id'> = {
           name: fullName,
           mobile: fullMobile,
           email: this.newCustomer.email || '',
@@ -479,14 +479,19 @@ export class CreateInvoiceComponent implements OnInit {
         const customerId = await this.customerService.addCustomer(customerData);
         
         // Create the full customer object for local use
-        const newCustomer: LocalCustomer = {
+        const newCustomer: FirestoreCustomer = {
           id: customerId,
           ...customerData
         };
         
-        // Add to local array and set as selected
-        this.existingCustomers.push(newCustomer);
-        this.selectCustomer(newCustomer);
+        // Reload customers from Firestore to ensure consistency
+        await this.loadCustomers();
+        
+        // Find and select the newly added customer
+        const addedCustomer = this.existingCustomers.find(c => c.id === customerId);
+        if (addedCustomer) {
+          this.selectCustomer(addedCustomer);
+        }
         
         this.showAddCustomerForm = false;
           // Reset new customer form

@@ -3,10 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule, ActivatedRoute } from '@angular/router';
 import { PdfGenerationService } from '../../services/pdf-generation.service';
-// import { CustomerService, Customer } from '../../services/customer.service';
-import { LocalCustomerService as CustomerService, Customer } from '../../services/local-customer.service';
-// import { InvoiceService, Invoice } from '../../services/invoice.service';
-import { LocalInvoiceService as InvoiceService, Invoice } from '../../services/local-invoice.service';
+import { CustomerService, Customer } from '../../services/customer.service';
+import { InvoiceService, Invoice } from '../../services/invoice.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -165,7 +163,7 @@ export class DashboardComponent implements OnInit {
     this.calculateStats();
     
     // Generate initial invoice number for dashboard invoice form
-    this.invoice.invoiceNumber = await this.invoiceService.generateNextInvoiceNumber();
+    this.invoice.invoiceNumber = await this.invoiceService.generateNextInvoiceNumber(this.invoice.invoiceDate);
   }
 
   async loadCustomers() {
@@ -287,7 +285,7 @@ export class DashboardComponent implements OnInit {
 
   // Invoice-related methods
   async generateInvoiceNumber(): Promise<string> {
-    return await this.invoiceService.generateNextInvoiceNumber();
+    return await this.invoiceService.generateNextInvoiceNumber(this.invoice.invoiceDate);
   }
 
   getCurrentDate(): string {

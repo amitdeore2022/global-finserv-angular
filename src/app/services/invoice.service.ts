@@ -155,4 +155,46 @@ export class InvoiceService {
       return 0;
     }
   }
+
+  // Generate next invoice number
+  async generateNextInvoiceNumber(invoiceDate: string): Promise<string> {
+    try {
+      const invoices = await this.getInvoices();
+      const currentDate = new Date(invoiceDate);
+      const year = currentDate.getFullYear();
+      const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+      const yearMonth = `${year}${month}`;
+      
+      // Filter invoices for the current year-month
+      const currentMonthInvoices = invoices.filter(invoice => {
+        const invoiceDateParts = invoice.invoiceDate.split('-');
+        const invoiceYear = invoiceDateParts[0];
+        const invoiceMonth = invoiceDateParts[1];
+        return `${invoiceYear}${invoiceMonth}` === yearMonth;
+      });
+      
+      // Find the highest sequence number for this month
+      let maxSequence = 0;
+      currentMonthInvoices.forEach(invoice => {
+        const match = invoice.invoiceNumber.match(/INV-\d{6}-(\d{4})/);
+        if (match) {
+          const sequence = parseInt(match[1], 10);
+          maxSequence = Math.max(maxSequence, sequence);
+        }
+      });
+      
+      // Generate next sequence number
+      const nextSequence = maxSequence + 1;
+      const sequenceStr = String(nextSequence).padStart(4, '0');
+      
+      return `INV-${yearMonth}-${sequenceStr}`;
+    } catch (error) {
+      console.error('Error generating invoice number:', error);
+      // Fallback to basic format
+      const currentDate = new Date(invoiceDate);
+      const year = currentDate.getFullYear();
+      const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+      return `INV-${year}${month}-0001`;
+    }
+  }
 }

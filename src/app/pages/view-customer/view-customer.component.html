@@ -2,6 +2,9 @@
   <div class="header">
     <button class="back-btn" (click)="goBack()">← Back to Dashboard</button>
     <h2>View Customers</h2>
+    <button class="refresh-btn" (click)="refreshData()" title="Refresh Data">
+      <i class="fas fa-sync-alt"></i> Refresh
+    </button>
   </div>
 
   <div *ngIf="isLoading" class="loading">
