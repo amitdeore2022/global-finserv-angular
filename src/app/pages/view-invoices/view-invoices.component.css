@@ -1083,7 +1083,12 @@
   display: grid;
   grid-template-columns: 2fr 2fr 1.5fr;
   gap: 15px;
-  margin-bottom: 20px;
+  margin-bottom: 15px;
+}
+
+/* For two-column layout in optional fields */
+.compact-form-row:last-of-type {
+  grid-template-columns: 1fr 1fr;
 }
 
 .payment-form {
@@ -1189,6 +1194,10 @@
   .compact-form-row {
     grid-template-columns: 1fr;
     gap: 15px;
+  }
+  
+  .compact-form-row:last-of-type {
+    grid-template-columns: 1fr;
   }
   
   .payment-modal-actions {

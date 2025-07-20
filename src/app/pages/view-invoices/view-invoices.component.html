@@ -284,6 +284,30 @@
           </div>
         </div>
 
+        <!-- Optional fields row -->
+        <div class="compact-form-row">
+          <div class="form-group">
+            <label for="paymentReference">Reference</label>
+            <input 
+              type="text" 
+              id="paymentReference"
+              [(ngModel)]="paymentForm.reference"
+              name="paymentReference"
+              placeholder="Transaction ID"
+              class="form-control">
+          </div>
+          <div class="form-group">
+            <label for="paymentNotes">Notes</label>
+            <input 
+              type="text" 
+              id="paymentNotes"
+              [(ngModel)]="paymentForm.notes"
+              name="paymentNotes"
+              placeholder="Payment notes"
+              class="form-control">
+          </div>
+        </div>
+
         <div class="payment-modal-actions">
           <button type="button" class="cancel-btn" (click)="closePaymentModal()" [disabled]="isProcessingPayment">Cancel</button>
           <button type="submit" class="submit-payment-btn" [disabled]="isProcessingPayment">

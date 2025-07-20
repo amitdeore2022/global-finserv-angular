@@ -161,10 +161,11 @@ export class PdfGenerationService {
         }
       }
       
-      // Amount column - right aligned with proper padding (fixed boundary)
-      const amountText = '₹' + this.formatAmount(service.amount);
+      // Amount column - right aligned with proper padding (well within boundary)
+      const formattedAmount = this.formatAmount(service.amount);
+      const amountText = `₹${formattedAmount}`;
       const amountWidth = doc.getTextWidth(amountText);
-      const rightEdge = 192; // Right edge of amount column (145 + 50 - 3 padding)
+      const rightEdge = 185; // Column ends at 195, more padding for safety
       doc.text(amountText, rightEdge - amountWidth, currentY + 8);
       
       currentY += rowHeight;
@@ -194,9 +195,10 @@ export class PdfGenerationService {
     
     doc.setFont('helvetica', 'bold');
     doc.text('TOTAL', 142, currentY + 8);
-    const totalText = '₹' + this.formatAmount(invoice.totalAmount);
+    const formattedTotal = this.formatAmount(invoice.totalAmount);
+    const totalText = `₹${formattedTotal}`;
     const totalWidth = doc.getTextWidth(totalText);
-    const rightEdge = 192; // Fixed right edge position to match amount column
+    const rightEdge = 185; // Matching the amount column alignment
     doc.text(totalText, rightEdge - totalWidth, currentY + 8);
     
     currentY += totalRowHeight;
@@ -237,10 +239,13 @@ export class PdfGenerationService {
     doc.text('Net Bal.', 137, currentY + 16);
     
     doc.setFont('helvetica', 'normal');
-    const rightEdgePayment = 192; // Fixed right edge for payment section to match amount column
-    let advanceText = '₹' + this.formatAmount(invoice.advanceReceived);
-    let billAmtText = '₹' + this.formatAmount(invoice.totalAmount);
-    let netBalText = '₹' + this.formatAmount(invoice.balancePayable);
+    const rightEdgePayment = 185; // Matching amount column alignment with proper padding
+    const formattedAdvance = this.formatAmount(invoice.advanceReceived);
+    const formattedBillAmt = this.formatAmount(invoice.totalAmount);
+    const formattedNetBal = this.formatAmount(invoice.balancePayable);
+    let advanceText = `₹${formattedAdvance}`;
+    let billAmtText = `₹${formattedBillAmt}`;
+    let netBalText = `₹${formattedNetBal}`;
     
     doc.text(advanceText, rightEdgePayment - doc.getTextWidth(advanceText), currentY + 4);
     doc.text(billAmtText, rightEdgePayment - doc.getTextWidth(billAmtText), currentY + 10);
@@ -435,10 +440,11 @@ export class PdfGenerationService {
           }
         }
         
-        // Amount column - right aligned with fixed boundary
-        const amountText = '₹' + this.formatAmount(service.amount);
+        // Amount column - right aligned with fixed boundary and proper padding
+        const formattedAmount = this.formatAmount(service.amount);
+        const amountText = `₹${formattedAmount}`;
         const amountWidth = doc.getTextWidth(amountText);
-        doc.text(amountText, 192 - amountWidth, currentY + 8);
+        doc.text(amountText, 185 - amountWidth, currentY + 8); // Column ends at 195, so 185 for more padding
         
         currentY += rowHeight;
       });
@@ -463,7 +469,8 @@ export class PdfGenerationService {
       
       doc.setFont('helvetica', 'bold');
       doc.text('TOTAL', 152, currentY + 8);
-      const totalText = '₹' + this.formatAmount(invoice.totalAmount);
+      const formattedTotal = this.formatAmount(invoice.totalAmount);
+      const totalText = `₹${formattedTotal}`;
       const totalWidth = doc.getTextWidth(totalText);
       doc.text(totalText, 192 - totalWidth, currentY + 8);
       
@@ -494,9 +501,12 @@ export class PdfGenerationService {
       doc.text('Net Bal.', 137, currentY + 18);
       
       doc.setFont('helvetica', 'normal');
-      let advanceText = '₹' + this.formatAmount(invoice.advanceReceived);
-      let billAmtText = '₹' + this.formatAmount(invoice.totalAmount);
-      let netBalText = '₹' + this.formatAmount(invoice.balancePayable);
+      const formattedAdvance = this.formatAmount(invoice.advanceReceived);
+      const formattedBillAmt = this.formatAmount(invoice.totalAmount);
+      const formattedNetBal = this.formatAmount(invoice.balancePayable);
+      let advanceText = `₹${formattedAdvance}`;
+      let billAmtText = `₹${formattedBillAmt}`;
+      let netBalText = `₹${formattedNetBal}`;
       
       doc.text(advanceText, 192 - doc.getTextWidth(advanceText), currentY + 4);
       doc.text(billAmtText, 192 - doc.getTextWidth(billAmtText), currentY + 11);
@@ -813,11 +823,7 @@ Global Financial Services
   private formatAmount(amount: number): string {
     // Ensure clean number formatting without any extra characters
     const cleanAmount = Number(amount) || 0;
-    return cleanAmount.toLocaleString('en-IN', { 
-      minimumFractionDigits: 2, 
-      maximumFractionDigits: 2,
-      useGrouping: true
-    });
+    return cleanAmount.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   }
   
   private convertAmountToWords(amount: number): string {
