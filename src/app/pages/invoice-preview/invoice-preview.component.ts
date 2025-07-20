@@ -117,7 +117,10 @@ export class InvoicePreviewComponent implements OnInit {
 📊 Status: *${this.invoice!.status}*
 
 💼 *Services:*
-${this.invoice!.serviceDetails.map((service, index) => `${index + 1}. ${service.description} - ₹${service.amount.toLocaleString('en-IN')}`).join('\n')}
+${this.invoice!.serviceDetails.map((service, index) => {
+  const description = this.getServiceDescription(service);
+  return `${index + 1}. ${description} - ₹${service.amount.toLocaleString('en-IN')}`;
+}).join('\n')}
 
 🏦 *Payment:*
 ${this.invoice!.selectedBank}
@@ -125,8 +128,6 @@ ${this.invoice!.selectedBank}
 📱 *GLOBAL FINANCIAL SERVICES*
 ☎️ 9623736781 | 9604722533
 📍 Nashik - 422003
-
-📄 PDF invoice downloaded to your device. Please attach it manually in WhatsApp by clicking the attachment (📎) button.
 
 Thank you for your business! 🙏`;
 

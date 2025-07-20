@@ -15,9 +15,11 @@ export interface Invoice {
   };
   serviceDetails: Array<{
     description: string;
+    customDescription?: string;
     quantity: number;
     rate: number;
     amount: number;
+    notes?: string;
   }>;
   totalAmount: number;
   advanceReceived: number;
