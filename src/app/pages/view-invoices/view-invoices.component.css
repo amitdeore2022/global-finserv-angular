@@ -989,8 +989,9 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000;
+  z-index: 9999;
   backdrop-filter: blur(2px);
+  overflow-y: auto;
 }
 
 .payment-modal {
@@ -998,8 +999,8 @@
   border-radius: 12px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
   width: 90%;
-  max-width: 500px;
-  max-height: 70vh;
+  max-width: 450px;
+  max-height: 65vh;
   animation: modalSlideIn 0.3s ease-out;
 }
 
@@ -1018,7 +1019,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px 25px;
+  padding: 15px 20px;
   border-bottom: 1px solid #e9ecef;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
@@ -1027,7 +1028,7 @@
 
 .payment-modal-header h3 {
   margin: 0;
-  font-size: 1.5rem;
+  font-size: 1.3rem;
   font-weight: 600;
 }
 
@@ -1047,14 +1048,14 @@
 }
 
 .payment-modal-content {
-  padding: 25px;
+  padding: 15px 20px;
 }
 
 .payment-invoice-details {
   background: #f8f9fa;
-  padding: 15px;
+  padding: 10px 15px;
   border-radius: 8px;
-  margin-bottom: 20px;
+  margin-bottom: 15px;
   border-left: 4px solid #28a745;
 }
 
@@ -1063,38 +1064,33 @@
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 8px;
 }
 
 .invoice-info {
   font-weight: 600;
   color: #2c3e50;
-  font-size: 1rem;
+  font-size: 0.95rem;
 }
 
 .remaining-amount {
   color: #e74c3c !important;
   font-weight: bold;
-  font-size: 1.1rem !important;
+  font-size: 1rem !important;
 }
 
-/* Compact form row for payment modal */
-.compact-form-row {
+/* Ultra compact form row for payment modal */
+.ultra-compact-row {
   display: grid;
-  grid-template-columns: 2fr 2fr 1.5fr;
-  gap: 15px;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 10px;
   margin-bottom: 15px;
-}
-
-/* For two-column layout in optional fields */
-.compact-form-row:last-of-type {
-  grid-template-columns: 1fr 1fr;
 }
 
 .payment-form {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 15px;
 }
 
 .payment-form .form-row {
@@ -1110,9 +1106,16 @@
 
 .payment-form label {
   font-weight: 600;
-  margin-bottom: 8px;
+  margin-bottom: 4px;
   color: #2c3e50;
-  font-size: 0.95rem;
+  font-size: 0.85rem;
+}
+
+.payment-form .optional-label {
+  color: #6c757d;
+  font-weight: 400;
+  font-size: 0.75rem;
+  font-style: italic;
 }
 
 .payment-form .form-control {
@@ -1123,10 +1126,19 @@
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-.payment-form .form-control:focus {
+.payment-form .form-control.compact {
+  padding: 8px 10px;
+  border: 2px solid #e9ecef;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.payment-form .form-control:focus,
+.payment-form .form-control.compact:focus {
   outline: none;
   border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1);
 }
 
 .payment-form textarea.form-control {
@@ -1154,6 +1166,11 @@
   transition: background-color 0.3s ease;
 }
 
+.cancel-btn.compact {
+  padding: 10px 20px;
+  font-size: 0.9rem;
+}
+
 .cancel-btn:hover {
   background: #5a6268;
 }
@@ -1170,6 +1187,11 @@
   transition: transform 0.2s ease, box-shadow 0.3s ease;
 }
 
+.submit-payment-btn.compact {
+  padding: 10px 20px;
+  font-size: 0.9rem;
+}
+
 .submit-payment-btn:hover {
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4);
@@ -1181,32 +1203,116 @@
 
 /* Responsive adjustments for payment modal */
 @media (max-width: 768px) {
+  .payment-modal-overlay {
+    padding: 5px;
+    align-items: center;
+    justify-content: center;
+  }
+  
   .payment-modal {
     width: 95%;
-    margin: 20px;
+    max-width: none;
+    margin: 0 auto;
+    max-height: 85vh;
   }
   
   .payment-modal-content {
-    padding: 20px;
+    padding: 12px 15px;
+  }
+  
+  .payment-modal-header {
+    padding: 12px 15px;
   }
   
   .payment-form .form-row,
-  .compact-form-row {
+  .compact-form-row,
+  .ultra-compact-row {
     grid-template-columns: 1fr;
-    gap: 15px;
+    gap: 10px;
   }
   
-  .compact-form-row:last-of-type {
+  .compact-form-row:last-of-type,
+  .ultra-compact-row:last-of-type {
     grid-template-columns: 1fr;
   }
   
   .payment-modal-actions {
-    flex-direction: column-reverse;
-    gap: 10px;
+    flex-direction: row;
+    gap: 8px;
+    margin-top: 10px;
+    padding-top: 10px;
+    position: static;
+    background: none;
+    border-top: none;
+  }
+  
+  .cancel-btn, .submit-payment-btn,
+  .cancel-btn.compact, .submit-payment-btn.compact {
+    flex: 1;
+    padding: 12px 15px;
+    font-size: 0.9rem;
+    border-radius: 6px;
+  }
+  
+  .submit-payment-btn {
+    order: 2;
+  }
+  
+  .cancel-btn {
+    order: 2;
+  }
+}
+
+/* Extra small mobile devices */
+@media (max-width: 480px) {
+  .payment-modal {
+    width: 98%;
+    max-height: 90vh;
+  }
+  
+  .payment-modal-header {
+    padding: 10px 12px;
+  }
+  
+  .payment-modal-header h3 {
+    font-size: 1.1rem;
+  }
+  
+  .payment-modal-content {
+    padding: 8px 10px;
+  }
+  
+  .payment-invoice-details {
+    padding: 6px 10px;
+    margin-bottom: 8px;
+  }
+  
+  .invoice-info {
+    font-size: 0.85rem;
+  }
+  
+  .remaining-amount {
+    font-size: 0.9rem !important;
+  }
+  
+  .payment-form label {
+    font-size: 0.75rem;
+    margin-bottom: 2px;
+  }
+  
+  .payment-form .form-control.compact {
+    padding: 6px 8px;
+    font-size: 0.8rem;
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+  
+  .payment-modal-actions {
+    padding: 12px 0 0 0;
+    margin-top: 15px;
   }
   
   .cancel-btn, .submit-payment-btn {
-    width: 100%;
-    padding: 15px;
+    padding: 14px;
+    font-size: 16px;
   }
 }

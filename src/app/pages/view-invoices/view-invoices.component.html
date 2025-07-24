@@ -236,81 +236,64 @@
     </div>
 
     <div class="payment-modal-content" *ngIf="selectedInvoiceForPayment">
-      <!-- Compact Invoice Details -->
+      <!-- Ultra Compact Invoice Details -->
       <div class="payment-invoice-details">
         <div class="invoice-summary">
-          <span class="invoice-info">{{selectedInvoiceForPayment.invoiceNumber}} - {{selectedInvoiceForPayment.customer.name}}</span>
-          <span class="remaining-amount">Balance: ₹{{selectedInvoiceForPayment.balancePayable | number:'1.2-2'}}</span>
+          <span class="invoice-info">{{selectedInvoiceForPayment.invoiceNumber}}</span>
+          <span class="remaining-amount">₹{{selectedInvoiceForPayment.balancePayable | number:'1.2-2'}}</span>
         </div>
       </div>
 
-      <!-- Compact Payment Form -->
+      <!-- Ultra Compact Payment Form -->
       <form class="payment-form" (ngSubmit)="submitPayment()">
-        <div class="compact-form-row">
+        <div class="ultra-compact-row">
           <div class="form-group">
-            <label for="paymentAmount">Amount *</label>
+            <label>Amount *</label>
             <input 
               type="number" 
-              id="paymentAmount"
               [(ngModel)]="paymentForm.amount"
               name="paymentAmount"
               min="0.01"
               [max]="selectedInvoiceForPayment.balancePayable"
               step="0.01"
               placeholder="₹0.00"
-              class="form-control"
+              class="form-control compact"
               required>
           </div>
           <div class="form-group">
-            <label for="paymentType">Method *</label>
+            <label>Method *</label>
             <select 
-              id="paymentType" 
               [(ngModel)]="paymentForm.paymentType" 
               name="paymentType"
-              class="form-control"
+              class="form-control compact"
               required>
               <option *ngFor="let type of paymentTypes" [value]="type">{{type}}</option>
             </select>
           </div>
           <div class="form-group">
-            <label for="paymentDate">Date *</label>
+            <label>Notes <span class="optional-label">(Optional)</span></label>
+            <input 
+              type="text" 
+              [(ngModel)]="paymentForm.notes"
+              name="paymentNotes"
+              placeholder="Add payment notes..."
+              class="form-control compact"
+              maxlength="200">
+          </div>
+          <div class="form-group">
+            <label>Date *</label>
             <input 
               type="date" 
-              id="paymentDate"
               [(ngModel)]="paymentForm.paymentDate"
               name="paymentDate"
-              class="form-control"
+              class="form-control compact"
               required>
           </div>
         </div>
 
-        <!-- Optional fields row -->
-        <div class="compact-form-row">
-          <div class="form-group">
-            <label for="paymentReference">Reference</label>
-            <input 
-              type="text" 
-              id="paymentReference"
-              [(ngModel)]="paymentForm.reference"
-              name="paymentReference"
-              placeholder="Transaction ID"
-              class="form-control">
-          </div>
-          <div class="form-group">
-            <label for="paymentNotes">Notes</label>
-            <input 
-              type="text" 
-              id="paymentNotes"
-              [(ngModel)]="paymentForm.notes"
-              name="paymentNotes"
-              placeholder="Payment notes"
-              class="form-control">
-          </div>
-        </div>
-
         <div class="payment-modal-actions">
-          <button type="button" class="cancel-btn" (click)="closePaymentModal()" [disabled]="isProcessingPayment">Cancel</button>
-          <button type="submit" class="submit-payment-btn" [disabled]="isProcessingPayment">
+          <button type="button" class="cancel-btn compact" (click)="closePaymentModal()" [disabled]="isProcessingPayment">Cancel</button>
+          <button type="submit" class="submit-payment-btn compact" [disabled]="isProcessingPayment">
             <i class="fas fa-spinner fa-spin" *ngIf="isProcessingPayment"></i>
             <i class="fas fa-check" *ngIf="!isProcessingPayment"></i>
             {{ isProcessingPayment ? 'Processing...' : 'Record Payment' }}
