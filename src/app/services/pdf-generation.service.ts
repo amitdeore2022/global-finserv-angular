@@ -163,7 +163,7 @@ export class PdfGenerationService {
       
       // Amount column - right aligned with proper padding (well within boundary)
       const formattedAmount = this.formatAmount(service.amount);
-      const amountText = `₹${formattedAmount}`;
+      const amountText = `${formattedAmount}`;
       const amountWidth = doc.getTextWidth(amountText);
       const rightEdge = 185; // Column ends at 195, more padding for safety
       doc.text(amountText, rightEdge - amountWidth, currentY + 8);
@@ -196,7 +196,7 @@ export class PdfGenerationService {
     doc.setFont('helvetica', 'bold');
     doc.text('TOTAL', 142, currentY + 8);
     const formattedTotal = this.formatAmount(invoice.totalAmount);
-    const totalText = `₹${formattedTotal}`;
+    const totalText = `${formattedTotal}`;
     const totalWidth = doc.getTextWidth(totalText);
     const rightEdge = 185; // Matching the amount column alignment
     doc.text(totalText, rightEdge - totalWidth, currentY + 8);
@@ -243,9 +243,9 @@ export class PdfGenerationService {
     const formattedAdvance = this.formatAmount(invoice.advanceReceived);
     const formattedBillAmt = this.formatAmount(invoice.totalAmount);
     const formattedNetBal = this.formatAmount(invoice.balancePayable);
-    let advanceText = `₹${formattedAdvance}`;
-    let billAmtText = `₹${formattedBillAmt}`;
-    let netBalText = `₹${formattedNetBal}`;
+    let advanceText = `${formattedAdvance}`;
+    let billAmtText = `${formattedBillAmt}`;
+    let netBalText = `${formattedNetBal}`;
     
     doc.text(advanceText, rightEdgePayment - doc.getTextWidth(advanceText), currentY + 4);
     doc.text(billAmtText, rightEdgePayment - doc.getTextWidth(billAmtText), currentY + 10);
