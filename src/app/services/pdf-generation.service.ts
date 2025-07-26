@@ -31,10 +31,9 @@ export class PdfGenerationService {
       this.generateSecondPage(doc, invoice, maxServicesPerPage);
     }
     
-    // Save the PDF with customer name and invoice number
-    const customerName = invoice.customer.name.replace(/[^a-zA-Z0-9]/g, '_'); // Replace special chars with underscore
-    const fileName = `${customerName}_${invoice.invoiceNumber}.pdf`;
-    doc.save(fileName);
+        // Use customer name and invoice number for filename
+        const safeName = (invoice.customer?.name || 'Customer').replace(/[^a-zA-Z0-9]/g, '_');
+        doc.save(`${safeName}_${invoice.invoiceNumber}.pdf`);
   }
 
   private generateFirstPage(doc: jsPDF, invoice: any, needsSecondPage: boolean): void {
@@ -504,10 +503,36 @@ export class PdfGenerationService {
     return bankDetails[selectedBank] || bankDetails['HDFC Bank'];
   }
 
+    // ...existing code...
+  
+  // Updated shareOnWhatsApp method to use Web Share API if available
   shareOnWhatsApp(invoice: any): void {
-    const message = `Invoice Details:\nInvoice No: ${invoice.invoiceNumber}\nCustomer: ${invoice.customer.name}\nAmount: ${invoice.totalAmount.toLocaleString('en-IN')}\nBalance: ${invoice.balancePayable.toLocaleString('en-IN')}`;
-    const encodedMessage = encodeURIComponent(message);
-    const whatsappUrl = `https://wa.me/?text=${encodedMessage}`;
-    window.open(whatsappUrl, '_blank');
+    // Try Web Share API if available (iOS/Android PWA)
+    const safeName = (invoice.customer?.name || 'Customer').replace(/[^a-zA-Z0-9]/g, '_');
+    const fileName = `${safeName}_${invoice.invoiceNumber}.pdf`;
+    const message = `Invoice Details:\nInvoice No: ${invoice.invoiceNumber}\nCustomer: ${invoice.customer.name}\nAmount: ₹${invoice.totalAmount.toLocaleString('en-IN')}\nBalance: ₹${invoice.balancePayable.toLocaleString('en-IN')}`;
+    // Generate PDF blob
+    const doc = new jsPDF();
+    this.generateInvoicePDF(invoice);
+    const pdfBlob = doc.output('blob');
+    // Web Share API
+    if (navigator.share && navigator.canShare && navigator.canShare({ files: [new File([pdfBlob], fileName, { type: 'application/pdf' })] })) {
+      navigator.share({
+        title: 'Invoice',
+        text: message,
+        files: [new File([pdfBlob], fileName, { type: 'application/pdf' })]
+      }).catch(() => {
+        alert('Sharing cancelled or not supported.');
+      });
+    } else {
+      // Fallback: WhatsApp web link (Android/desktop)
+      const encodedMessage = encodeURIComponent(message);
+      const whatsappUrl = `https://wa.me/?text=${encodedMessage}`;
+      window.open(whatsappUrl, '_blank');
+      // Show info for iOS users
+      if (/iphone|ipad|ipod/i.test(navigator.userAgent)) {
+        alert('On iPhone, you must use the share sheet to send the PDF via WhatsApp. Direct sharing is not supported by iOS PWAs.');
+      }
+    }
   }
 }
