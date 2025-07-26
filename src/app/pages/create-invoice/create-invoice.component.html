@@ -1,7 +1,6 @@
 <div class="create-invoice-container" *ngIf="!showPreview">
   <div class="invoice-header">
     <h2>{{ isEditMode ? 'Edit Invoice' : 'Create Invoice' }}</h2>
-    <button type="button" class="back-btn" (click)="goBack()">← Back to Dashboard</button>
   </div>
 
   <form class="invoice-form">
@@ -319,7 +318,7 @@
           class="add-service-btn" 
           (click)="addServiceToList()"
           [disabled]="!canAddService()">
-          + Add Service
+          Add Service
         </button>
       </div>
 

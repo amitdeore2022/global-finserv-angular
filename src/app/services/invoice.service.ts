@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Firestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, query, orderBy } from '@angular/fire/firestore';
+import { Firestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, query, orderBy, QueryDocumentSnapshot, DocumentData } from '@angular/fire/firestore';
 
 export interface Invoice {
   id?: string;
@@ -34,8 +34,11 @@ export interface Invoice {
 })
 export class InvoiceService {
   private invoicesCollection;
+  private readonly PAGE_SIZE = 10;
 
-  constructor(private firestore: Firestore) {
+  constructor(
+    private firestore: Firestore
+  ) {
     this.invoicesCollection = collection(this.firestore, 'invoices');
   }
 

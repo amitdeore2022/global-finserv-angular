@@ -602,3 +602,27 @@
     font-size: 14px;
   }
 }
+
+/* Bottom Actions */
+.bottom-actions {
+  margin-top: 30px;
+  padding: 20px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.bottom-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 15px;
+  flex-wrap: wrap;
+}
+
+.cancel-note {
+  margin: 0;
+  font-size: 14px;
+  color: #6c757d;
+}
