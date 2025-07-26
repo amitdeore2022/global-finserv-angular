@@ -629,9 +629,15 @@
   border-top: 1px solid #f0f2f5;
 }
 
+.minimal-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
 .payment-btn {
   flex: 1;
-  padding: 10px 12px;
+  padding: 10px 16px;
   border: none;
   border-radius: 8px;
   font-size: 13px;
@@ -642,6 +648,8 @@
   align-items: center;
   justify-content: center;
   gap: 6px;
+  min-width: 120px;
+  height: 40px;
 }
 
 .payment-btn.add-payment-btn {
@@ -651,6 +659,24 @@
 
 .payment-btn.add-payment-btn:hover {
   background-color: #0056b3;
+}
+
+.show-details-btn, .hide-details-btn {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-width: 120px;
+  height: 40px;
 }
 
 .payment-btn.paid-btn {
@@ -732,21 +758,6 @@
 .status-badge.status-partial {
   background-color: #fff3cd;
   color: #856404;
-}
-
-.show-details-btn, .hide-details-btn {
-  background-color: #007bff;
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 13px;
-  font-weight: 500;
-  transition: background-color 0.2s ease;
-  display: flex;
-  align-items: center;
-  gap: 6px;
 }
 
 .show-details-btn:hover, .hide-details-btn:hover {

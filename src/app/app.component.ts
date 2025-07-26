@@ -92,4 +92,10 @@ export class AppComponent implements OnInit {
     const currentUrl = this.router.url;
     return currentUrl === '/login' || currentUrl === '/' || currentUrl === '';
   }
+
+  isDashboardPage(): boolean {
+    // Check if current route is dashboard page
+    const currentUrl = this.router.url;
+    return currentUrl === '/dashboard';
+  }
 }
