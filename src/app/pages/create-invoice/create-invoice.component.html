@@ -1,7 +1,6 @@
 <div class="create-invoice-container" *ngIf="!showPreview">
   <div class="invoice-header">
     <h2>{{ isEditMode ? 'Edit Invoice' : 'Create Invoice' }}</h2>
-    <button type="button" class="back-btn" (click)="goBack()">← Back to Dashboard</button>
   </div>
 
   <form class="invoice-form">
@@ -9,17 +8,6 @@
     <div class="form-section">
       <h3>📋 Invoice Details</h3>
       <div class="form-row">
-        <div class="form-group">
-          <label for="invoiceNumber">Invoice Number</label>
-          <input 
-            type="text" 
-            id="invoiceNumber" 
-            [(ngModel)]="invoice.invoiceNumber" 
-            name="invoiceNumber"
-            class="form-control"
-            readonly
-            title="Invoice number is auto-generated based on selected date">
-        </div>
         <div class="form-group">
           <label for="invoiceDate">Invoice Date</label>
           <input 
@@ -30,6 +18,17 @@
             class="form-control"
             [max]="getCurrentDate()"
             (change)="onInvoiceDateChange()">
+        </div>
+        <div class="form-group">
+          <label for="invoiceNumber">Invoice Number</label>
+          <input 
+            type="text" 
+            id="invoiceNumber" 
+            [(ngModel)]="invoice.invoiceNumber" 
+            name="invoiceNumber"
+            class="form-control"
+            readonly
+            title="Invoice number is auto-generated based on selected date">
         </div>
       </div>
     </div>
@@ -260,27 +259,6 @@
     <div class="form-section">
       <h3>💼 Service Details</h3>
       
-      <!-- Display added services -->
-      <div *ngIf="invoice.serviceDetails.length > 0" class="service-list">
-        <h4>Added Services:</h4>
-        <div *ngFor="let service of invoice.serviceDetails; let i = index" class="service-item-display">
-          <div class="service-details">
-            <h5>{{ getServiceDisplayName(service) }}</h5>
-            <p *ngIf="service.notes">{{ service.notes }}</p>
-          </div>
-          <div class="service-actions">
-            <span class="service-amount">₹{{ service.amount | number:'1.2-2' }}</span>
-            <button 
-              type="button" 
-              class="remove-service-btn"
-              (click)="removeServiceFromList(i)"
-              title="Remove service">
-              ✕
-            </button>
-          </div>
-        </div>
-      </div>
-
       <!-- Add new service form -->
       <div class="add-service-form">
         <h4>{{ invoice.serviceDetails.length > 0 ? 'Add Another Service:' : 'Add Service:' }}</h4>
@@ -342,6 +320,27 @@
           [disabled]="!canAddService()">
           Add Service
         </button>
+      </div>
+
+      <!-- Display added services below the form -->
+      <div *ngIf="invoice.serviceDetails.length > 0" class="service-list">
+        <h4>📋 Added Services:</h4>
+        <div *ngFor="let service of invoice.serviceDetails; let i = index" class="service-item-display">
+          <div class="service-details">
+            <h5>{{ getServiceDisplayName(service) }}</h5>
+            <p *ngIf="service.notes">{{ service.notes }}</p>
+          </div>
+          <div class="service-actions">
+            <span class="service-amount">₹{{ service.amount | number:'1.2-2' }}</span>
+            <button 
+              type="button" 
+              class="remove-service-btn"
+              (click)="removeServiceFromList(i)"
+              title="Remove service">
+              ✕
+            </button>
+          </div>
+        </div>
       </div>
     </div>
 

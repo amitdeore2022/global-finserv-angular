@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Firestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, query, orderBy } from '@angular/fire/firestore';
+import { Firestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, query, orderBy, QueryDocumentSnapshot, DocumentData } from '@angular/fire/firestore';
 
 export interface Customer {
   id?: string;
@@ -9,6 +9,8 @@ export interface Customer {
   email: string;
   address: string;
   dueAmount: number;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 @Injectable({
@@ -16,8 +18,11 @@ export interface Customer {
 })
 export class CustomerService {
   private customersCollection;
+  private readonly PAGE_SIZE = 10;
 
-  constructor(private firestore: Firestore) {
+  constructor(
+    private firestore: Firestore
+  ) {
     this.customersCollection = collection(this.firestore, 'customers');
   }
 
@@ -41,7 +46,7 @@ export class CustomerService {
   // Get all customers
   async getCustomers(): Promise<Customer[]> {
     try {
-      const q = query(this.customersCollection, orderBy('createdAt', 'desc'));
+      const q = query(this.customersCollection, orderBy('createdAt', 'asc'));
       const querySnapshot = await getDocs(q);
       
       return querySnapshot.docs.map(doc => ({
@@ -104,4 +109,6 @@ export class CustomerService {
       throw error;
     }
   }
+
+  // ===== PAGINATED METHODS =====
 }

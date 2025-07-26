@@ -31,10 +31,8 @@ export class PdfGenerationService {
       this.generateSecondPage(doc, invoice, maxServicesPerPage);
     }
     
-    // Save the PDF with customer name and invoice number
-    const customerName = invoice.customer.name.replace(/[^a-zA-Z0-9]/g, '_'); // Replace special chars with underscore
-    const fileName = `${customerName}_${invoice.invoiceNumber}.pdf`;
-    doc.save(fileName);
+    // Save the PDF
+    doc.save(`invoice-${invoice.invoiceNumber}.pdf`);
   }
 
   private generateFirstPage(doc: jsPDF, invoice: any, needsSecondPage: boolean): void {
@@ -197,19 +195,16 @@ export class PdfGenerationService {
     currentY += 8;
     doc.setFont('helvetica', 'normal');
     
-    // Determine which services to show
-    let servicesToShow;
-    if (isFirstPage) {
-      // First page: show up to 8 services
-      servicesToShow = invoice.serviceDetails.slice(0, Math.min(8, invoice.serviceDetails.length));
-    } else {
-      // Second page: show remaining services
-      servicesToShow = invoice.serviceDetails.slice(startIndex);
-    }
+    // Determine services to show
+    const maxServices = isFirstPage ? 8 : (invoice.serviceDetails.length - startIndex);
+    const servicesToShow = isFirstPage ? 
+      Math.min(8, invoice.serviceDetails.length) : 
+      invoice.serviceDetails.slice(startIndex);
     
     // Add service rows
-    servicesToShow.forEach((service: any, index: number) => {
-      const actualServiceIndex = isFirstPage ? index : startIndex + index;
+    for (let i = 0; i < servicesToShow.length; i++) {
+      const serviceIndex = isFirstPage ? i : startIndex + i;
+      const service = isFirstPage ? invoice.serviceDetails[i] : servicesToShow[i];
       const rowHeight = 12;
       
       // Row borders
@@ -221,7 +216,7 @@ export class PdfGenerationService {
       doc.rect(145, currentY, 50, rowHeight);
       
       // Service number
-      doc.text((actualServiceIndex + 1).toString(), 25, currentY + 8);
+      doc.text((serviceIndex + 1).toString(), 25, currentY + 8);
       
       // Service description
       let description = service.description;
@@ -248,9 +243,9 @@ export class PdfGenerationService {
       doc.text(formattedAmount, 190 - amountWidth, currentY + 8);
       
       currentY += rowHeight;
-    });
+    }
     
-    // Add empty rows only on the final page to maintain consistent layout
+    // Add empty rows only on last page
     if (!isFirstPage || invoice.serviceDetails.length <= 8) {
       const minRows = 6;
       const usedRows = servicesToShow.length;
@@ -502,12 +497,5 @@ export class PdfGenerationService {
     };
     
     return bankDetails[selectedBank] || bankDetails['HDFC Bank'];
-  }
-
-  shareOnWhatsApp(invoice: any): void {
-    const message = `Invoice Details:\nInvoice No: ${invoice.invoiceNumber}\nCustomer: ${invoice.customer.name}\nAmount: ${invoice.totalAmount.toLocaleString('en-IN')}\nBalance: ${invoice.balancePayable.toLocaleString('en-IN')}`;
-    const encodedMessage = encodeURIComponent(message);
-    const whatsappUrl = `https://wa.me/?text=${encodedMessage}`;
-    window.open(whatsappUrl, '_blank');
   }
 }

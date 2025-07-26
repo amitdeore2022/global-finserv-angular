@@ -9,9 +9,13 @@
         </div>
       </div>
       <div class="header-actions">
-        <button (click)="navigateToHome()" class="home-btn" *ngIf="showHomeButton()">
-          <i class="fas fa-home"></i>
-          <span>Home</span>
+        <button (click)="navigateToHome()" class="header-btn dashboard-btn" *ngIf="showDashboardButton()">
+          <i class="fas fa-tachometer-alt"></i>
+          <span>Back to Dashboard</span>
+        </button>
+        <button (click)="logout()" class="header-btn logout-btn" *ngIf="isDashboardPage()">
+          <i class="fas fa-sign-out-alt"></i>
+          <span>Logout</span>
         </button>
       </div>
     </div>

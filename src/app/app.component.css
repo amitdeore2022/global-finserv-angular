@@ -38,6 +38,48 @@
 .header-actions {
   display: flex;
   align-items: center;
+  gap: 12px;
+}
+
+.header-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+
+.header-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: translateY(-1px);
+}
+
+.header-btn i {
+  font-size: 16px;
+}
+
+.dashboard-btn:hover {
+  background: rgba(102, 126, 234, 0.3);
+}
+
+.logout-btn {
+  background: #dc3545 !important;
+  border-color: rgba(220, 53, 69, 0.5) !important;
+}
+
+.logout-btn:hover {
+  background: #c82333 !important;
+  border-color: rgba(200, 35, 51, 0.7) !important;
+  transform: translateY(-1px);
 }
 
 .home-btn {

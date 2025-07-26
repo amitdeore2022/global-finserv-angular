@@ -68,6 +68,19 @@ export class AppComponent implements OnInit {
     this.router.navigate(['/dashboard']);
   }
 
+  logout(): void {
+    // Clear any stored authentication data if needed
+    localStorage.clear();
+    sessionStorage.clear();
+    this.router.navigate(['/login']);
+  }
+
+  showDashboardButton(): boolean {
+    // Show dashboard button on all pages except login and the dashboard itself
+    const currentUrl = this.router.url;
+    return currentUrl !== '/login' && currentUrl !== '/dashboard' && currentUrl !== '/' && currentUrl !== '';
+  }
+
   showHomeButton(): boolean {
     // Show home button on all pages except login and the dashboard itself
     const currentUrl = this.router.url;
@@ -78,5 +91,11 @@ export class AppComponent implements OnInit {
     // Check if current route is login page
     const currentUrl = this.router.url;
     return currentUrl === '/login' || currentUrl === '/' || currentUrl === '';
+  }
+
+  isDashboardPage(): boolean {
+    // Check if current route is dashboard page
+    const currentUrl = this.router.url;
+    return currentUrl === '/dashboard';
   }
 }

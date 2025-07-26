@@ -41,6 +41,10 @@ export class ViewInvoicesComponent implements OnInit {
   };
   paymentTypes = ['Cash', 'Bank Transfer', 'UPI', 'Cheque', 'Card', 'Online'];
 
+  // Payment Success Animation Properties
+  showPaymentSuccess: boolean = false;
+  successPaymentAmount: number = 0;
+
   constructor(
     private invoiceService: InvoiceService,
     private router: Router,
@@ -396,7 +400,14 @@ Thank you for your business! 🙏`;
       this.closePaymentModal();
       await this.loadInvoices();
       
-      alert(`Payment of ₹${recordedAmount.toLocaleString('en-IN')} recorded successfully!`);
+      // Show success animation instead of alert
+      this.successPaymentAmount = recordedAmount;
+      this.showPaymentSuccess = true;
+      
+      // Hide success animation after 3 seconds
+      setTimeout(() => {
+        this.showPaymentSuccess = false;
+      }, 3000);
     } catch (error) {
       console.error('Error adding payment:', error);
       alert('Error adding payment. Please try again.');

@@ -17,29 +17,18 @@
         <button 
           (click)="printInvoice()" 
           class="print-btn"
-          [disabled]="isPreviewMode && !invoiceCreated">
+          [disabled]="isPreviewMode && !invoiceCreated"
+          title="Download PDF">
           <i class="fas fa-download"></i>
-          Download
+          <span>Download</span>
         </button>
         <button 
           (click)="shareOnWhatsApp()" 
           class="whatsapp-btn"
-          [disabled]="isPreviewMode && !invoiceCreated">
+          [disabled]="isPreviewMode && !invoiceCreated"
+          title="Share on WhatsApp">
           <i class="fab fa-whatsapp"></i>
-          WhatsApp
-        </button>
-        <button (click)="editInvoice()" class="edit-btn">
-          <i class="fas fa-edit"></i>
-          {{ isPreviewMode ? 'Edit Form' : 'Edit' }}
-        </button>
-        <button 
-          *ngIf="isPreviewMode && !invoiceCreated" 
-          (click)="createInvoice()" 
-          class="save-invoice-btn"
-          [disabled]="isCreating">
-          <i class="fas fa-save" *ngIf="!isCreating"></i>
-          <i class="fas fa-spinner fa-spin" *ngIf="isCreating"></i>
-          {{ isCreating ? 'Saving Invoice...' : 'Save Invoice' }}
+          <span>WhatsApp</span>
         </button>
         <div *ngIf="isPreviewMode && invoiceCreated" class="invoice-saved-indicator">
           <i class="fas fa-check-circle"></i>
@@ -112,7 +101,7 @@
           <tbody>
             <tr *ngFor="let service of invoice.serviceDetails; let i = index">
               <td>{{i + 1}}</td>
-              <td>{{service.description}}</td>
+              <td>{{getServiceDescription(service)}}</td>
               <td class="amount">{{service.amount | number:'1.2-2'}}</td>
             </tr>
             <!-- Empty rows to match PDF format -->
@@ -169,14 +158,29 @@
       </div>
     </div>
 
-    <!-- Cancel Button Section -->
-    <div class="cancel-section">
-      <button (click)="cancelInvoice()" class="cancel-invoice-btn">
-        <i class="fas fa-times"></i>
-        {{ isPreviewMode ? 'Cancel Invoice' : 'Close Preview' }}
-      </button>
+    <!-- Bottom Action Buttons Section -->
+    <div class="bottom-actions">
+      <div class="bottom-buttons">
+        <button 
+          *ngIf="isPreviewMode && !invoiceCreated" 
+          (click)="createInvoice()" 
+          class="save-invoice-btn"
+          [disabled]="isCreating">
+          <i class="fas fa-save" *ngIf="!isCreating"></i>
+          <i class="fas fa-spinner fa-spin" *ngIf="isCreating"></i>
+          {{ isCreating ? 'Saving Invoice...' : 'Save Invoice' }}
+        </button>
+        <button (click)="editInvoice()" class="edit-btn">
+          <i class="fas fa-edit"></i>
+          EDIT
+        </button>
+        <button (click)="cancelInvoice()" class="cancel-invoice-btn">
+          <i class="fas fa-times"></i>
+          Cancel
+        </button>
+      </div>
       <p *ngIf="isPreviewMode" class="cancel-note">
-        Click "Cancel Invoice" to discard this invoice and return to dashboard
+        Click "Cancel" to discard this invoice and return to dashboard
       </p>
     </div>
   </div>

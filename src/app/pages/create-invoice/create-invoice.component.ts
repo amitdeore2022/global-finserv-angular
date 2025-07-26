@@ -661,6 +661,7 @@ export class CreateInvoiceComponent implements OnInit {
     // Map service details to match InvoiceService interface  
     const mappedServiceDetails = this.invoice.serviceDetails.map(service => ({
       description: service.description,
+      customDescription: service.customDescription, // Preserve custom description
       quantity: 1, // Default quantity since original doesn't have it
       rate: service.amount,
       amount: service.amount,
