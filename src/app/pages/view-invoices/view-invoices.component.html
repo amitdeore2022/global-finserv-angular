@@ -49,18 +49,6 @@
       <h4>Total Invoices</h4>
       <p class="stat-number">{{customerFilter ? filteredInvoices.length : invoices.length}}</p>
     </div>
-    <div class="stat-card">
-      <h4>Total Amount</h4>
-      <p class="stat-number">₹{{totalInvoiceAmount | number:'1.2-2'}}</p>
-    </div>
-    <div class="stat-card">
-      <h4>Pending Amount</h4>
-      <p class="stat-number due-amount">₹{{totalPendingAmount | number:'1.2-2'}}</p>
-    </div>
-    <div class="stat-card">
-      <h4>Paid Invoices</h4>
-      <p class="stat-number paid">{{paidInvoicesCount}}</p>
-    </div>
   </div>
 
   <!-- Invoice List -->

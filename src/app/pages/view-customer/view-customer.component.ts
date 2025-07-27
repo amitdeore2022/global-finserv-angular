@@ -47,34 +47,45 @@ export class ViewCustomerComponent implements OnInit {
   async loadCustomersWithStats() {
     try {
       this.isLoading = true;
-      console.log('Loading customers and invoices from Firestore...');
       
       // Load customers and invoices
       const customers = await this.customerService.getCustomers();
-      console.log('Loaded customers:', customers);
-      
       this.allInvoices = await this.invoiceService.getInvoices();
-      console.log('Loaded invoices:', this.allInvoices);
       
-      // Calculate stats for each customer
+      // Calculate stats for each customer with robust validation
       this.customers = customers.map(customer => {
-        const customerInvoices = this.allInvoices.filter(
-          invoice => invoice.customer.mobile === customer.mobile
+        // Normalize customer mobile for comparison (digits only for reliable matching)
+        const customerMobileDigits = customer.mobile.replace(/\D/g, '');
+        
+        const customerInvoices = this.allInvoices.filter(invoice => {
+          if (!invoice?.customer?.mobile) return false;
+          
+          // Use digits-only comparison for reliable mobile number matching
+          const invoiceMobileDigits = invoice.customer.mobile.replace(/\D/g, '');
+          return invoiceMobileDigits === customerMobileDigits && customerMobileDigits.length >= 10;
+        });
+        
+        // Remove duplicate invoices based on invoice number
+        const uniqueInvoices = customerInvoices.filter((invoice, index, self) => 
+          index === self.findIndex(i => i.invoiceNumber === invoice.invoiceNumber)
         );
         
-        const totalTransactionAmount = customerInvoices.reduce(
-          (sum, invoice) => sum + invoice.totalAmount, 0
-        );
+        // Calculate totals with proper number validation
+        const totalTransactionAmount = uniqueInvoices.reduce((sum, invoice) => {
+          const amount = Number(invoice.totalAmount) || 0;
+          return sum + amount;
+        }, 0);
         
-        const totalDueAmount = customerInvoices.reduce(
-          (sum, invoice) => sum + invoice.balancePayable, 0
-        );
+        const totalDueAmount = uniqueInvoices.reduce((sum, invoice) => {
+          const due = Number(invoice.balancePayable) || 0;
+          return sum + due;
+        }, 0);
         
         return {
           ...customer,
-          totalTransactionAmount,
-          totalDueAmount,
-          invoiceCount: customerInvoices.length
+          totalTransactionAmount: Math.round(totalTransactionAmount * 100) / 100,
+          totalDueAmount: Math.round(totalDueAmount * 100) / 100,
+          invoiceCount: uniqueInvoices.length
         };
       });
       
@@ -90,17 +101,24 @@ export class ViewCustomerComponent implements OnInit {
 
   // Method to refresh data
   async refreshData() {
-    console.log('Refreshing customer data...');
     await this.loadCustomersWithStats();
   }
 
-  // Calculated totals for filtered customers
+  // Calculated totals for filtered customers with validation
   get totalTransactionAmount(): number {
-    return this.filteredCustomers.reduce((sum, customer) => sum + customer.totalTransactionAmount, 0);
+    const total = this.filteredCustomers.reduce((sum, customer) => {
+      const amount = Number(customer.totalTransactionAmount) || 0;
+      return sum + amount;
+    }, 0);
+    return Math.round(total * 100) / 100;
   }
 
   get totalDueAmount(): number {
-    return this.filteredCustomers.reduce((sum, customer) => sum + customer.totalDueAmount, 0);
+    const total = this.filteredCustomers.reduce((sum, customer) => {
+      const amount = Number(customer.totalDueAmount) || 0;
+      return sum + amount;
+    }, 0);
+    return Math.round(total * 100) / 100;
   }
 
   // Alternative names for filtered totals (for template clarity)
@@ -123,14 +141,10 @@ export class ViewCustomerComponent implements OnInit {
 
   async generateCustomerLedger(customer: CustomerWithStats) {
     try {
-      console.log('Generating ledger for customer:', customer.name);
-      
       // Get all invoices for this customer
       const customerInvoices = this.allInvoices.filter(
         invoice => invoice.customer.mobile === customer.mobile
       );
-
-      console.log('Found invoices for customer:', customerInvoices.length);
 
       if (customerInvoices.length === 0) {
         alert('No transactions found for this customer.');
@@ -138,9 +152,7 @@ export class ViewCustomerComponent implements OnInit {
       }
 
       // Generate and download ledger using the new service
-      console.log('Calling ledger service...');
       this.ledgerService.generateCustomerLedger(customer, customerInvoices);
-      console.log('Ledger service call completed');
       
     } catch (error) {
       console.error('Error in generateCustomerLedger:', error);
@@ -221,7 +233,6 @@ export class ViewCustomerComponent implements OnInit {
 
   // Test method
   testLedgerService() {
-    console.log('Testing simple ledger service...');
     // Test removed - SimpleLedgerService doesn't have testPDF method
   }
 
