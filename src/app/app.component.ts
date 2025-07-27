@@ -25,10 +25,8 @@ export class AppComponent implements OnInit {
     // Clear local storage to ensure we're using Firestore
     this.clearLegacyData();
     
-    // Defer Firestore initialization to ensure Firebase is fully ready
-    setTimeout(() => {
-      this.initializeFirestore();
-    }, 100);
+    // Initialize Firestore immediately
+    this.initializeFirestore();
   }
 
   private clearLegacyData(): void {

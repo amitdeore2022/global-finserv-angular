@@ -285,7 +285,6 @@ export class DashboardComponent implements OnInit {
   }
 
   editCustomer(customerId: string) {
-    console.log('Edit customer:', customerId);
     // Future implementation for editing customer
   }
 
@@ -294,7 +293,6 @@ export class DashboardComponent implements OnInit {
       try {
         await this.customerService.deleteCustomer(customerId);
         this.loadCustomers(); // Refresh the list
-        console.log('Customer deleted:', customerId);
       } catch (error) {
         console.error('Error deleting customer:', error);
         alert('Failed to delete customer. Please try again.');
@@ -511,7 +509,6 @@ export class DashboardComponent implements OnInit {
         await this.loadInvoices();
         this.filterInvoices(); // Refresh the filtered list
         
-        console.log('Invoice saved successfully');
         alert('Invoice created successfully!');
         
         // Reset invoice form
@@ -648,7 +645,6 @@ export class DashboardComponent implements OnInit {
         await this.invoiceService.deleteInvoice(invoiceId);
         await this.loadInvoices();
         this.filterInvoices();
-        console.log('Invoice deleted:', invoiceId);
       } catch (error) {
         console.error('Error deleting invoice:', error);
         alert('Failed to delete invoice. Please try again.');
@@ -675,17 +671,24 @@ export class DashboardComponent implements OnInit {
   }
 
   editInvoice(invoiceId: string): void {
-    console.log('Edit invoice:', invoiceId);
     // Future implementation for editing invoice
     alert('Edit functionality will be implemented soon!');
   }
 
   get totalInvoiceAmount(): number {
-    return this.invoices.reduce((sum, invoice) => sum + invoice.totalAmount, 0);
+    const total = this.invoices.reduce((sum, invoice) => {
+      const amount = Number(invoice.totalAmount) || 0;
+      return sum + amount;
+    }, 0);
+    return Math.round(total * 100) / 100;
   }
 
   get totalPendingAmount(): number {
-    return this.invoices.reduce((sum, invoice) => sum + invoice.balancePayable, 0);
+    const total = this.invoices.reduce((sum, invoice) => {
+      const amount = Number(invoice.balancePayable) || 0;
+      return sum + amount;
+    }, 0);
+    return Math.round(total * 100) / 100;
   }
 
   get paidInvoicesCount(): number {
@@ -850,19 +853,28 @@ export class DashboardComponent implements OnInit {
     this.isRevenueMode = !this.isRevenueMode;
   }
 
-  // Calculate stats
+  // Calculate stats with validation
   private calculateStats() {
     this.totalCustomers = this.customers.length;
     this.totalInvoices = this.invoices.length;
     
-    this.totalRevenue = this.invoices.reduce((sum, invoice) => 
-      sum + invoice.totalAmount, 0);
+    this.totalRevenue = this.invoices.reduce((sum, invoice) => {
+      const amount = Number(invoice.totalAmount) || 0;
+      return sum + amount;
+    }, 0);
     
-    this.outstandingAmount = this.invoices.reduce((sum, invoice) => 
-      sum + invoice.balancePayable, 0);
+    this.outstandingAmount = this.invoices.reduce((sum, invoice) => {
+      const amount = Number(invoice.balancePayable) || 0;
+      return sum + amount;
+    }, 0);
     
     const paidAmount = this.totalRevenue - this.outstandingAmount;
     this.collectionRate = this.totalRevenue > 0 ? 
       (paidAmount / this.totalRevenue) * 100 : 0;
+      
+    // Round values for consistency
+    this.totalRevenue = Math.round(this.totalRevenue * 100) / 100;
+    this.outstandingAmount = Math.round(this.outstandingAmount * 100) / 100;
+    this.collectionRate = Math.round(this.collectionRate * 100) / 100;
   }
 }
