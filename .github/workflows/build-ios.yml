@@ -1,0 +1,69 @@
+name: Build iOS App
+on:
+  workflow_dispatch:
+  push:
+    branches: [ feature/global-finserv ]
+
+jobs:
+  build-ios:
+    runs-on: macos-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Build Angular app
+      run: npm run build
+      
+    - name: Setup iOS build tools
+      run: |
+        sudo xcode-select --switch /Applications/Xcode.app/Contents/Developer
+        xcodebuild -version
+        
+    - name: Install CocoaPods
+      run: |
+        sudo gem install cocoapods
+        pod --version
+        
+    - name: Sync Capacitor
+      run: |
+        npx cap sync ios
+        
+    - name: Install iOS dependencies
+      run: |
+        cd ios/App
+        pod install
+        
+    - name: Build iOS App
+      run: |
+        cd ios/App
+        xcodebuild -workspace App.xcworkspace \
+          -scheme App \
+          -configuration Release \
+          -destination generic/platform=iOS \
+          -archivePath App.xcarchive \
+          archive
+          
+    - name: Export IPA
+      run: |
+        cd ios/App
+        xcodebuild -exportArchive \
+          -archivePath App.xcarchive \
+          -exportPath . \
+          -exportOptionsPlist ../../export-options.plist
+          
+    - name: Upload IPA artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: GlobalFinancialApp-iOS
+        path: ios/App/App.ipa
+        retention-days: 30
