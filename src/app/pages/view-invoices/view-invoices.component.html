@@ -119,7 +119,10 @@
             <button class="action-btn print-btn" (click)="printInvoice(invoice.id!)" title="Print Invoice">
               <i class="fas fa-print"></i>
             </button>
-            <button class="action-btn whatsapp-btn" (click)="shareOnWhatsApp(invoice.id!)" title="Share on WhatsApp">
+            <button class="action-btn whatsapp-btn" 
+                    (click)="shareOnWhatsApp(invoice.id!)" 
+                    [attr.data-invoice-id]="invoice.id"
+                    title="Share on WhatsApp">
               <i class="fab fa-whatsapp"></i>
             </button>
             <button class="action-btn edit-btn" (click)="editInvoice(invoice.id!)" title="Edit Invoice">
