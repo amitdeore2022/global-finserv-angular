@@ -780,6 +780,22 @@ export class CreateInvoiceComponent implements OnInit {
     if (value !== 'custom') {
       this.newService.customDescription = '';
     }
+    
+    // Force blur to close mobile dropdown
+    if (event.target) {
+      event.target.blur();
+    }
+  }
+
+  // Handle payment type change for PWA compatibility
+  onPaymentTypeChange(event: any) {
+    const value = event.target.value;
+    this.invoice.paymentType = value;
+    
+    // Force blur to close mobile dropdown
+    if (event.target) {
+      event.target.blur();
+    }
   }
 
   // Check if service can be added

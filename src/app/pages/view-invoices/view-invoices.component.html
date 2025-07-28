@@ -257,8 +257,10 @@
             <select 
               [(ngModel)]="paymentForm.paymentType" 
               name="paymentType"
-              class="form-control compact"
+              class="form-control compact mobile-select"
+              (change)="onPaymentTypeChange($event)"
               required>
+              <option value="">Select Payment Method</option>
               <option *ngFor="let type of paymentTypes" [value]="type">{{type}}</option>
             </select>
           </div>

@@ -269,7 +269,7 @@
             id="newServiceDescription"
             [(ngModel)]="newService.description" 
             name="newServiceDescription"
-            class="form-control service-dropdown"
+            class="form-control service-dropdown mobile-select"
             (change)="onNewServiceDescriptionChange($event)">
             <option value="">Select a service or enter custom description</option>
             <option *ngFor="let option of serviceOptions" [value]="option">{{ option }}</option>
@@ -383,7 +383,8 @@
               id="paymentType" 
               [(ngModel)]="invoice.paymentType" 
               name="paymentType" 
-              class="form-control"
+              class="form-control mobile-select"
+              (change)="onPaymentTypeChange($event)"
               [disabled]="!invoice.advanceReceived || invoice.advanceReceived <= 0">
               <option value="">Select Payment Type</option>
               <option *ngFor="let type of paymentTypeOptions" [value]="type">{{ type }}</option>

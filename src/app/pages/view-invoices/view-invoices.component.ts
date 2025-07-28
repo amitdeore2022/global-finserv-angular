@@ -356,6 +356,17 @@ export class ViewInvoicesComponent implements OnInit {
     };
   }
 
+  // Handle payment type change for PWA compatibility
+  onPaymentTypeChange(event: any) {
+    const value = event.target.value;
+    this.paymentForm.paymentType = value;
+    
+    // Force blur to close mobile dropdown
+    if (event.target) {
+      event.target.blur();
+    }
+  }
+
   async submitPayment() {
     if (!this.selectedInvoiceForPayment) {
       alert('No invoice selected for payment!');
