@@ -63,7 +63,7 @@ app-root {
 
 /* PWA-friendly dropdown styles for all select elements */
 @media (max-width: 768px) {
-  select {
+  select, .service-dropdown {
     font-size: 16px !important; /* Prevents zoom on iOS */
     min-height: 44px !important; /* Better touch target */
     -webkit-appearance: menulist !important; /* Use native iOS/Android picker */
@@ -75,6 +75,8 @@ app-root {
     /* Remove custom styling that causes Done button */
     background-image: none !important;
     padding-right: 12px !important;
+    /* Ensure native behavior */
+    cursor: pointer !important;
   }
   
   input, textarea {

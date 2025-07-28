@@ -20,7 +20,7 @@ export class PdfGenerationNewService {
     const doc = new jsPDF();
     
     // Calculate if we need multiple pages
-    const maxServicesPerPage = 8;
+    const maxServicesPerPage = 6;
     const needsSecondPage = invoice.serviceDetails.length > maxServicesPerPage;
     
     // Generate first page
@@ -59,7 +59,7 @@ export class PdfGenerationNewService {
     this.addCompanyHeader(doc);
     this.addCustomerDetails(doc, invoice);
     
-    const servicesEndY = this.addServicesTable(doc, invoice, needsSecondPage, 0);
+    const servicesEndY = this.addServicesTable(doc, invoice, true, 0, 120);
     
     if (!needsSecondPage) {
       // Add all the closing sections on first page
@@ -215,15 +215,15 @@ export class PdfGenerationNewService {
     doc.setFont('helvetica', 'normal');
     
     // Determine services to show
-    const maxServices = isFirstPage ? 8 : (invoice.serviceDetails.length - startIndex);
+    const maxServicesPerPage = 6; // Changed from 8 to 6 as requested
     const servicesToShow = isFirstPage ? 
-      Math.min(8, invoice.serviceDetails.length) : 
+      invoice.serviceDetails.slice(0, maxServicesPerPage) : 
       invoice.serviceDetails.slice(startIndex);
     
     // Add service rows
     for (let i = 0; i < servicesToShow.length; i++) {
       const serviceIndex = isFirstPage ? i : startIndex + i;
-      const service = isFirstPage ? invoice.serviceDetails[i] : servicesToShow[i];
+      const service = servicesToShow[i];
       const rowHeight = 12;
       
       // Row borders
