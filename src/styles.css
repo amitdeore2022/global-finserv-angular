@@ -60,3 +60,23 @@ app-root {
   display: block;
   height: 100%;
 }
+
+/* PWA-friendly dropdown styles for all select elements */
+@media (max-width: 768px) {
+  select {
+    font-size: 16px !important; /* Prevents zoom on iOS */
+    min-height: 44px !important; /* Better touch target */
+    -webkit-appearance: none !important;
+    appearance: none !important;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e") !important;
+    background-repeat: no-repeat !important;
+    background-position: right 12px center !important;
+    background-size: 16px !important;
+    padding-right: 40px !important;
+  }
+  
+  input, textarea {
+    font-size: 16px !important; /* Prevents zoom on iOS */
+    min-height: 44px !important; /* Better touch target */
+  }
+}

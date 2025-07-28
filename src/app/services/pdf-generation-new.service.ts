@@ -20,7 +20,7 @@ export class PdfGenerationNewService {
     const doc = new jsPDF();
     
     // Calculate if we need multiple pages
-    const maxServicesPerPage = 8;
+    const maxServicesPerPage = 6;
     const needsSecondPage = invoice.serviceDetails.length > maxServicesPerPage;
     
     // Generate first page
@@ -196,9 +196,9 @@ export class PdfGenerationNewService {
     doc.setFont('helvetica', 'normal');
     
     // Determine services to show
-    const maxServices = isFirstPage ? 8 : (invoice.serviceDetails.length - startIndex);
+    const maxServices = isFirstPage ? 6 : (invoice.serviceDetails.length - startIndex);
     const servicesToShow = isFirstPage ? 
-      Math.min(8, invoice.serviceDetails.length) : 
+      Math.min(6, invoice.serviceDetails.length) : 
       invoice.serviceDetails.slice(startIndex);
     
     // Add service rows
@@ -246,7 +246,7 @@ export class PdfGenerationNewService {
     }
     
     // Add empty rows only on last page
-    if (!isFirstPage || invoice.serviceDetails.length <= 8) {
+    if (!isFirstPage || invoice.serviceDetails.length <= 6) {
       const minRows = 6;
       const usedRows = servicesToShow.length;
       for (let i = usedRows; i < minRows; i++) {
