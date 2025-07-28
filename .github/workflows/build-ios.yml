@@ -1,0 +1,190 @@
+# AltStore Distribution Guide for Windows Users
+
+## 🖥️ Complete Guide: Windows → iPhone App (No Mac Required!)
+
+### Overview
+You're a **Windows user** who wants to distribute your Global Financial Services app to **5 customers** via **AltStore** - completely **FREE** and **no Mac needed**!
+
+## 📋 What You'll Need
+
+### For You (Developer):
+- ✅ **Windows computer** (what you have)
+- ✅ **Apple ID** (free account)
+- ✅ **3uTools** or **Sideloadly** (free Windows software)
+- ✅ **Your Angular project** (already done)
+
+### For Customers:
+- ✅ **iPhone** (iOS 12.2 or later)
+- ✅ **AltStore app** (free download)
+- ✅ **Apple ID** (their own)
+
+## 🚀 Step-by-Step Process
+
+### Phase 1: Prepare Your Project (5 minutes)
+
+#### Step 1: Build Your App
+```powershell
+# In your project folder (e:\global-fin\global-finserv-angular)
+npm run build
+npx cap sync ios
+```
+
+#### Step 2: Create iOS Build Files
+Your project now has:
+- ✅ `ios/` folder with Xcode project
+- ✅ `dist/` folder with web build
+- ✅ All Capacitor plugins configured
+
+---
+
+### Phase 2: Install Windows Tools (10 minutes)
+
+#### Option A: Sideloadly (Recommended for Beginners)
+
+1. **Download Sideloadly**
+   - Go to: https://sideloadly.io/
+   - Download for Windows
+   - Install (simple .exe file)
+
+2. **Create Apple ID** (if you don't have one)
+   - Go to: https://appleid.apple.com/
+   - Create free account
+   - Remember username/password
+
+#### Option B: 3uTools (Alternative)
+
+1. **Download 3uTools**
+   - Go to: https://www.3u.com/
+   - Download for Windows
+   - Install (includes drivers)
+
+---
+
+### Phase 3: Convert Your Project to .ipa (15 minutes)
+
+Since you don't have Mac/Xcode, we'll use a **hybrid approach**:
+
+#### Method 1: Online IPA Builder (Easiest)
+
+1. **Zip your iOS folder**
+   ```powershell
+   # Create zip of ios folder
+   Compress-Archive -Path "ios" -DestinationPath "GlobalFinServ-iOS.zip"
+   ```
+
+2. **Use Online Builder**
+   - Go to: https://www.iosappinstaller.com/ (or similar service)
+   - Upload your zip file
+   - They build .ipa for free
+   - Download the .ipa file
+
+#### Method 2: GitHub Actions (Free & Automated)
+
+1. **Push to GitHub** (if not already)
+   ```powershell
+   git add .
+   git commit -m "iOS app ready for build"
+   git push
+   ```
+
+2. **Setup GitHub Actions**
+   - I'll create the workflow file for you
+   - GitHub builds .ipa automatically
+   - Download from GitHub releases
+
+#### Method 3: Request Build Service
+
+1. **Find iOS Developer**
+   - Post on Fiverr/Upwork: "Build .ipa from Capacitor project"
+   - Cost: $5-10
+   - Send them your project zip
+   - Get .ipa file back
+
+---
+
+### Phase 4: Distribute to Customers (5 minutes per customer)
+
+#### Step 1: Send Instructions to Customers
+
+**WhatsApp Message Template:**
+```
+🍎 iPhone App Installation - Global Financial Services
+
+Hi [Customer Name],
+
+Your exclusive iPhone app is ready! Follow these simple steps:
+
+1️⃣ Install AltStore:
+• Go to https://altstore.io on your iPhone
+• Follow their installation guide (5 minutes)
+
+2️⃣ Install Our App:
+• I'll send you an .ipa file
+• Open AltStore → "+" → Install .ipa
+• Select our file → Install
+
+3️⃣ Done!
+• App appears on home screen
+• Works exactly like App Store apps
+• WhatsApp sharing included
+
+Need help? Call me: [Your number]
+```
+
+#### Step 2: Send .ipa File
+- **WhatsApp**: Send .ipa file directly
+- **Email**: Attach .ipa file
+- **Google Drive**: Share download link
+- **Telegram**: Send as document
+
+---
+
+## 🛠️ Let Me Set This Up For You
+
+### I'll Create GitHub Actions Workflow
+
+<function_calls>
+<invoke name="create_file">
+<parameter name="content">name: Build iOS App
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main, master, feature/global-finserv ]
+
+jobs:
+  build-ios:
+    runs-on: macos-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+        
+    - name: Install dependencies
+      run: npm install
+      
+    - name: Build Angular app
+      run: npm run build
+      
+    - name: Sync Capacitor
+      run: npx cap sync ios
+      
+    - name: Setup Xcode
+      uses: maxim-lobanov/setup-xcode@v1
+      with:
+        xcode-version: latest-stable
+        
+    - name: Build iOS app
+      run: |
+        cd ios/App
+        xcodebuild -workspace App.xcworkspace -scheme App -configuration Release -destination generic/platform=iOS -archivePath App.xcarchive archive
+        xcodebuild -exportArchive -archivePath App.xcarchive -exportPath . -exportOptionsPlist ../../export-options.plist
+        
+    - name: Upload IPA
+      uses: actions/upload-artifact@v3
+      with:
+        name: GlobalFinServ-iOS
+        path: ios/App/App.ipa

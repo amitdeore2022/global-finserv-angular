@@ -1,0 +1,25 @@
+﻿Global Financial Services iPhone App
+
+Hi! Your exclusive invoice app is ready. Here's how to install:
+
+STEP 1: Install AltStore (5 minutes)
+1. On your iPhone, go to: https://altstore.io
+2. Follow their installation guide
+3. Trust the certificate in Settings
+
+STEP 2: Install Our App (2 minutes)
+1. I'll send you an .ipa file
+2. Open AltStore app on your iPhone
+3. Tap "+" button -> "Install .ipa"
+4. Select our file -> Install
+5. Trust our app in Settings
+
+DONE! App appears on your home screen
+
+Features:
+â€¢ Create professional invoices
+â€¢ Share directly to WhatsApp with PDF
+â€¢ Manage customers & payments
+â€¢ Works offline
+
+Need help? Call: [YOUR PHONE]

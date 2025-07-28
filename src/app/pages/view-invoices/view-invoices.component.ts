@@ -4,6 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterModule, ActivatedRoute } from '@angular/router';
 import { InvoiceService, Invoice } from '../../services/invoice.service';
 import { PdfGenerationService } from '../../services/pdf-generation.service';
+import { NativeShareService } from '../../services/native-share.service';
+import { Capacitor } from '@capacitor/core';
 
 @Component({
   selector: 'app-view-invoices',
@@ -49,7 +51,8 @@ export class ViewInvoicesComponent implements OnInit {
     private invoiceService: InvoiceService,
     private router: Router,
     private route: ActivatedRoute,
-    private pdfService: PdfGenerationService
+    private pdfService: PdfGenerationService,
+    private nativeShareService: NativeShareService
   ) {}
 
   ngOnInit() {
@@ -189,54 +192,33 @@ export class ViewInvoicesComponent implements OnInit {
         whatsappButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating PDF...';
       }
 
-      // First, download the PDF
-      this.pdfService.generateInvoicePDF(invoice);
-
+      // Generate PDF blob instead of downloading
+      const pdfBlob = await this.generatePDFBlob(invoice);
+      
       // Update button text
       if (whatsappButton) {
         whatsappButton.innerHTML = '<i class="fab fa-whatsapp"></i> Opening WhatsApp...';
       }
 
-      // Wait a moment for the download to start
+      // Use native share service for both native and web
+      const fileName = `${invoice.customer.name.replace(/[^a-zA-Z0-9]/g, '_')}_${invoice.invoiceNumber}.pdf`;
+      
+      await this.nativeShareService.shareInvoiceViaWhatsApp(
+        pdfBlob,
+        fileName,
+        invoice.customer.name,
+        invoice.customer.mobile,
+        invoice.invoiceNumber,
+        invoice.totalAmount
+      );
+
+      // Reset button after sharing
       setTimeout(() => {
-        // Prepare comprehensive WhatsApp message
-        const message = `🧾 *Invoice ${invoice.invoiceNumber}*
-
-� Customer: ${invoice.customer.name}
-📅 Date: ${new Date(invoice.invoiceDate).toLocaleDateString('en-IN')}
-💰 Total: ₹${invoice.totalAmount.toLocaleString('en-IN')}
-💳 Advance: ₹${invoice.advanceReceived.toLocaleString('en-IN')}
-🔄 Balance: ₹${invoice.balancePayable.toLocaleString('en-IN')}
-📊 Status: *${invoice.status}*
-
-💼 *Services:*
-${invoice.serviceDetails.map((service, index) => `${index + 1}. ${service.description} - ₹${service.amount.toLocaleString('en-IN')}`).join('\n')}
-
-🏦 *Payment:*
-${invoice.selectedBank}
-
-� *GLOBAL FINANCIAL SERVICES*
-☎️ 9623736781 | 9604722533
-📍 Nashik - 422003
-
-📄 PDF invoice downloaded to your device. Please attach it manually in WhatsApp by clicking the attachment (📎) button.
-
-Thank you for your business! 🙏`;
-
-        // Open WhatsApp with the message
-        const phoneNumber = invoice.customer.mobile.replace(/\D/g, '');
-        const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
-        window.open(whatsappUrl, '_blank');
-
-        // Reset button after WhatsApp opens
-        setTimeout(() => {
-          if (whatsappButton) {
-            whatsappButton.disabled = false;
-            whatsappButton.innerHTML = '<i class="fab fa-whatsapp"></i> WhatsApp';
-          }
-        }, 2000);
-
-      }, 1500); // 1.5 second delay to allow PDF download to start
+        if (whatsappButton) {
+          whatsappButton.disabled = false;
+          whatsappButton.innerHTML = '<i class="fab fa-whatsapp"></i> WhatsApp';
+        }
+      }, 2000);
 
     } catch (error) {
       console.error('Error sharing on WhatsApp:', error);
@@ -249,6 +231,52 @@ Thank you for your business! 🙏`;
         whatsappButton.innerHTML = '<i class="fab fa-whatsapp"></i> WhatsApp';
       }
     }
+  }
+
+  // Helper method to generate PDF as blob
+  private async generatePDFBlob(invoice: any): Promise<Blob> {
+    return new Promise((resolve, reject) => {
+      try {
+        // Import jsPDF dynamically to ensure it's loaded
+        import('jspdf').then(({ default: jsPDF }) => {
+          const doc = new jsPDF();
+          
+          // Use the same PDF generation logic as the service
+          this.generatePDFContent(doc, invoice);
+          
+          // Convert to blob
+          const pdfBlob = doc.output('blob');
+          resolve(pdfBlob);
+        }).catch(reject);
+      } catch (error) {
+        reject(error);
+      }
+    });
+  }
+
+  // Simplified PDF generation for sharing (you can expand this)
+  private generatePDFContent(doc: any, invoice: any): void {
+    // Basic PDF content - you can enhance this with your existing PDF generation logic
+    doc.setFontSize(20);
+    doc.text('INVOICE', 105, 20, { align: 'center' });
+    
+    doc.setFontSize(12);
+    doc.text(`Invoice Number: ${invoice.invoiceNumber}`, 20, 40);
+    doc.text(`Date: ${new Date(invoice.invoiceDate).toLocaleDateString('en-IN')}`, 20, 50);
+    doc.text(`Customer: ${invoice.customer.name}`, 20, 60);
+    doc.text(`Mobile: ${invoice.customer.mobile}`, 20, 70);
+    doc.text(`Total Amount: ₹${invoice.totalAmount}`, 20, 80);
+    doc.text(`Balance: ₹${invoice.balancePayable}`, 20, 90);
+    
+    // Add services
+    let yPos = 110;
+    doc.text('Services:', 20, yPos);
+    yPos += 10;
+    
+    invoice.serviceDetails.forEach((service: any, index: number) => {
+      doc.text(`${index + 1}. ${service.description} - ₹${service.amount}`, 25, yPos);
+      yPos += 8;
+    });
   }
 
   editInvoice(invoiceId: string) {
