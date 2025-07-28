@@ -81,30 +81,29 @@ export class NativeShareService {
     invoiceNumber: string,
     totalAmount: number
   ): Promise<void> {
-    // Your existing PWA share logic
+    // Skip Web Share API for PWA to avoid download prompts
+    // Instead, download PDF directly and open WhatsApp
     const message = this.createWhatsAppMessage(customerName, invoiceNumber, totalAmount);
 
-    if (navigator.share && navigator.canShare) {
-      try {
-        const fileArray = [new File([pdfBlob], fileName, { type: 'application/pdf' })];
-        
-        if (navigator.canShare({ files: fileArray })) {
-          await navigator.share({
-            title: 'Invoice',
-            text: message,
-            files: fileArray
-          });
-        } else {
-          // Fallback to WhatsApp web without file
-          this.openWhatsAppWeb(customerMobile, message);
-        }
-      } catch (error) {
-        console.log('Web share cancelled or failed, falling back to WhatsApp web');
-        this.openWhatsAppWeb(customerMobile, message);
-      }
-    } else {
+    // Create direct download link
+    const url = URL.createObjectURL(pdfBlob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = fileName;
+    a.style.display = 'none';
+    
+    // Trigger download automatically
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    
+    // Clean up the URL object
+    setTimeout(() => URL.revokeObjectURL(url), 100);
+    
+    // Open WhatsApp after short delay
+    setTimeout(() => {
       this.openWhatsAppWeb(customerMobile, message);
-    }
+    }, 500);
   }
 
   private openWhatsAppWeb(mobile: string, message: string): void {

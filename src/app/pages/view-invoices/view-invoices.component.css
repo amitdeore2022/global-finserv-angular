@@ -947,8 +947,10 @@
   select {
     font-size: 16px !important; /* Prevents zoom on iOS */
     min-height: 44px !important; /* Better touch target */
-    -webkit-appearance: none;
-    appearance: none;
+    -webkit-appearance: menulist !important; /* Use native iOS picker */
+    appearance: menulist !important; /* Use native picker */
+    background-image: none !important; /* Remove custom styling */
+    padding-right: 12px !important;
   }
   
   .form-control {
