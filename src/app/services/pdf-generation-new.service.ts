@@ -35,6 +35,25 @@ export class PdfGenerationNewService {
     doc.save(`invoice-${invoice.invoiceNumber}.pdf`);
   }
 
+  generateInvoicePDFBlob(invoice: any): Blob {
+    const doc = new jsPDF();
+    
+    // Calculate if we need multiple pages
+    const maxServicesPerPage = 6;
+    const needsSecondPage = invoice.serviceDetails.length > maxServicesPerPage;
+    
+    // Generate first page
+    this.generateFirstPage(doc, invoice, needsSecondPage);
+    
+    // Generate second page if needed
+    if (needsSecondPage) {
+      this.generateSecondPage(doc, invoice, maxServicesPerPage);
+    }
+    
+    // Return as blob instead of downloading
+    return doc.output('blob');
+  }
+
   private generateFirstPage(doc: jsPDF, invoice: any, needsSecondPage: boolean): void {
     this.addPageBorder(doc);
     this.addCompanyHeader(doc);

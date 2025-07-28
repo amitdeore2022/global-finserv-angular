@@ -1184,9 +1184,10 @@
   .service-dropdown {
     font-size: 16px; /* Prevents zoom on iOS */
     min-height: 44px; /* Better touch target */
-    background-size: 20px;
-    background-position: right 16px center;
-    padding-right: 48px;
+    -webkit-appearance: menulist; /* Native picker behavior */
+    appearance: menulist;
+    background-image: none; /* Remove custom arrow */
+    padding-right: 12px; /* Reset padding */
   }
   
   .custom-input {

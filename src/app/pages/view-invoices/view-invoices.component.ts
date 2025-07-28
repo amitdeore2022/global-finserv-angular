@@ -3,7 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule, ActivatedRoute } from '@angular/router';
 import { InvoiceService, Invoice } from '../../services/invoice.service';
-import { PdfGenerationService } from '../../services/pdf-generation.service';
+import { PdfGenerationNewService } from '../../services/pdf-generation-new.service';
+import { NativeShareService } from '../../services/native-share.service';
 
 @Component({
   selector: 'app-view-invoices',
@@ -49,7 +50,9 @@ export class ViewInvoicesComponent implements OnInit {
     private invoiceService: InvoiceService,
     private router: Router,
     private route: ActivatedRoute,
-    private pdfService: PdfGenerationService
+    private pdfService: PdfGenerationNewService,
+    private pdfNewService: PdfGenerationNewService,
+    private nativeShareService: NativeShareService
   ) {}
 
   ngOnInit() {
@@ -189,17 +192,15 @@ export class ViewInvoicesComponent implements OnInit {
         whatsappButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating PDF...';
       }
 
-      // First, download the PDF
-      this.pdfService.generateInvoicePDF(invoice);
+      // Generate PDF blob
+      const pdfBlob = await this.pdfService.generateInvoicePDFBlob(invoice);
 
       // Update button text
       if (whatsappButton) {
-        whatsappButton.innerHTML = '<i class="fab fa-whatsapp"></i> Opening WhatsApp...';
+        whatsappButton.innerHTML = '<i class="fab fa-whatsapp"></i> Sharing...';
       }
 
-      // Wait a moment for the download to start
-      setTimeout(() => {
-        // Prepare comprehensive WhatsApp message
+      // Prepare comprehensive WhatsApp message
         const message = `🧾 *Invoice ${invoice.invoiceNumber}*
 
 � Customer: ${invoice.customer.name}
@@ -219,24 +220,24 @@ ${invoice.selectedBank}
 ☎️ 9623736781 | 9604722533
 📍 Nashik - 422003
 
-📄 PDF invoice downloaded to your device. Please attach it manually in WhatsApp by clicking the attachment (📎) button.
-
 Thank you for your business! 🙏`;
 
-        // Open WhatsApp with the message
-        const phoneNumber = invoice.customer.mobile.replace(/\D/g, '');
-        const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
-        window.open(whatsappUrl, '_blank');
+      // Use NativeShareService for seamless sharing
+      const phoneNumber = invoice.customer.mobile.replace(/\D/g, '');
+      await this.nativeShareService.sharePWA(
+        pdfBlob,
+        `invoice_${invoice.invoiceNumber}.pdf`,
+        invoice.customer.name,
+        phoneNumber,
+        invoice.invoiceNumber,
+        invoice.totalAmount
+      );
 
-        // Reset button after WhatsApp opens
-        setTimeout(() => {
-          if (whatsappButton) {
-            whatsappButton.disabled = false;
-            whatsappButton.innerHTML = '<i class="fab fa-whatsapp"></i> WhatsApp';
-          }
-        }, 2000);
-
-      }, 1500); // 1.5 second delay to allow PDF download to start
+      // Reset button after sharing
+      if (whatsappButton) {
+        whatsappButton.disabled = false;
+        whatsappButton.innerHTML = '<i class="fab fa-whatsapp"></i> WhatsApp';
+      }
 
     } catch (error) {
       console.error('Error sharing on WhatsApp:', error);

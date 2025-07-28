@@ -60,3 +60,25 @@ app-root {
   display: block;
   height: 100%;
 }
+
+/* PWA-friendly dropdown styles for all select elements */
+@media (max-width: 768px) {
+  select {
+    font-size: 16px !important; /* Prevents zoom on iOS */
+    min-height: 44px !important; /* Better touch target */
+    -webkit-appearance: menulist !important; /* Use native iOS/Android picker */
+    appearance: menulist !important;
+    background: white !important;
+    border: 1px solid #ced4da !important;
+    border-radius: 4px !important;
+    padding: 12px !important;
+    /* Remove custom styling that causes Done button */
+    background-image: none !important;
+    padding-right: 12px !important;
+  }
+  
+  input, textarea {
+    font-size: 16px !important; /* Prevents zoom on iOS */
+    min-height: 44px !important; /* Better touch target */
+  }
+}
