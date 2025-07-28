@@ -39,23 +39,72 @@ export class NativeShareService {
     totalAmount: number
   ): Promise<void> {
     try {
-      // Direct download without prompts
-      const url = URL.createObjectURL(pdfBlob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = fileName;
-      link.style.display = 'none';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
+      // Try Web Share API first (best option - no popups)
+      if (navigator.share) {
+        try {
+          const file = new File([pdfBlob], fileName, { type: 'application/pdf' });
+          await navigator.share({
+            files: [file],
+            title: `Invoice ${invoiceNumber}`,
+            text: `Hi ${customerName}, Your invoice ${invoiceNumber} for ₹${totalAmount}. Thank you for choosing Global Financial Services!`
+          });
+          return;
+        } catch (shareError) {
+          console.log('Web Share API failed, trying download + WhatsApp:', shareError);
+        }
+      }
 
-      // Wait a moment then open WhatsApp
+      // Fallback: Silent download using different technique
+      try {
+        // Create a temporary URL for the blob
+        const url = URL.createObjectURL(pdfBlob);
+        
+        // Try to download using fetch and save
+        const response = await fetch(url);
+        const blob = await response.blob();
+        
+        // Use a different download method that might be less intrusive
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = fileName;
+        
+        // Try to trigger download without showing popup
+        link.style.position = 'fixed';
+        link.style.left = '-9999px';
+        link.style.opacity = '0';
+        document.body.appendChild(link);
+        
+        // Trigger download
+        link.click();
+        
+        // Clean up immediately
+        setTimeout(() => {
+          document.body.removeChild(link);
+          URL.revokeObjectURL(url);
+        }, 100);
+        
+      } catch (downloadError) {
+        console.log('Silent download failed:', downloadError);
+      }
+
+      // Always open WhatsApp with message
       setTimeout(() => {
-        const message = `Hi ${customerName}, Your invoice ${invoiceNumber} for ₹${totalAmount} has been generated. Please find the PDF in your downloads. Thank you for choosing Global Financial Services!`;
+        const message = `Hi ${customerName},
+
+📄 *Invoice ${invoiceNumber}*
+💰 Amount: ₹${totalAmount}
+
+Your invoice has been generated and downloaded to your device.
+
+🏦 *GLOBAL FINANCIAL SERVICES*
+📍 Nashik - 422003
+☎️ 9623736781 | 9604722533
+
+Thank you for your business! 🙏`;
+        
         const whatsappUrl = `https://wa.me/${customerMobile}?text=${encodeURIComponent(message)}`;
         window.open(whatsappUrl, '_blank');
-      }, 1000);
+      }, 500);
 
     } catch (error) {
       console.error('PWA share failed:', error);
