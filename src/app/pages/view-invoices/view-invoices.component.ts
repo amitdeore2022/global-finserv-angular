@@ -192,12 +192,12 @@ export class ViewInvoicesComponent implements OnInit {
         whatsappButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating PDF...';
       }
 
-      // Generate PDF blob
-      const pdfBlob = await this.pdfService.generateInvoicePDFBlob(invoice);
+      // Generate and download PDF (same as working preview method)
+      this.pdfService.generateInvoicePDF(invoice);
 
       // Update button text
       if (whatsappButton) {
-        whatsappButton.innerHTML = '<i class="fab fa-whatsapp"></i> Sharing...';
+        whatsappButton.innerHTML = '<i class="fab fa-whatsapp"></i> Opening WhatsApp...';
       }
 
       // Prepare comprehensive WhatsApp message
@@ -222,22 +222,46 @@ ${invoice.selectedBank}
 
 Thank you for your business! 🙏`;
 
-      // Use NativeShareService for seamless sharing
-      const phoneNumber = invoice.customer.mobile.replace(/\D/g, '');
-      await this.nativeShareService.sharePWA(
-        pdfBlob,
-        `invoice_${invoice.invoiceNumber}.pdf`,
-        invoice.customer.name,
-        phoneNumber,
-        invoice.invoiceNumber,
-        invoice.totalAmount
-      );
+      // Wait a moment for the download to start
+      setTimeout(() => {
+        // Prepare WhatsApp message
+        const message = `🧾 *Invoice ${invoice.invoiceNumber}*
 
-      // Reset button after sharing
-      if (whatsappButton) {
-        whatsappButton.disabled = false;
-        whatsappButton.innerHTML = '<i class="fab fa-whatsapp"></i> WhatsApp';
-      }
+👤 Customer: ${invoice.customer.name}
+📅 Date: ${new Date(invoice.invoiceDate).toLocaleDateString('en-IN')}
+💰 Total: ₹${invoice.totalAmount.toLocaleString('en-IN')}
+💳 Advance: ₹${invoice.advanceReceived.toLocaleString('en-IN')}
+🔄 Balance: ₹${invoice.balancePayable.toLocaleString('en-IN')}
+📊 Status: *${invoice.status}*
+
+💼 *Services:*
+${invoice.serviceDetails.map((service, index) => `${index + 1}. ${service.description} - ₹${service.amount.toLocaleString('en-IN')}`).join('\n')}
+
+🏦 *Payment:*
+${invoice.selectedBank}
+
+📱 *GLOBAL FINANCIAL SERVICES*
+☎️ 9623736781 | 9604722533
+📍 Nashik - 422003
+
+📄 PDF invoice downloaded to your device. Please attach it manually in WhatsApp by clicking the attachment (📎) button.
+
+Thank you for your business! 🙏`;
+
+        // Open WhatsApp with the message
+        const phoneNumber = invoice.customer.mobile.replace(/\D/g, '');
+        const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+        window.open(whatsappUrl, '_blank');
+
+        // Reset button after WhatsApp opens
+        setTimeout(() => {
+          if (whatsappButton) {
+            whatsappButton.disabled = false;
+            whatsappButton.innerHTML = '<i class="fab fa-whatsapp"></i> WhatsApp';
+          }
+        }, 2000);
+
+      }, 1500); // 1.5 second delay to allow PDF download to start
 
     } catch (error) {
       console.error('Error sharing on WhatsApp:', error);

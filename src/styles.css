@@ -62,7 +62,13 @@ app-root {
 }
 
 /* Force custom dropdown behavior - NO native mobile picker */
-select, .service-dropdown {
+select, 
+.service-dropdown,
+.form-control select,
+select.form-control,
+input[type="select"],
+*[class*="select"],
+*[class*="dropdown"] select {
   font-size: 16px !important; /* Prevents zoom on iOS */
   min-height: 44px !important; /* Better touch target */
   -webkit-appearance: none !important; /* Remove ALL native appearance */
@@ -82,6 +88,27 @@ select, .service-dropdown {
   /* Force desktop-style dropdown */
   -webkit-user-select: none !important;
   user-select: none !important;
+  /* Additional overrides for stubborn mobile behavior */
+  -webkit-border-radius: 4px !important;
+  -moz-border-radius: 4px !important;
+  box-sizing: border-box !important;
+  width: 100% !important;
+}
+
+/* Hide native dropdown arrows on ALL browsers */
+select::-ms-expand,
+.service-dropdown::-ms-expand {
+  display: none !important;
+}
+
+/* Focus states for custom dropdowns */
+select:focus, 
+.service-dropdown:focus,
+.form-control select:focus,
+select.form-control:focus {
+  border-color: #007bff !important;
+  outline: none !important;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.1) !important;
 }
 
 /* Remove any native styling completely */
