@@ -9,26 +9,19 @@ import { getDatabase, provideDatabase } from '@angular/fire/database';
 
 import { importProvidersFrom, isDevMode } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { provideServiceWorker } from '@angular/service-worker'; // ✅ Add this
+import { provideServiceWorker } from '@angular/service-worker';
+import { environment } from '../environments/environment';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
-    importProvidersFrom(FormsModule), // ✅ Include this line
-    provideFirebaseApp(() =>
-      initializeApp({
-        projectId: 'global-finserve',
-        appId: '1:651361387611:web:cbeb371e072814159d2b7e',
-        storageBucket: 'global-finserve.firebasestorage.app',
-        apiKey: 'AIzaSyASNag2dfCxlhKsMM2QkJQ5EqX-DvxYcko',
-        authDomain: 'global-finserve.firebaseapp.com',
-        messagingSenderId: '651361387611',
-      })
-    ),
+    importProvidersFrom(FormsModule),
+    provideFirebaseApp(() => initializeApp(environment.firebase)),
     provideAuth(() => getAuth()),
     provideFirestore(() => getFirestore()),
-    provideDatabase(() => getDatabase()), provideServiceWorker('ngsw-worker.js', {
+    provideDatabase(() => getDatabase()), 
+    provideServiceWorker('ngsw-worker.js', {
             enabled: !isDevMode(),
             registrationStrategy: 'registerWhenStable:30000'
           }),
