@@ -868,4 +868,37 @@ export class CreateInvoiceComponent implements OnInit {
       window.open(whatsappUrl, '_blank');
     }
   }
+
+  // Handle service dropdown selection - force immediate close
+  onServiceChange(event: any, index: number): void {
+    const selectElement = event.target;
+    const selectedValue = selectElement.value;
+    
+    // Immediately blur to close dropdown
+    setTimeout(() => {
+      selectElement.blur();
+    }, 10);
+    
+    // Update the service detail
+    if (selectedValue && selectedValue !== this.invoice.serviceDetails[index]?.description) {
+      this.invoice.serviceDetails[index].description = selectedValue;
+      this.calculateTotals();
+    }
+  }
+
+  // Handle payment type selection - force immediate close
+  onPaymentTypeChange(event: any): void {
+    const selectElement = event.target;
+    const selectedValue = selectElement.value;
+    
+    // Immediately blur to close dropdown
+    setTimeout(() => {
+      selectElement.blur();
+    }, 10);
+    
+    // Update payment type
+    if (selectedValue) {
+      this.invoice.paymentType = selectedValue;
+    }
+  }
 }

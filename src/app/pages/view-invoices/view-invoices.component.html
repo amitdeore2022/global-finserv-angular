@@ -261,6 +261,7 @@
               [(ngModel)]="paymentForm.paymentType" 
               name="paymentType"
               class="form-control compact"
+              (change)="onPaymentTypeChange($event)"
               required>
               <option *ngFor="let type of paymentTypes" [value]="type">{{type}}</option>
             </select>

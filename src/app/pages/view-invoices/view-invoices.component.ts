@@ -4,7 +4,6 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterModule, ActivatedRoute } from '@angular/router';
 import { InvoiceService, Invoice } from '../../services/invoice.service';
 import { PdfGenerationNewService } from '../../services/pdf-generation-new.service';
-import { NativeShareService } from '../../services/native-share.service';
 
 @Component({
   selector: 'app-view-invoices',
@@ -51,8 +50,7 @@ export class ViewInvoicesComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private pdfService: PdfGenerationNewService,
-    private pdfNewService: PdfGenerationNewService,
-    private nativeShareService: NativeShareService
+    private pdfNewService: PdfGenerationNewService
   ) {}
 
   ngOnInit() {
@@ -243,8 +241,6 @@ ${invoice.selectedBank}
 📱 *GLOBAL FINANCIAL SERVICES*
 ☎️ 9623736781 | 9604722533
 📍 Nashik - 422003
-
-📄 PDF invoice downloaded to your device. Please attach it manually in WhatsApp by clicking the attachment (📎) button.
 
 Thank you for your business! 🙏`;
 
@@ -481,5 +477,21 @@ Thank you for your business! 🙏`;
     }
     // Get customer name from the first filtered invoice
     return this.filteredInvoices[0].customer.name;
+  }
+
+  // Handle payment type selection - force immediate close
+  onPaymentTypeChange(event: any): void {
+    const selectElement = event.target;
+    const selectedValue = selectElement.value;
+    
+    // Immediately blur to close dropdown
+    setTimeout(() => {
+      selectElement.blur();
+    }, 10);
+    
+    // Update payment type
+    if (selectedValue) {
+      this.paymentForm.paymentType = selectedValue;
+    }
   }
 }

@@ -98,32 +98,33 @@ export class InvoicePreviewComponent implements OnInit {
   }
 
   shareOnWhatsApp() {
-    if (!this.invoice) return;
+    if (!this.invoice) {
+      alert('Invoice data not available. Please try again.');
+      return;
+    }
 
     try {
       // Generate PDF first
       this.pdfService.generateInvoicePDF(this.invoice);
 
-      // Wait a moment for the download to start
-      setTimeout(() => {
-        // Prepare WhatsApp message
-        const message = `🧾 *Invoice ${this.invoice!.invoiceNumber}*
+      // Prepare comprehensive WhatsApp message
+      const message = `🧾 *Invoice ${this.invoice.invoiceNumber}*
 
-👤 Customer: ${this.invoice!.customer.name}
-📅 Date: ${new Date(this.invoice!.invoiceDate).toLocaleDateString('en-IN')}
-💰 Total: ₹${this.invoice!.totalAmount.toLocaleString('en-IN')}
-💳 Advance: ₹${this.invoice!.advanceReceived.toLocaleString('en-IN')}
-🔄 Balance: ₹${this.invoice!.balancePayable.toLocaleString('en-IN')}
-📊 Status: *${this.invoice!.status}*
+👤 Customer: ${this.invoice.customer.name}
+📅 Date: ${new Date(this.invoice.invoiceDate).toLocaleDateString('en-IN')}
+💰 Total: ₹${this.invoice.totalAmount.toLocaleString('en-IN')}
+💳 Advance: ₹${this.invoice.advanceReceived.toLocaleString('en-IN')}
+🔄 Balance: ₹${this.invoice.balancePayable.toLocaleString('en-IN')}
+📊 Status: *${this.invoice.status}*
 
 💼 *Services:*
-${this.invoice!.serviceDetails.map((service, index) => {
+${this.invoice.serviceDetails.map((service, index) => {
   const description = this.getServiceDescription(service);
   return `${index + 1}. ${description} - ₹${service.amount.toLocaleString('en-IN')}`;
 }).join('\n')}
 
 🏦 *Payment:*
-${this.invoice!.selectedBank}
+${this.invoice.selectedBank}
 
 📱 *GLOBAL FINANCIAL SERVICES*
 ☎️ 9623736781 | 9604722533
@@ -131,13 +132,28 @@ ${this.invoice!.selectedBank}
 
 Thank you for your business! 🙏`;
 
-        // Open WhatsApp
-        const phoneNumber = this.invoice!.customer.mobile.replace(/\D/g, '');
-        const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+      // Clean phone number (remove all non-digits)
+      const phoneNumber = this.invoice.customer.mobile.replace(/\D/g, '');
+      
+      // Log for debugging
+      console.log('📱 Phone number:', phoneNumber);
+      console.log('💬 Message length:', message.length);
+      console.log('� Message preview:', message.substring(0, 100) + '...');
+      
+      // Create WhatsApp URL
+      const encodedMessage = encodeURIComponent(message);
+      const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
+      
+      console.log('🔗 WhatsApp URL length:', whatsappUrl.length);
+      console.log('🔗 Opening WhatsApp URL:', whatsappUrl.substring(0, 150) + '...');
+      
+      // Open WhatsApp with a slight delay
+      setTimeout(() => {
         window.open(whatsappUrl, '_blank');
-      }, 1500);
+      }, 500);
+      
     } catch (error) {
-      console.error('Error sharing on WhatsApp:', error);
+      console.error('❌ Error sharing on WhatsApp:', error);
       alert('Error sharing invoice. Please try again.');
     }
   }

@@ -31,9 +31,9 @@ export class PdfGenerationService {
       this.generateSecondPage(doc, invoice, maxServicesPerPage);
     }
     
-        // Use customer name and invoice number for filename
+        // Use customer name and invoice number for filename: Customer_name_INV_No
         const safeName = (invoice.customer?.name || 'Customer').replace(/[^a-zA-Z0-9]/g, '_');
-        doc.save(`${safeName}_${invoice.invoiceNumber}.pdf`);
+        doc.save(`${safeName}_INV_${invoice.invoiceNumber}.pdf`);
   }
 
   private generateFirstPage(doc: jsPDF, invoice: any, needsSecondPage: boolean): void {

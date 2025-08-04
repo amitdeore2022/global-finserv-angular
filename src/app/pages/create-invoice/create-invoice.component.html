@@ -384,6 +384,7 @@
               [(ngModel)]="invoice.paymentType" 
               name="paymentType" 
               class="form-control"
+              (change)="onPaymentTypeChange($event)"
               [disabled]="!invoice.advanceReceived || invoice.advanceReceived <= 0">
               <option value="">Select Payment Type</option>
               <option *ngFor="let type of paymentTypeOptions" [value]="type">{{ type }}</option>

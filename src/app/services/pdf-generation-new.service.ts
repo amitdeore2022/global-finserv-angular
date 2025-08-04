@@ -31,8 +31,11 @@ export class PdfGenerationNewService {
       this.generateSecondPage(doc, invoice, maxServicesPerPage);
     }
     
-    // Save the PDF
-    doc.save(`invoice-${invoice.invoiceNumber}.pdf`);
+    // Save the PDF with custom filename: Customer_name_INV_No
+    const customerName = invoice.customer?.name || 'Customer';
+    const sanitizedCustomerName = customerName.replace(/[^a-zA-Z0-9]/g, '_');
+    const filename = `${sanitizedCustomerName}_INV_${invoice.invoiceNumber}.pdf`;
+    doc.save(filename);
   }
 
   generateInvoicePDFBlob(invoice: any): Blob {

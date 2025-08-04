@@ -93,6 +93,12 @@ input[type="select"],
   -moz-border-radius: 4px !important;
   box-sizing: border-box !important;
   width: 100% !important;
+  /* NEW: Prevent native mobile modal/wheel picker */
+  -webkit-touch-callout: none !important;
+  -webkit-tap-highlight-color: transparent !important;
+  touch-action: manipulation !important;
+  /* Force immediate selection behavior */
+  outline: none !important;
 }
 
 /* Hide native dropdown arrows on ALL browsers */
