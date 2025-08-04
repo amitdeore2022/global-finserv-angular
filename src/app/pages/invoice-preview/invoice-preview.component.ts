@@ -104,29 +104,46 @@ export class InvoicePreviewComponent implements OnInit {
     }
 
     try {
-      // Generate PDF silently using blob method to avoid download popup
-      const pdfBlob = this.pdfService.generateInvoicePDFBlob(this.invoice);
+      // Generate and download PDF silently using a debounced approach
+      console.log('📄 Generating PDF silently for WhatsApp sharing...');
       
-      // Create filename: Customer_name_INV_No
-      const customerName = this.invoice.customer?.name || 'Customer';
-      const sanitizedCustomerName = customerName.replace(/[^a-zA-Z0-9]/g, '_');
-      const filename = `${sanitizedCustomerName}_INV_${this.invoice.invoiceNumber}.pdf`;
+      // Check if we recently downloaded this invoice to prevent rapid fire clicks
+      const lastDownloadKey = `lastDownload_${this.invoice.invoiceNumber}`;
+      const lastDownloadTime = localStorage.getItem(lastDownloadKey);
+      const now = Date.now();
       
-      // Create download link programmatically (silent download)
-      const downloadLink = document.createElement('a');
-      const url = window.URL.createObjectURL(pdfBlob);
-      downloadLink.href = url;
-      downloadLink.download = filename;
-      
-      // Trigger download silently without user interaction
-      document.body.appendChild(downloadLink);
-      downloadLink.click();
-      document.body.removeChild(downloadLink);
-      
-      // Clean up the blob URL immediately
-      setTimeout(() => window.URL.revokeObjectURL(url), 100);
-      
-      console.log('📄 PDF downloaded silently:', filename);
+      // If less than 2 seconds since last download, skip duplicate download
+      if (lastDownloadTime && (now - parseInt(lastDownloadTime)) < 2000) {
+        console.log('📄 Skipping duplicate PDF download (within 2 seconds)');
+      } else {
+        // Generate PDF with blob method
+        const pdfBlob = this.pdfService.generateInvoicePDFBlob(this.invoice);
+        
+        // Create standard filename without timestamp for consistent naming
+        const customerName = this.invoice.customer?.name || 'Customer';
+        const sanitizedCustomerName = customerName.replace(/[^a-zA-Z0-9]/g, '_');
+        const filename = `${sanitizedCustomerName}_INV_${this.invoice.invoiceNumber}.pdf`;
+        
+        // Use a more browser-friendly download approach
+        const url = window.URL.createObjectURL(pdfBlob);
+        const downloadLink = document.createElement('a');
+        downloadLink.href = url;
+        downloadLink.download = filename;
+        downloadLink.style.display = 'none';
+        
+        // Add to DOM, click, and remove quickly
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+        
+        // Clean up blob URL after a short delay
+        setTimeout(() => window.URL.revokeObjectURL(url), 1000);
+        
+        // Store the download timestamp
+        localStorage.setItem(lastDownloadKey, now.toString());
+        
+        console.log('📄 PDF downloaded silently:', filename);
+      }
 
       // Prepare comprehensive WhatsApp message
       const message = `🧾 *Invoice ${this.invoice.invoiceNumber}*
@@ -159,13 +176,13 @@ Thank you for your business! 🙏`;
       // Log for debugging
       console.log('📱 Phone number:', phoneNumber);
       console.log('💬 Message length:', message.length);
-      console.log('� Message preview:', message.substring(0, 100) + '...');
+      console.log('📝 Message preview:', message.substring(0, 100) + '...');
       
       // Create WhatsApp URL
       const encodedMessage = encodeURIComponent(message);
       const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
       
-      console.log('🔗 Opening WhatsApp immediately');
+      console.log('🔗 Opening WhatsApp without PDF download');
       
       // Open WhatsApp immediately (no delay needed since download is programmatic)
       window.open(whatsappUrl, '_blank');
