@@ -104,46 +104,71 @@ export class InvoicePreviewComponent implements OnInit {
     }
 
     try {
-      // Generate and download PDF silently using a debounced approach
-      console.log('📄 Generating PDF silently for WhatsApp sharing...');
+      // Always generate and download PDF for WhatsApp sharing
+      console.log('📄 Generating PDF for WhatsApp sharing...');
       
-      // Check if we recently downloaded this invoice to prevent rapid fire clicks
-      const lastDownloadKey = `lastDownload_${this.invoice.invoiceNumber}`;
-      const lastDownloadTime = localStorage.getItem(lastDownloadKey);
-      const now = Date.now();
+      // Check if this is the first download for this invoice
+      const downloadCountKey = `downloadCount_${this.invoice.invoiceNumber}`;
+      let downloadCount = parseInt(localStorage.getItem(downloadCountKey) || '0');
+      const isFirstDownload = downloadCount === 0;
       
-      // If less than 2 seconds since last download, skip duplicate download
-      if (lastDownloadTime && (now - parseInt(lastDownloadTime)) < 2000) {
-        console.log('📄 Skipping duplicate PDF download (within 2 seconds)');
-      } else {
-        // Generate PDF with blob method
-        const pdfBlob = this.pdfService.generateInvoicePDFBlob(this.invoice);
-        
-        // Create standard filename without timestamp for consistent naming
-        const customerName = this.invoice.customer?.name || 'Customer';
-        const sanitizedCustomerName = customerName.replace(/[^a-zA-Z0-9]/g, '_');
-        const filename = `${sanitizedCustomerName}_INV_${this.invoice.invoiceNumber}.pdf`;
-        
-        // Use a more browser-friendly download approach
+      // Generate PDF with blob method
+      const pdfBlob = this.pdfService.generateInvoicePDFBlob(this.invoice);
+      
+      // Create standard filename
+      const customerName = this.invoice.customer?.name || 'Customer';
+      const sanitizedCustomerName = customerName.replace(/[^a-zA-Z0-9]/g, '_');
+      const filename = `${sanitizedCustomerName}_INV_${this.invoice.invoiceNumber}.pdf`;
+      
+      if (isFirstDownload) {
+        // First download - normal download (browser may show dialog)
+        console.log('📄 First download - normal download method');
         const url = window.URL.createObjectURL(pdfBlob);
         const downloadLink = document.createElement('a');
         downloadLink.href = url;
         downloadLink.download = filename;
         downloadLink.style.display = 'none';
         
-        // Add to DOM, click, and remove quickly
         document.body.appendChild(downloadLink);
         downloadLink.click();
         document.body.removeChild(downloadLink);
         
-        // Clean up blob URL after a short delay
         setTimeout(() => window.URL.revokeObjectURL(url), 1000);
+      } else {
+        // Subsequent downloads - try to download silently
+        console.log('📄 Subsequent download - attempting silent download');
         
-        // Store the download timestamp
-        localStorage.setItem(lastDownloadKey, now.toString());
+        // Method 1: Try using the same approach but with different timing
+        const url = window.URL.createObjectURL(pdfBlob);
+        const downloadLink = document.createElement('a');
+        downloadLink.href = url;
+        downloadLink.download = filename;
+        downloadLink.style.display = 'none';
+        downloadLink.style.position = 'absolute';
+        downloadLink.style.left = '-9999px';
         
-        console.log('📄 PDF downloaded silently:', filename);
+        // Add unique identifier to avoid browser caching issues
+        downloadLink.setAttribute('data-download-id', Date.now().toString());
+        
+        document.body.appendChild(downloadLink);
+        
+        // Use setTimeout to avoid rapid succession issues
+        setTimeout(() => {
+          downloadLink.click();
+          setTimeout(() => {
+            if (document.body.contains(downloadLink)) {
+              document.body.removeChild(downloadLink);
+            }
+            window.URL.revokeObjectURL(url);
+          }, 500);
+        }, 100);
       }
+      
+      // Increment download count
+      downloadCount++;
+      localStorage.setItem(downloadCountKey, downloadCount.toString());
+      
+      console.log('📄 PDF download initiated:', filename, `(Download #${downloadCount})`);
 
       // Prepare comprehensive WhatsApp message
       const message = `🧾 *Invoice ${this.invoice.invoiceNumber}*

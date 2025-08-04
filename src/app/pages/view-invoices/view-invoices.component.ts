@@ -190,37 +190,77 @@ export class ViewInvoicesComponent implements OnInit {
         whatsappButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating PDF...';
       }
 
-      // Generate and download PDF (same as working preview method)
-      this.pdfService.generateInvoicePDF(invoice);
+      // Always generate and download PDF for WhatsApp sharing
+      console.log('📄 Generating PDF for WhatsApp sharing...');
+      
+      // Check if this is the first download for this invoice
+      const downloadCountKey = `downloadCount_${invoice.invoiceNumber}`;
+      let downloadCount = parseInt(localStorage.getItem(downloadCountKey) || '0');
+      const isFirstDownload = downloadCount === 0;
+      
+      // Generate PDF with blob method
+      const pdfBlob = this.pdfService.generateInvoicePDFBlob(invoice);
+      
+      // Create standard filename
+      const customerName = invoice.customer?.name || 'Customer';
+      const sanitizedCustomerName = customerName.replace(/[^a-zA-Z0-9]/g, '_');
+      const filename = `${sanitizedCustomerName}_INV_${invoice.invoiceNumber}.pdf`;
+      
+      if (isFirstDownload) {
+        // First download - normal download (browser may show dialog)
+        console.log('📄 First download - normal download method');
+        const url = window.URL.createObjectURL(pdfBlob);
+        const downloadLink = document.createElement('a');
+        downloadLink.href = url;
+        downloadLink.download = filename;
+        downloadLink.style.display = 'none';
+        
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+        
+        setTimeout(() => window.URL.revokeObjectURL(url), 1000);
+      } else {
+        // Subsequent downloads - try to download silently
+        console.log('📄 Subsequent download - attempting silent download');
+        
+        const url = window.URL.createObjectURL(pdfBlob);
+        const downloadLink = document.createElement('a');
+        downloadLink.href = url;
+        downloadLink.download = filename;
+        downloadLink.style.display = 'none';
+        downloadLink.style.position = 'absolute';
+        downloadLink.style.left = '-9999px';
+        
+        // Add unique identifier to avoid browser caching issues
+        downloadLink.setAttribute('data-download-id', Date.now().toString());
+        
+        document.body.appendChild(downloadLink);
+        
+        // Use setTimeout to avoid rapid succession issues
+        setTimeout(() => {
+          downloadLink.click();
+          setTimeout(() => {
+            if (document.body.contains(downloadLink)) {
+              document.body.removeChild(downloadLink);
+            }
+            window.URL.revokeObjectURL(url);
+          }, 500);
+        }, 100);
+      }
+      
+      // Increment download count
+      downloadCount++;
+      localStorage.setItem(downloadCountKey, downloadCount.toString());
+      
+      console.log('📄 PDF download initiated:', filename, `(Download #${downloadCount})`);
 
       // Update button text
       if (whatsappButton) {
         whatsappButton.innerHTML = '<i class="fab fa-whatsapp"></i> Opening WhatsApp...';
       }
 
-      // Prepare comprehensive WhatsApp message
-        const message = `🧾 *Invoice ${invoice.invoiceNumber}*
-
-� Customer: ${invoice.customer.name}
-📅 Date: ${new Date(invoice.invoiceDate).toLocaleDateString('en-IN')}
-💰 Total: ₹${invoice.totalAmount.toLocaleString('en-IN')}
-💳 Advance: ₹${invoice.advanceReceived.toLocaleString('en-IN')}
-🔄 Balance: ₹${invoice.balancePayable.toLocaleString('en-IN')}
-📊 Status: *${invoice.status}*
-
-💼 *Services:*
-${invoice.serviceDetails.map((service, index) => `${index + 1}. ${service.description} - ₹${service.amount.toLocaleString('en-IN')}`).join('\n')}
-
-🏦 *Payment:*
-${invoice.selectedBank}
-
-� *GLOBAL FINANCIAL SERVICES*
-☎️ 9623736781 | 9604722533
-📍 Nashik - 422003
-
-Thank you for your business! 🙏`;
-
-      // Wait a moment for the download to start
+      // Wait a moment for the download to start, then open WhatsApp
       setTimeout(() => {
         // Prepare WhatsApp message
         const message = `🧾 *Invoice ${invoice.invoiceNumber}*
