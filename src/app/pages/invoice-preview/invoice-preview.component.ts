@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { InvoiceService, Invoice } from '../../services/invoice.service';
-import { PdfGenerationService } from '../../services/pdf-generation.service';
+import { PdfGenerationNewService } from '../../services/pdf-generation-new.service';
 
 @Component({
   selector: 'app-invoice-preview',
@@ -23,7 +23,7 @@ export class InvoicePreviewComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private invoiceService: InvoiceService,
-    private pdfService: PdfGenerationService
+    private pdfService: PdfGenerationNewService
   ) {}
 
   ngOnInit() {
@@ -104,8 +104,29 @@ export class InvoicePreviewComponent implements OnInit {
     }
 
     try {
-      // Generate PDF first
-      this.pdfService.generateInvoicePDF(this.invoice);
+      // Generate PDF silently using blob method to avoid download popup
+      const pdfBlob = this.pdfService.generateInvoicePDFBlob(this.invoice);
+      
+      // Create filename: Customer_name_INV_No
+      const customerName = this.invoice.customer?.name || 'Customer';
+      const sanitizedCustomerName = customerName.replace(/[^a-zA-Z0-9]/g, '_');
+      const filename = `${sanitizedCustomerName}_INV_${this.invoice.invoiceNumber}.pdf`;
+      
+      // Create download link programmatically (silent download)
+      const downloadLink = document.createElement('a');
+      const url = window.URL.createObjectURL(pdfBlob);
+      downloadLink.href = url;
+      downloadLink.download = filename;
+      
+      // Trigger download silently without user interaction
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      document.body.removeChild(downloadLink);
+      
+      // Clean up the blob URL immediately
+      setTimeout(() => window.URL.revokeObjectURL(url), 100);
+      
+      console.log('📄 PDF downloaded silently:', filename);
 
       // Prepare comprehensive WhatsApp message
       const message = `🧾 *Invoice ${this.invoice.invoiceNumber}*
@@ -144,13 +165,10 @@ Thank you for your business! 🙏`;
       const encodedMessage = encodeURIComponent(message);
       const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
       
-      console.log('🔗 WhatsApp URL length:', whatsappUrl.length);
-      console.log('🔗 Opening WhatsApp URL:', whatsappUrl.substring(0, 150) + '...');
+      console.log('🔗 Opening WhatsApp immediately');
       
-      // Open WhatsApp with a slight delay
-      setTimeout(() => {
-        window.open(whatsappUrl, '_blank');
-      }, 500);
+      // Open WhatsApp immediately (no delay needed since download is programmatic)
+      window.open(whatsappUrl, '_blank');
       
     } catch (error) {
       console.error('❌ Error sharing on WhatsApp:', error);
