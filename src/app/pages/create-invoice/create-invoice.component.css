@@ -413,6 +413,14 @@
   border-left: 3px solid #007bff;
   font-size: 13px;
   line-height: 1.4;
+  position: relative;
+}
+
+/* Remove any dropdown arrows from selected customer card */
+.customer-card.selected p::after,
+.customer-card.selected p::before {
+  display: none !important;
+  content: none !important;
 }
 
 .customer-card.selected p strong {

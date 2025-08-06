@@ -397,6 +397,12 @@ export class PdfGenerationNewService {
     doc.setFont('helvetica', 'normal');
     doc.text('Authorised Signatory', 145, currentY + 27);
     
+    // Computer generated invoice message
+    doc.setFontSize(7);
+    doc.setTextColor(120, 120, 120);
+    doc.text('This is computer generated invoice', 145, currentY + 32);
+    doc.text('& may not require signature', 145, currentY + 36);
+    
     // Footer
     const footerY = currentY + sectionHeight + 5;
     if (footerY < 285) {
