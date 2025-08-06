@@ -18,17 +18,16 @@
   flex-wrap: wrap;
   gap: 15px;
   padding: 20px;
-  background: linear-gradient(180deg, #667eea 0%, #764ba2 30%, #ad1457 70%, #c2185b 100%);
+  background: #ffffff;
   border-radius: 15px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e9ecef;
 }
 
 .refresh-btn {
-  background: rgba(255, 255, 255, 0.2);
+  background: #6c757d;
   color: white;
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  border: none;
   border-radius: 8px;
   padding: 10px 15px;
   cursor: pointer;
@@ -37,11 +36,10 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  backdrop-filter: blur(10px);
 }
 
 .refresh-btn:hover {
-  background: rgba(255, 255, 255, 0.3);
+  background: #5a6268;
   transform: translateY(-1px);
 }
 
@@ -72,11 +70,10 @@
 }
 
 .header h2 {
-  color: #ffffff;
+  color: #333333;
   font-size: 32px;
   margin: 0;
   font-weight: 700;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   letter-spacing: 0.5px;
 }
 
@@ -96,24 +93,27 @@
 }
 
 .stat-card {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  background: #ffffff;
+  color: #333333;
   padding: 20px;
   border-radius: 15px;
   text-align: center;
-  box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e9ecef;
 }
 
 .stat-card h3 {
   margin: 0 0 10px 0;
   font-size: 16px;
   font-weight: 500;
+  color: #6c757d;
 }
 
 .stat-number {
   font-size: 28px;
   font-weight: 700;
   margin: 0;
+  color: #28a745;
 }
 
 .customer-list {
@@ -188,27 +188,27 @@
 }
 
 .invoices-btn {
-  background: linear-gradient(135deg, #c2185b 0%, #ad1457 100%);
+  background: #28a745;
   color: white;
-  box-shadow: 0 2px 6px rgba(194, 24, 91, 0.2);
+  box-shadow: 0 2px 6px rgba(40, 167, 69, 0.2);
 }
 
 .invoices-btn:hover {
-  background: linear-gradient(135deg, #ad1457 0%, #880e4f 100%);
+  background: #218838;
   transform: translateY(-1px);
-  box-shadow: 0 4px 10px rgba(194, 24, 91, 0.3);
+  box-shadow: 0 4px 10px rgba(40, 167, 69, 0.3);
 }
 
 .ledger-btn {
-  background: linear-gradient(135deg, #c2185b 0%, #ad1457 100%);
+  background: #28a745;
   color: white;
-  box-shadow: 0 2px 6px rgba(194, 24, 91, 0.2);
+  box-shadow: 0 2px 6px rgba(40, 167, 69, 0.2);
 }
 
 .ledger-btn:hover {
-  background: linear-gradient(135deg, #ad1457 0%, #880e4f 100%);
+  background: #218838;
   transform: translateY(-1px);
-  box-shadow: 0 4px 10px rgba(194, 24, 91, 0.3);
+  box-shadow: 0 4px 10px rgba(40, 167, 69, 0.3);
 }
 
 .customer-details {

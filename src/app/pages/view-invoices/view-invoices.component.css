@@ -16,19 +16,17 @@
   align-items: center;
   margin-bottom: 30px;
   padding: 20px;
-  background: linear-gradient(180deg, #667eea 0%, #764ba2 30%, #ad1457 70%, #c2185b 100%);
+  background: #ffffff;
   border-radius: 15px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e9ecef;
 }
 
 .invoice-header h2 {
-  color: #ffffff;
+  color: #333333;
   margin: 0;
   font-size: 2rem;
   font-weight: 700;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   letter-spacing: 0.5px;
 }
 
@@ -101,24 +99,27 @@
 }
 
 .invoice-stats .stat-card {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  background: #ffffff;
+  color: #333333;
   padding: 20px;
   border-radius: 12px;
   text-align: center;
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e9ecef;
 }
 
 .invoice-stats .stat-card h4 {
   margin: 0 0 10px 0;
   font-size: 14px;
-  opacity: 0.9;
+  color: #6c757d;
+  font-weight: 500;
 }
 
 .invoice-stats .stat-card .stat-number {
   font-size: 2rem;
   font-weight: bold;
   margin: 0;
+  color: #28a745;
 }
 
 .invoice-stats .stat-card .stat-number.paid {
@@ -657,20 +658,20 @@
 }
 
 .payment-btn.add-payment-btn {
-  background: linear-gradient(135deg, #c2185b 0%, #ad1457 100%);
+  background: #28a745;
   color: white;
   border: none;
-  box-shadow: 0 2px 8px rgba(194, 24, 91, 0.3);
+  box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
 }
 
 .payment-btn.add-payment-btn:hover {
-  background: linear-gradient(135deg, #ad1457 0%, #880e4f 100%);
+  background: #218838;
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(194, 24, 91, 0.4);
+  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4);
 }
 
 .show-details-btn, .hide-details-btn {
-  background: linear-gradient(135deg, #c2185b 0%, #ad1457 100%);
+  background: #28a745;
   color: white;
   border: none;
   padding: 10px 16px;
@@ -683,7 +684,7 @@
   align-items: center;
   justify-content: center;
   gap: 6px;
-  box-shadow: 0 2px 6px rgba(194, 24, 91, 0.2);
+  box-shadow: 0 2px 6px rgba(40, 167, 69, 0.2);
   min-width: 120px;
   height: 40px;
 }
@@ -1225,7 +1226,7 @@
 }
 
 .submit-payment-btn {
-  background: linear-gradient(135deg, #c2185b 0%, #ad1457 100%);
+  background: #28a745;
   color: white;
   border: none;
   padding: 12px 25px;
@@ -1234,7 +1235,7 @@
   font-size: 1rem;
   font-weight: 600;
   transition: transform 0.2s ease, box-shadow 0.3s ease;
-  box-shadow: 0 2px 8px rgba(194, 24, 91, 0.3);
+  box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
 }
 
 .submit-payment-btn.compact {
@@ -1243,9 +1244,9 @@
 }
 
 .submit-payment-btn:hover {
-  background: linear-gradient(135deg, #ad1457 0%, #880e4f 100%);
+  background: #218838;
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(194, 24, 91, 0.4);
+  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4);
 }
 
 .submit-payment-btn:active {

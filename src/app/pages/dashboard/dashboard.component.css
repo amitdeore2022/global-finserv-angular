@@ -16,19 +16,17 @@
   align-items: center;
   margin-bottom: 30px;
   padding: 20px;
-  background: linear-gradient(180deg, #667eea 0%, #764ba2 30%, #ad1457 70%, #c2185b 100%);
+  background: #ffffff;
   border-radius: 15px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e9ecef;
 }
 
 .dashboard-header h2 {
-  color: #ffffff;
+  color: #333333;
   font-size: 28px;
   margin: 0;
   font-weight: 700;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   letter-spacing: 0.5px;
 }
 
@@ -67,7 +65,7 @@
 
 .actions button {
   padding: 15px 25px;
-  background: linear-gradient(135deg, #c2185b 0%, #ad1457 100%);
+  background: #28a745;
   color: white;
   border: none;
   border-radius: 25px;
@@ -75,21 +73,20 @@
   font-size: 16px;
   font-weight: 600;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(194, 24, 91, 0.3);
-  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
 }
 
 .actions button:hover {
-  background: linear-gradient(135deg, #ad1457 0%, #880e4f 100%);
+  background: #218838;
   transform: translateY(-3px);
-  box-shadow: 0 6px 20px rgba(194, 24, 91, 0.4);
+  box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
 }
 
 .actions button.active {
-  background: linear-gradient(135deg, #880e4f 0%, #4a148c 100%);
+  background: #1e7e34;
   color: white;
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(136, 14, 79, 0.4);
+  box-shadow: 0 8px 20px rgba(30, 126, 52, 0.4);
 }
 
 .section-container {
@@ -1295,9 +1292,9 @@ tr:hover {
 .accordion-header {
   width: 100%;
   padding: 20px;
-  background: linear-gradient(135deg, #c2185b 0%, #ad1457 100%);
-  color: white;
-  border: none;
+  background: #ffffff;
+  color: #333333;
+  border: 1px solid #e0e0e0;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -1306,28 +1303,30 @@ tr:hover {
   font-weight: 600;
   text-align: left;
   transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(194, 24, 91, 0.2);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .accordion-header:hover {
-  background: linear-gradient(135deg, #ad1457 0%, #880e4f 100%);
+  background: #f8f9fa;
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(194, 24, 91, 0.3);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .accordion-header.active {
-  background: linear-gradient(135deg, #ad1457 0%, #880e4f 100%);
-  box-shadow: 0 4px 12px rgba(194, 24, 91, 0.3);
+  background: #f8f9fa;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .accordion-header i:first-child {
   font-size: 18px;
   margin-right: 12px;
+  color: #28a745;
 }
 
 .accordion-icon {
   font-size: 14px;
   transition: transform 0.3s ease;
+  color: #6c757d;
 }
 
 .accordion-icon.rotated {
@@ -1358,31 +1357,33 @@ tr:hover {
 
 .accordion-content .actions button {
   padding: 15px 20px;
-  background: #f8f9fa;
-  border: 1px solid #e0e0e0;
+  background: #ffffff;
+  border: 1px solid #e9ecef;
   border-radius: 8px;
   cursor: pointer;
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 10px;
+  justify-content: flex-start;
+  gap: 12px;
   font-size: 14px;
   font-weight: 500;
   color: #495057;
   text-decoration: none;
   transition: all 0.3s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .accordion-content .actions button:hover {
-  background: #e9ecef;
+  background: #f8f9fa;
+  border-color: #dee2e6;
   transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  color: #c2185b;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  color: #333333;
 }
 
 .accordion-content .actions button i {
   font-size: 16px;
-  color: #c2185b;
+  color: #28a745;
 }
 
 /* Quick Stats Styles (keeping from improvements) */
