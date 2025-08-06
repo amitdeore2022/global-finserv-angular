@@ -75,6 +75,10 @@ export class ViewInvoicesComponent implements OnInit {
       console.log('Loading invoices...');
       this.invoices = await this.invoiceService.getInvoices();
       console.log('Loaded invoices:', this.invoices);
+      
+      // Sort invoices by date (most recent first)
+      this.invoices = this.sortInvoicesByDate(this.invoices);
+      
       this.filteredInvoices = [...this.invoices];
       this.calculateStatistics();
     } catch (error) {
@@ -89,6 +93,29 @@ export class ViewInvoicesComponent implements OnInit {
     this.totalInvoiceAmount = this.invoices.reduce((sum, invoice) => sum + invoice.totalAmount, 0);
     this.totalPendingAmount = this.invoices.reduce((sum, invoice) => sum + invoice.balancePayable, 0);
     this.paidInvoicesCount = this.invoices.filter(invoice => invoice.status === 'PAID').length;
+  }
+
+  sortInvoicesByDate(invoices: Invoice[]): Invoice[] {
+    return invoices.sort((a, b) => {
+      // First try to sort by invoiceDate (string format)
+      const dateA = new Date(a.invoiceDate);
+      const dateB = new Date(b.invoiceDate);
+      
+      // If both dates are valid, sort by invoice date (most recent first)
+      if (!isNaN(dateA.getTime()) && !isNaN(dateB.getTime())) {
+        return dateB.getTime() - dateA.getTime();
+      }
+      
+      // Fallback to createdAt if available
+      if (a.createdAt && b.createdAt) {
+        const createdA = a.createdAt instanceof Date ? a.createdAt : new Date(a.createdAt);
+        const createdB = b.createdAt instanceof Date ? b.createdAt : new Date(b.createdAt);
+        return createdB.getTime() - createdA.getTime();
+      }
+      
+      // If no valid dates, maintain original order
+      return 0;
+    });
   }
 
   onInvoiceSearch() {
@@ -112,6 +139,9 @@ export class ViewInvoicesComponent implements OnInit {
       return matchesSearch && matchesStatus;
     });
     
+    // Sort filtered results by date (most recent first)
+    this.filteredInvoices = this.sortInvoicesByDate(this.filteredInvoices);
+    
     // Recalculate statistics based on filtered results
     this.calculateFilteredStatistics();
   }
@@ -122,6 +152,10 @@ export class ViewInvoicesComponent implements OnInit {
     this.filteredInvoices = this.invoices.filter(invoice => 
       invoice.customer.mobile === this.customerFilter
     );
+    
+    // Sort filtered results by date (most recent first)
+    this.filteredInvoices = this.sortInvoicesByDate(this.filteredInvoices);
+    
     console.log('Filtered invoices for customer:', this.filteredInvoices);
     
     // Set the search term to show the customer mobile in the search box
@@ -511,6 +545,8 @@ Thank you for your business! 🙏`;
     this.customerFilter = '';
     this.invoiceSearchTerm = '';
     this.filteredInvoices = [...this.invoices];
+    // Ensure the cleared list is also sorted
+    this.filteredInvoices = this.sortInvoicesByDate(this.filteredInvoices);
     this.calculateStatistics(); // Recalculate for all invoices
     // Update URL to remove customer query param
     this.router.navigate(['/view-invoices']);

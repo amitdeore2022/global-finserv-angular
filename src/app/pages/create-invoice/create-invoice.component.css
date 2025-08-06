@@ -16,30 +16,38 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 30px;
-  padding-bottom: 15px;
-  border-bottom: 2px solid #e9ecef;
+  padding: 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 15px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .invoice-header h2 {
-  color: #2c3e50;
+  color: #ffffff;
   margin: 0;
   font-size: 2rem;
-  font-weight: 600;
+  font-weight: 700;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  letter-spacing: 0.5px;
 }
 
 .back-btn {
-  background: #6c757d;
+  background: rgba(255, 255, 255, 0.2);
   color: white;
-  border: none;
+  border: 1px solid rgba(255, 255, 255, 0.3);
   padding: 10px 20px;
   border-radius: 8px;
   cursor: pointer;
   font-size: 14px;
-  transition: background-color 0.3s ease;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
 }
 
 .back-btn:hover {
-  background: #5a6268;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-1px);
 }
 
 .invoice-form {
@@ -1227,6 +1235,22 @@
 
 /* Mobile responsive */
 @media (max-width: 768px) {
+  .create-invoice-container {
+    padding: 20px 15px;
+  }
+  
+  .invoice-header {
+    flex-direction: column;
+    gap: 15px;
+    padding: 20px 15px;
+    text-align: center;
+  }
+  
+  .invoice-header h2 {
+    font-size: 1.5rem;
+    margin-bottom: 0;
+  }
+  
   .service-dropdown {
     font-size: 16px !important; /* Prevents zoom on iOS */
     min-height: 44px !important; /* Better touch target */
