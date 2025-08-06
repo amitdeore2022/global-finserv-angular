@@ -204,11 +204,12 @@ export class ViewInvoicesComponent implements OnInit {
       // Create standard filename
       const customerName = invoice.customer?.name || 'Customer';
       const sanitizedCustomerName = customerName.replace(/[^a-zA-Z0-9]/g, '_');
-      const filename = `${sanitizedCustomerName}_INV_${invoice.invoiceNumber}.pdf`;
+      const baseFilename = `${sanitizedCustomerName}_INV_${invoice.invoiceNumber}`;
       
       if (isFirstDownload) {
-        // First download - normal download (browser may show dialog)
+        // First download - normal download
         console.log('📄 First download - normal download method');
+        const filename = `${baseFilename}.pdf`;
         const url = window.URL.createObjectURL(pdfBlob);
         const downloadLink = document.createElement('a');
         downloadLink.href = url;
@@ -221,31 +222,35 @@ export class ViewInvoicesComponent implements OnInit {
         
         setTimeout(() => window.URL.revokeObjectURL(url), 1000);
       } else {
-        // Subsequent downloads - try to download silently
-        console.log('📄 Subsequent download - attempting silent download');
+        // Subsequent downloads - use unique filename with timestamp to avoid browser cache
+        const timestamp = Date.now();
+        const uniqueFilename = `${baseFilename}_${timestamp}.pdf`;
+        
+        console.log('📄 Subsequent download - using unique filename to avoid popup');
         
         const url = window.URL.createObjectURL(pdfBlob);
         const downloadLink = document.createElement('a');
         downloadLink.href = url;
-        downloadLink.download = filename;
+        downloadLink.download = uniqueFilename;
         downloadLink.style.display = 'none';
         downloadLink.style.position = 'absolute';
         downloadLink.style.left = '-9999px';
+        downloadLink.style.visibility = 'hidden';
         
-        // Add unique identifier to avoid browser caching issues
-        downloadLink.setAttribute('data-download-id', Date.now().toString());
+        // Add random attribute to make it even more unique
+        downloadLink.setAttribute('data-unique-id', Math.random().toString(36).substr(2, 9));
         
         document.body.appendChild(downloadLink);
         
-        // Use setTimeout to avoid rapid succession issues
+        // Trigger download immediately without timeout
+        downloadLink.click();
+        
+        // Clean up after a short delay
         setTimeout(() => {
-          downloadLink.click();
-          setTimeout(() => {
-            if (document.body.contains(downloadLink)) {
-              document.body.removeChild(downloadLink);
-            }
-            window.URL.revokeObjectURL(url);
-          }, 500);
+          if (document.body.contains(downloadLink)) {
+            document.body.removeChild(downloadLink);
+          }
+          window.URL.revokeObjectURL(url);
         }, 100);
       }
       
@@ -253,7 +258,7 @@ export class ViewInvoicesComponent implements OnInit {
       downloadCount++;
       localStorage.setItem(downloadCountKey, downloadCount.toString());
       
-      console.log('📄 PDF download initiated:', filename, `(Download #${downloadCount})`);
+      console.log('📄 PDF download initiated:', `Download #${downloadCount}`);
 
       // Update button text
       if (whatsappButton) {
