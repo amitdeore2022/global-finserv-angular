@@ -17,7 +17,7 @@
   align-items: center;
   margin-bottom: 30px;
   padding: 20px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(180deg, #667eea 0%, #764ba2 30%, #ad1457 70%, #c2185b 100%);
   border-radius: 15px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   backdrop-filter: blur(10px);
@@ -1007,19 +1007,22 @@
 }
 
 .preview-btn {
-  background: #007bff;
+  background: linear-gradient(135deg, #c2185b 0%, #ad1457 100%);
   color: white;
   border: none;
   padding: 12px 30px;
-  border-radius: 8px;
+  border-radius: 25px;
   cursor: pointer;
   font-size: 16px;
-  font-weight: 500;
-  transition: background-color 0.3s ease;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(194, 24, 91, 0.3);
 }
 
 .preview-btn:hover {
-  background: #0056b3;
+  background: linear-gradient(135deg, #ad1457 0%, #880e4f 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(194, 24, 91, 0.4);
 }
 
 /* Preview Section Styles */
@@ -1397,23 +1400,23 @@
 }
 
 .save-customer-btn {
-  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+  background: linear-gradient(135deg, #c2185b 0%, #ad1457 100%);
   color: white;
   border: none;
   padding: 12px 24px;
-  border-radius: 8px;
+  border-radius: 25px;
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+  box-shadow: 0 4px 15px rgba(194, 24, 91, 0.3);
   min-width: 180px;
 }
 
 .save-customer-btn:hover {
-  background: linear-gradient(135deg, #218838 0%, #1da88a 100%);
+  background: linear-gradient(135deg, #ad1457 0%, #880e4f 100%);
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(40, 167, 69, 0.4);
+  box-shadow: 0 6px 20px rgba(194, 24, 91, 0.4);
 }
 
 .save-customer-btn:active {

@@ -16,7 +16,7 @@
   align-items: center;
   margin-bottom: 30px;
   padding: 20px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(180deg, #667eea 0%, #764ba2 30%, #ad1457 70%, #c2185b 100%);
   border-radius: 15px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   backdrop-filter: blur(10px);
@@ -657,28 +657,33 @@
 }
 
 .payment-btn.add-payment-btn {
-  background-color: #007bff;
+  background: linear-gradient(135deg, #c2185b 0%, #ad1457 100%);
   color: white;
+  border: none;
+  box-shadow: 0 2px 8px rgba(194, 24, 91, 0.3);
 }
 
 .payment-btn.add-payment-btn:hover {
-  background-color: #0056b3;
+  background: linear-gradient(135deg, #ad1457 0%, #880e4f 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(194, 24, 91, 0.4);
 }
 
 .show-details-btn, .hide-details-btn {
-  background-color: #007bff;
+  background: linear-gradient(135deg, #c2185b 0%, #ad1457 100%);
   color: white;
   border: none;
   padding: 10px 16px;
-  border-radius: 8px;
+  border-radius: 20px;
   cursor: pointer;
   font-size: 13px;
   font-weight: 500;
-  transition: background-color 0.2s ease;
+  transition: all 0.2s ease;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 6px;
+  box-shadow: 0 2px 6px rgba(194, 24, 91, 0.2);
   min-width: 120px;
   height: 40px;
 }
@@ -765,7 +770,9 @@
 }
 
 .show-details-btn:hover, .hide-details-btn:hover {
-  background-color: #0056b3;
+  background: linear-gradient(135deg, #ad1457 0%, #880e4f 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(194, 24, 91, 0.3);
 }
 
 .minimal-content {
@@ -1218,15 +1225,16 @@
 }
 
 .submit-payment-btn {
-  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+  background: linear-gradient(135deg, #c2185b 0%, #ad1457 100%);
   color: white;
   border: none;
   padding: 12px 25px;
-  border-radius: 8px;
+  border-radius: 25px;
   cursor: pointer;
   font-size: 1rem;
   font-weight: 600;
   transition: transform 0.2s ease, box-shadow 0.3s ease;
+  box-shadow: 0 2px 8px rgba(194, 24, 91, 0.3);
 }
 
 .submit-payment-btn.compact {
@@ -1235,8 +1243,9 @@
 }
 
 .submit-payment-btn:hover {
+  background: linear-gradient(135deg, #ad1457 0%, #880e4f 100%);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4);
+  box-shadow: 0 4px 12px rgba(194, 24, 91, 0.4);
 }
 
 .submit-payment-btn:active {

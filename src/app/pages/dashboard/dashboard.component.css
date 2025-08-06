@@ -16,7 +16,7 @@
   align-items: center;
   margin-bottom: 30px;
   padding: 20px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(180deg, #667eea 0%, #764ba2 30%, #ad1457 70%, #c2185b 100%);
   border-radius: 15px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   backdrop-filter: blur(10px);
@@ -67,29 +67,29 @@
 
 .actions button {
   padding: 15px 25px;
-  background: rgba(255, 255, 255, 0.95);
-  color: #333;
+  background: linear-gradient(135deg, #c2185b 0%, #ad1457 100%);
+  color: white;
   border: none;
-  border-radius: 15px;
+  border-radius: 25px;
   cursor: pointer;
   font-size: 16px;
   font-weight: 600;
   transition: all 0.3s ease;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 15px rgba(194, 24, 91, 0.3);
   backdrop-filter: blur(10px);
 }
 
 .actions button:hover {
+  background: linear-gradient(135deg, #ad1457 0%, #880e4f 100%);
   transform: translateY(-3px);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-  background: white;
+  box-shadow: 0 6px 20px rgba(194, 24, 91, 0.4);
 }
 
 .actions button.active {
-  background: #28a745;
+  background: linear-gradient(135deg, #880e4f 0%, #4a148c 100%);
   color: white;
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(40, 167, 69, 0.3);
+  box-shadow: 0 8px 20px rgba(136, 14, 79, 0.4);
 }
 
 .section-container {
@@ -1295,7 +1295,7 @@ tr:hover {
 .accordion-header {
   width: 100%;
   padding: 20px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #c2185b 0%, #ad1457 100%);
   color: white;
   border: none;
   cursor: pointer;
@@ -1306,15 +1306,18 @@ tr:hover {
   font-weight: 600;
   text-align: left;
   transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(194, 24, 91, 0.2);
 }
 
 .accordion-header:hover {
-  background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+  background: linear-gradient(135deg, #ad1457 0%, #880e4f 100%);
   transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(194, 24, 91, 0.3);
 }
 
 .accordion-header.active {
-  background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+  background: linear-gradient(135deg, #ad1457 0%, #880e4f 100%);
+  box-shadow: 0 4px 12px rgba(194, 24, 91, 0.3);
 }
 
 .accordion-header i:first-child {
@@ -1361,6 +1364,7 @@ tr:hover {
   cursor: pointer;
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 10px;
   font-size: 14px;
   font-weight: 500;
@@ -1373,11 +1377,12 @@ tr:hover {
   background: #e9ecef;
   transform: translateY(-1px);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  color: #c2185b;
 }
 
 .accordion-content .actions button i {
   font-size: 16px;
-  color: #667eea;
+  color: #c2185b;
 }
 
 /* Quick Stats Styles (keeping from improvements) */
