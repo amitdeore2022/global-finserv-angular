@@ -80,6 +80,9 @@ export class PdfGenerationNewService {
   private generateSecondPage(doc: jsPDF, invoice: any, startIndex: number): void {
     doc.addPage();
     
+    // Add page border to second page (same as first page)
+    this.addPageBorder(doc);
+    
     // Simple header for second page
     doc.setFontSize(16);
     doc.setFont('helvetica', 'bold');

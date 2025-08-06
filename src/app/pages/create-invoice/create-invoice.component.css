@@ -423,6 +423,32 @@
   content: none !important;
 }
 
+/* Remove all possible arrow/chevron indicators */
+.customer-card.selected p,
+.customer-card.selected p *,
+.customer-card.selected div,
+.customer-card.selected span {
+  background-image: none !important;
+}
+
+/* Hide any chevron/arrow icons specifically */
+.customer-card.selected .fa-chevron-down,
+.customer-card.selected .fa-angle-down,
+.customer-card.selected .fa-caret-down,
+.customer-card.selected i[class*="chevron"],
+.customer-card.selected i[class*="angle"],
+.customer-card.selected i[class*="caret"] {
+  display: none !important;
+  visibility: hidden !important;
+}
+
+/* Remove any absolute positioned arrows */
+.customer-card.selected *::after,
+.customer-card.selected *::before {
+  content: none !important;
+  display: none !important;
+}
+
 .customer-card.selected p strong {
   color: #0056b3;
 }
