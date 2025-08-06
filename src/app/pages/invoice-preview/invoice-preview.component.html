@@ -9,10 +9,6 @@
   <div *ngIf="!isLoading && invoice" class="invoice-preview">
     <!-- Action Buttons Header -->
     <div class="action-header">
-      <button (click)="goBack()" class="back-btn">
-        <i class="fas fa-arrow-left"></i>
-        {{ isPreviewMode ? 'Back to Form' : 'Back' }}
-      </button>
       <div class="action-buttons">
         <button 
           (click)="printInvoice()" 
@@ -173,6 +169,10 @@
         <button (click)="editInvoice()" class="edit-btn">
           <i class="fas fa-edit"></i>
           EDIT
+        </button>
+        <button (click)="goBack()" class="back-btn">
+          <i class="fas fa-arrow-left"></i>
+          {{ isPreviewMode ? 'Back to Form' : 'Back' }}
         </button>
         <button (click)="cancelInvoice()" class="cancel-invoice-btn">
           <i class="fas fa-times"></i>
