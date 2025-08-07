@@ -5,15 +5,18 @@ import { CommonModule } from '@angular/common';
 import { MigrationService } from './services/migration.service';
 import { FirestoreSetupService } from './services/firestore-setup.service';
 import { DataCleanupService } from './services/data-cleanup.service';
+import { LogoutModalComponent } from './components/logout-modal/logout-modal.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, CommonModule],
+  imports: [RouterOutlet, CommonModule, LogoutModalComponent],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit {
+  showLogoutModal = false;
+
   constructor(
     private router: Router,
     private migrationService: MigrationService,
@@ -67,10 +70,19 @@ export class AppComponent implements OnInit {
   }
 
   logout(): void {
+    this.showLogoutModal = true;
+  }
+
+  onLogoutConfirmed(): void {
+    this.showLogoutModal = false;
     // Clear any stored authentication data if needed
     localStorage.clear();
     sessionStorage.clear();
     this.router.navigate(['/login']);
+  }
+
+  onLogoutCancelled(): void {
+    this.showLogoutModal = false;
   }
 
   showDashboardButton(): boolean {

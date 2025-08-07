@@ -260,4 +260,10 @@
       </div>
     </div>
   </div>
+
+  <app-logout-modal
+    [isVisible]="showLogoutModal"
+    (confirmed)="onLogoutConfirmed()"
+    (cancelled)="onLogoutCancelled()">
+  </app-logout-modal>
 </div>

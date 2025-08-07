@@ -18,7 +18,7 @@
   flex-wrap: wrap;
   gap: 15px;
   padding: 20px;
-  background: #D5E5D5;
+  background: linear-gradient(180deg, #C7D9DD 0%, #D5E5D5 40%, #f8f9fa 100%);
   border-radius: 15px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   border: 1px solid #e9ecef;

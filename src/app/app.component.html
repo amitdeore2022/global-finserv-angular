@@ -24,4 +24,10 @@
   <main class="main-content">
     <router-outlet />
   </main>
+
+  <app-logout-modal
+    [isVisible]="showLogoutModal"
+    (confirmed)="onLogoutConfirmed()"
+    (cancelled)="onLogoutCancelled()">
+  </app-logout-modal>
 </div>

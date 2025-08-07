@@ -1,16 +1,78 @@
 :host {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  display: block;
   min-height: 100vh;
-  padding: 60px 20px;
   background: #f8f9fa;
   font-family: 'Roboto', sans-serif;
 }
 
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.login-header {
+  background: linear-gradient(180deg, #C7D9DD 0%, #D5E5D5 40%, #f8f9fa 100%);
+  padding: 20px;
+  border-radius: 0 0 15px 15px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid #e9ecef;
+  margin-bottom: 40px;
+}
+
+.logo-section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.app-logo {
+  width: 60px;
+  height: 60px;
+  border-radius: 8px;
+  object-fit: cover;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+.title-section {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.app-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin: 0;
+  letter-spacing: -0.5px;
+  color: #333333;
+}
+
+.header-subtitle {
+  font-size: 1.1rem;
+  margin-top: 8px;
+  font-weight: 400;
+  letter-spacing: 0.5px;
+  color: #6c757d;
+}
+
 .login-container {
-  width: 100%;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 20px;
   max-width: 400px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+form {
+  width: 100%;
   padding: 40px;
   border-radius: 15px;
   background-color: #ffffff;
@@ -105,38 +167,11 @@ button:hover {
   text-decoration: underline;
 }
 
-/* Logo Section Styling */
-.logo-section {
-  margin-bottom: 30px;
-  text-align: center;
-}
-
-.app-logo {
-  width: 80px;
-  height: 80px;
-  border-radius: 12px;
-  margin-bottom: 15px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  object-fit: cover;
-}
-
-.app-title {
-  color: #2c3e50;
-  font-size: 24px;
-  font-weight: 700;
-  margin: 0;
-  margin-bottom: 10px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
 /* PWA Install Button Styles */
 .install-prompt {
   margin-bottom: 20px;
   padding: 10px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
   border-radius: 10px;
   animation: pulse 2s infinite;
 }
@@ -160,7 +195,7 @@ button:hover {
 
 .install-btn:hover {
   background: #ffffff;
-  color: #667eea;
+  color: #28a745;
   transform: translateY(-2px);
 }
 
@@ -170,12 +205,36 @@ button:hover {
 
 @keyframes pulse {
   0% {
-    box-shadow: 0 0 0 0 rgba(102, 126, 234, 0.7);
+    box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.7);
   }
   70% {
-    box-shadow: 0 0 0 10px rgba(102, 126, 234, 0);
+    box-shadow: 0 0 0 10px rgba(40, 167, 69, 0);
   }
   100% {
-    box-shadow: 0 0 0 0 rgba(102, 126, 234, 0);
+    box-shadow: 0 0 0 0 rgba(40, 167, 69, 0);
+  }
+}
+
+/* Mobile responsive styles */
+@media (max-width: 768px) {
+  .app-title {
+    font-size: 2rem;
+  }
+  
+  .header-subtitle {
+    font-size: 1rem;
+  }
+  
+  .logo-section {
+    gap: 15px;
+  }
+  
+  .app-logo {
+    width: 50px;
+    height: 50px;
+  }
+  
+  form {
+    padding: 30px 20px;
   }
 }

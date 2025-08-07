@@ -5,18 +5,20 @@ import { Router, RouterModule, ActivatedRoute } from '@angular/router';
 import { PdfGenerationService } from '../../services/pdf-generation.service';
 import { CustomerService, Customer } from '../../services/customer.service';
 import { InvoiceService, Invoice } from '../../services/invoice.service';
+import { LogoutModalComponent } from '../../components/logout-modal/logout-modal.component';
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css'],
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule]
+  imports: [CommonModule, FormsModule, RouterModule, LogoutModalComponent]
 })
 export class DashboardComponent implements OnInit {
   activeCategory: string | null = null;
   activeSection: string | null = null;
   isRevenueMode = false;
+  showLogoutModal = false;
   
   // Coming Soon Popup properties
   showComingSoonPopup = false;
@@ -809,6 +811,11 @@ export class DashboardComponent implements OnInit {
   }
 
   logout(): void {
+    this.showLogoutModal = true;
+  }
+
+  onLogoutConfirmed(): void {
+    this.showLogoutModal = false;
     // Clear any stored authentication data
     localStorage.removeItem('authToken');
     localStorage.removeItem('userSession');
@@ -821,6 +828,10 @@ export class DashboardComponent implements OnInit {
     
     // Navigate to login page
     this.router.navigate(['/login']);
+  }
+
+  onLogoutCancelled(): void {
+    this.showLogoutModal = false;
   }
 
   // Navigation methods for new dashboard
