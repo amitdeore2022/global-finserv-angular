@@ -3,82 +3,60 @@
     <h2>Dashboard</h2>
   </div>
 
-  <!-- Accordion Style Navigation -->
-  <div class="accordion-navigation">
-    
-    <!-- Customers Section -->
-    <div class="accordion-item">
-      <button class="accordion-header" (click)="toggleCategory('customers')" [class.active]="activeCategory === 'customers'">
-        <div class="header-content">
+  <!-- Dashboard Action Buttons -->
+  <div class="quick-actions">
+    <div class="actions-grid">
+      <!-- Invoice Actions (Primary) -->
+      <button class="action-btn" (click)="navigateToCreateInvoice()">
+        <div class="btn-icon">
+          <i class="fas fa-plus-circle"></i>
+        </div>
+        <span class="btn-label">Create Invoice</span>
+      </button>
+
+      <button class="action-btn" (click)="navigateToViewInvoices()">
+        <div class="btn-icon">
+          <i class="fas fa-file-invoice-dollar"></i>
+        </div>
+        <span class="btn-label">View Invoices</span>
+      </button>
+
+      <!-- Customer Actions -->
+      <button class="action-btn" (click)="navigateToAddCustomer()">
+        <div class="btn-icon">
+          <i class="fas fa-user-plus"></i>
+        </div>
+        <span class="btn-label">Add Customer</span>
+      </button>
+
+      <button class="action-btn" (click)="navigateToViewCustomers()">
+        <div class="btn-icon">
           <i class="fas fa-users"></i>
-          <span>Customers</span>
         </div>
-        <i class="fas fa-chevron-down accordion-icon" [class.rotated]="activeCategory === 'customers'"></i>
+        <span class="btn-label">View Customers</span>
       </button>
-      <div class="accordion-content" [class.expanded]="activeCategory === 'customers'">
-        <div class="sub-functions">
-          <h3>Customer Management</h3>
-          <div class="actions">
-            <button (click)="navigateToAddCustomer()">
-              <i class="fas fa-user-plus"></i> Add Customer
-            </button>
-            <button (click)="navigateToViewCustomers()">
-              <i class="fas fa-users"></i> View Customers
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
 
-    <!-- Invoices Section -->
-    <div class="accordion-item">
-      <button class="accordion-header" (click)="toggleCategory('invoices')" [class.active]="activeCategory === 'invoices'">
-        <div class="header-content">
-          <i class="fas fa-file-invoice"></i>
-          <span>Invoices</span>
+      <!-- Revenue Actions -->
+      <button class="action-btn" (click)="setActiveSection('monthlyRevenue')">
+        <div class="btn-icon">
+          <i class="fas fa-calendar-alt"></i>
         </div>
-        <i class="fas fa-chevron-down accordion-icon" [class.rotated]="activeCategory === 'invoices'"></i>
+        <span class="btn-label">Monthly Revenue</span>
       </button>
-      <div class="accordion-content" [class.expanded]="activeCategory === 'invoices'">
-        <div class="sub-functions">
-          <h3>Invoice Management</h3>
-          <div class="actions">
-            <button (click)="navigateToCreateInvoice()">
-              <i class="fas fa-plus-circle"></i> Create Invoice
-            </button>
-            <button (click)="navigateToViewInvoices()">
-              <i class="fas fa-file-invoice-dollar"></i> View Invoices
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
 
-    <!-- Revenue Dashboard Section -->
-    <div class="accordion-item">
-      <button class="accordion-header" (click)="toggleCategory('revenue')" [class.active]="activeCategory === 'revenue'">
-        <div class="header-content">
-          <i class="fas fa-chart-line"></i>
-          <span>Revenue Dashboard</span>
+      <button class="action-btn" (click)="setActiveSection('customerRevenue')">
+        <div class="btn-icon">
+          <i class="fas fa-user-chart"></i>
         </div>
-        <i class="fas fa-chevron-down accordion-icon" [class.rotated]="activeCategory === 'revenue'"></i>
+        <span class="btn-label">Customer Revenue</span>
       </button>
-      <div class="accordion-content" [class.expanded]="activeCategory === 'revenue'">
-        <div class="sub-functions">
-          <h3>Revenue Analytics</h3>
-          <div class="actions">
-            <button (click)="setActiveSection('monthlyRevenue')" [class.active]="activeSection === 'monthlyRevenue'">
-              <i class="fas fa-calendar-alt"></i> Monthly Revenue
-            </button>
-            <button (click)="setActiveSection('customerRevenue')" [class.active]="activeSection === 'customerRevenue'">
-              <i class="fas fa-user-chart"></i> Customer Revenue
-            </button>
-            <button (click)="setActiveSection('revenueReports')" [class.active]="activeSection === 'revenueReports'">
-              <i class="fas fa-chart-bar"></i> Revenue Reports
-            </button>
-          </div>
+
+      <button class="action-btn" (click)="setActiveSection('revenueReports')">
+        <div class="btn-icon">
+          <i class="fas fa-chart-bar"></i>
         </div>
-      </div>
+        <span class="btn-label">Revenue Reports</span>
+      </button>
     </div>
   </div>
 
