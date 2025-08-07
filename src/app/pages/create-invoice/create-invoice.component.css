@@ -265,14 +265,14 @@
 }
 
 .customer-result.selected {
-  border-color: #28a745;
-  background: #f8fff9;
-  box-shadow: 0 4px 16px rgba(40, 167, 69, 0.2);
+  border-color: #495057;
+  background: #f8f9fa;
+  box-shadow: 0 4px 16px rgba(73, 80, 87, 0.2);
   transform: scale(1.02);
 }
 
 .customer-result.selected::before {
-  background: #28a745;
+  background: #495057;
 }
 
 .customer-info {
@@ -1004,20 +1004,20 @@
 }
 
 .preview-btn {
-  background: #28a745;
+  background: linear-gradient(135deg, #495057 0%, #343a40 100%);
   color: white;
   border: none;
   padding: 12px 30px;
-  border-radius: 25px;
+  border-radius: 8px;
   cursor: pointer;
   font-size: 16px;
   font-weight: 600;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+  box-shadow: 0 4px 15px rgba(73, 80, 87, 0.3);
 }
 
 .preview-btn:hover {
-  background: #218838;
+  background: linear-gradient(135deg, #343a40 0%, #212529 100%);
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
 }
@@ -1194,12 +1194,12 @@
 }
 
 .print-btn {
-  background: #007bff;
+  background: #495057;
   color: white;
 }
 
 .print-btn:hover:not(:disabled) {
-  background: #0056b3;
+  background: #343a40;
   transform: translateY(-2px);
 }
 

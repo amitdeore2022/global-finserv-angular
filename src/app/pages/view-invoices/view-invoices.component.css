@@ -321,17 +321,17 @@
 }
 
 .status-btn.mark-paid {
-  background-color: #28a745;
+  background-color: #495057;
   color: white;
 }
 
 .status-btn.mark-paid:hover:not(:disabled) {
-  background-color: #218838;
+  background-color: #343a40;
 }
 
 .status-btn.mark-paid.active,
 .status-btn.mark-paid:disabled {
-  background-color: #155724;
+  background-color: #212529;
   opacity: 0.7;
   cursor: not-allowed;
 }
@@ -520,7 +520,7 @@
 }
 
 .balance-amount.paid {
-  color: #28a745;
+  color: #495057;
 }
 
 .balance-row {
@@ -531,7 +531,7 @@
 }
 
 .paid-badge {
-  background: #28a745;
+  background: #495057;
   color: white;
   padding: 2px 6px;
   border-radius: 10px;
@@ -574,12 +574,12 @@
 }
 
 .print-btn {
-  background: #28a745;
+  background: #495057;
   color: white;
 }
 
 .print-btn:hover {
-  background: #218838;
+  background: #343a40;
 }
 
 .whatsapp-btn {
@@ -621,8 +621,8 @@
 
 .status-select:focus {
   outline: none;
-  border-color: #667eea;
-  box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
+  border-color: #495057;
+  box-shadow: 0 0 0 2px rgba(73, 80, 87, 0.2);
 }
 
 /* Payment Actions Styles */
@@ -658,24 +658,24 @@
 }
 
 .payment-btn.add-payment-btn {
-  background: #28a745;
+  background: linear-gradient(135deg, #28a745 0%, #218838 100%);
   color: white;
   border: none;
   box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
 }
 
 .payment-btn.add-payment-btn:hover {
-  background: #218838;
+  background: linear-gradient(135deg, #218838 0%, #1e7e34 100%);
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4);
 }
 
 .show-details-btn, .hide-details-btn {
-  background: #28a745;
+  background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
   color: white;
   border: none;
   padding: 10px 16px;
-  border-radius: 20px;
+  border-radius: 8px;
   cursor: pointer;
   font-size: 13px;
   font-weight: 500;
@@ -684,18 +684,24 @@
   align-items: center;
   justify-content: center;
   gap: 6px;
-  box-shadow: 0 2px 6px rgba(40, 167, 69, 0.2);
+  box-shadow: 0 2px 6px rgba(220, 53, 69, 0.2);
   min-width: 120px;
   height: 40px;
 }
 
+.show-details-btn:hover, .hide-details-btn:hover {
+  background: linear-gradient(135deg, #c82333 0%, #a71d2a 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(220, 53, 69, 0.3);
+}
+
 .payment-btn.paid-btn {
-  background-color: #28a745;
+  background-color: #495057;
   color: white;
 }
 
 .payment-btn.paid-btn:hover {
-  background-color: #218838;
+  background-color: #343a40;
 }
 
 .payment-btn.pending-btn {
@@ -1070,8 +1076,8 @@
   justify-content: space-between;
   align-items: center;
   padding: 15px 20px;
-  border-bottom: 1px solid #e9ecef;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-bottom: 1px solid #dee2e6;
+  background: linear-gradient(135deg, #495057 0%, #343a40 100%);
   color: white;
   border-radius: 12px 12px 0 0;
 }
@@ -1187,8 +1193,8 @@
 .payment-form .form-control:focus,
 .payment-form .form-control.compact:focus {
   outline: none;
-  border-color: #667eea;
-  box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1);
+  border-color: #495057;
+  box-shadow: 0 0 0 2px rgba(73, 80, 87, 0.1);
 }
 
 .payment-form textarea.form-control {
@@ -1222,20 +1228,20 @@
 }
 
 .cancel-btn:hover {
-  background: #5a6268;
+  background: #495057;
 }
 
 .submit-payment-btn {
-  background: #28a745;
+  background: linear-gradient(135deg, #495057 0%, #343a40 100%);
   color: white;
   border: none;
   padding: 12px 25px;
-  border-radius: 25px;
+  border-radius: 8px;
   cursor: pointer;
   font-size: 1rem;
   font-weight: 600;
   transition: transform 0.2s ease, box-shadow 0.3s ease;
-  box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
+  box-shadow: 0 2px 8px rgba(73, 80, 87, 0.3);
 }
 
 .submit-payment-btn.compact {
@@ -1244,9 +1250,9 @@
 }
 
 .submit-payment-btn:hover {
-  background: #218838;
+  background: linear-gradient(135deg, #343a40 0%, #212529 100%);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4);
+  box-shadow: 0 4px 12px rgba(73, 80, 87, 0.4);
 }
 
 .submit-payment-btn:active {

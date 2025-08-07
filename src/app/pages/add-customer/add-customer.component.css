@@ -153,22 +153,22 @@
 }
 
 .submit-btn {
-  background: #28a745;
+  background: linear-gradient(135deg, #495057 0%, #343a40 100%);
   color: white;
   border: none;
-  border-radius: 25px;
+  border-radius: 8px;
   padding: 15px 30px;
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+  box-shadow: 0 4px 15px rgba(73, 80, 87, 0.3);
 }
 
 .submit-btn:hover {
-  background: #218838;
+  background: linear-gradient(135deg, #343a40 0%, #212529 100%);
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+  box-shadow: 0 6px 20px rgba(73, 80, 87, 0.4);
 }
 
 /* Radio Button Styling */

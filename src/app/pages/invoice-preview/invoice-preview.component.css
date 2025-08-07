@@ -90,11 +90,11 @@
 }
 
 .print-btn {
-  background: rgba(40, 167, 69, 0.8);
+  background: rgba(73, 80, 87, 0.8);
 }
 
 .print-btn:hover {
-  background: rgba(40, 167, 69, 1);
+  background: rgba(73, 80, 87, 1);
   transform: translateY(-2px);
 }
 
@@ -469,7 +469,7 @@
 }
 
 .create-invoice-btn {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #495057 0%, #343a40 100%);
   color: white;
   border: none;
   border-radius: 12px;
@@ -487,7 +487,7 @@
 
 .create-invoice-btn:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 8px 16px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 8px 16px rgba(73, 80, 87, 0.3);
 }
 
 .create-invoice-btn:disabled {
@@ -622,6 +622,69 @@
   gap: 15px;
   margin-bottom: 15px;
   flex-wrap: wrap;
+}
+
+.bottom-buttons button {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+  min-width: 120px;
+  justify-content: center;
+}
+
+.bottom-buttons .save-invoice-btn {
+  background: linear-gradient(135deg, #495057 0%, #343a40 100%);
+  color: white;
+  box-shadow: 0 2px 8px rgba(73, 80, 87, 0.3);
+}
+
+.bottom-buttons .save-invoice-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, #343a40 0%, #212529 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(73, 80, 87, 0.4);
+}
+
+.bottom-buttons .back-btn {
+  background: #6c757d;
+  color: white;
+  box-shadow: 0 2px 8px rgba(108, 117, 125, 0.3);
+}
+
+.bottom-buttons .back-btn:hover {
+  background: #5a6268;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(108, 117, 125, 0.4);
+}
+
+.bottom-buttons .edit-btn {
+  background: #ffc107;
+  color: #212529;
+  box-shadow: 0 2px 8px rgba(255, 193, 7, 0.3);
+}
+
+.bottom-buttons .edit-btn:hover {
+  background: #e0a800;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 193, 7, 0.4);
+}
+
+.bottom-buttons .cancel-invoice-btn {
+  background: #dc3545;
+  color: white;
+  box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3);
+}
+
+.bottom-buttons .cancel-invoice-btn:hover {
+  background: #c82333;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(220, 53, 69, 0.4);
 }
 
 .cancel-note {

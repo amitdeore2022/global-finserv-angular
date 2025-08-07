@@ -65,28 +65,28 @@
 
 .actions button {
   padding: 15px 25px;
-  background: #28a745;
+  background: linear-gradient(135deg, #495057 0%, #343a40 100%);
   color: white;
   border: none;
-  border-radius: 25px;
+  border-radius: 8px;
   cursor: pointer;
   font-size: 16px;
   font-weight: 600;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+  box-shadow: 0 4px 15px rgba(73, 80, 87, 0.3);
 }
 
 .actions button:hover {
-  background: #218838;
+  background: linear-gradient(135deg, #343a40 0%, #212529 100%);
   transform: translateY(-3px);
-  box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+  box-shadow: 0 6px 20px rgba(73, 80, 87, 0.4);
 }
 
 .actions button.active {
-  background: #1e7e34;
+  background: linear-gradient(135deg, #212529 0%, #000000 100%);
   color: white;
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(30, 126, 52, 0.4);
+  box-shadow: 0 8px 20px rgba(33, 37, 41, 0.4);
 }
 
 .section-container {
@@ -244,12 +244,12 @@ tr:hover {
 }
 
 .stat-card {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #495057 0%, #343a40 100%);
   color: white;
   padding: 20px;
   border-radius: 15px;
   text-align: center;
-  box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 10px 20px rgba(73, 80, 87, 0.3);
 }
 
 /* Make Total Customers and Total Invoices stat cards clickable */
@@ -262,7 +262,7 @@ tr:hover {
 .stat-card.total-customers:hover,
 .stat-card.total-invoices:hover {
   transform: translateY(-3px);
-  box-shadow: 0 15px 30px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 15px 30px rgba(73, 80, 87, 0.4);
 }
 
 .stat-card.total-customers:active,
@@ -333,12 +333,12 @@ tr:hover {
 }
 
 .edit-btn {
-  background: #28a745;
+  background: #495057;
   color: white;
 }
 
 .edit-btn:hover {
-  background: #218838;
+  background: #343a40;
   transform: translateY(-1px);
 }
 
@@ -389,11 +389,11 @@ tr:hover {
 }
 
 .due-amount.no-due {
-  color: #28a745;
+  color: #495057;
 }
 
 .paid-badge {
-  background: #28a745;
+  background: #495057;
   color: white;
   padding: 2px 8px;
   border-radius: 12px;

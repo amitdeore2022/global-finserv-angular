@@ -98,10 +98,7 @@ export class CreateInvoiceComponent implements OnInit {
   };
 
   bankAccounts = [
-    'HDFC Bank - Current Account (****1234)',
-    'ICICI Bank - Savings Account (****5678)',
-    'SBI Bank - Current Account (****9012)',
-    'Axis Bank - Current Account (****3456)'
+    'HDFC Bank, Thatte Nagar Branch - A/c Holder: Global Financial Services - A/c No: 50200107802130 - IFSC: HDFC0000064'
   ];
 
   serviceOptions = [

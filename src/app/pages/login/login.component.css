@@ -1,90 +1,30 @@
 :host {
-  display: block;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   min-height: 100vh;
-  background: #f8f9fa;
+  padding: 60px 20px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 30%, #dee2e6 100%);
   font-family: 'Roboto', sans-serif;
 }
 
-.login-page {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-
-.login-header {
-  background: linear-gradient(180deg, #C7D9DD 0%, #D5E5D5 40%, #f8f9fa 100%);
-  padding: 20px;
-  border-radius: 0 0 15px 15px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  border-bottom: 1px solid #e9ecef;
-  margin-bottom: 40px;
-}
-
-.logo-section {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 20px;
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-.app-logo {
-  width: 60px;
-  height: 60px;
-  border-radius: 8px;
-  object-fit: cover;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
-}
-
-.title-section {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-}
-
-.app-title {
-  font-size: 2.5rem;
-  font-weight: 700;
-  margin: 0;
-  letter-spacing: -0.5px;
-  color: #333333;
-}
-
-.header-subtitle {
-  font-size: 1.1rem;
-  margin-top: 8px;
-  font-weight: 400;
-  letter-spacing: 0.5px;
-  color: #6c757d;
-}
-
 .login-container {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding: 40px 20px;
+  width: 100%;
   max-width: 400px;
-  margin: 0 auto;
-  width: 100%;
-}
-
-form {
-  width: 100%;
   padding: 40px;
-  border-radius: 15px;
-  background-color: #ffffff;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  border-radius: 20px;
+  background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1), 0 0 20px rgba(102, 126, 234, 0.05);
   text-align: center;
+  border: 1px solid rgba(255, 255, 255, 0.8);
 }
 
 h2 {
-  color: #333;
+  color: #495057;
   margin-bottom: 30px;
   font-size: 28px;
   font-weight: 600;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .form-group {
@@ -104,19 +44,20 @@ label {
 input {
   width: 100%;
   padding: 15px 20px;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
+  border: 2px solid #e9ecef;
+  border-radius: 12px;
   font-size: 14px;
   box-sizing: border-box;
   outline: none;
   transition: all 0.3s ease;
-  background: #f8f9fa;
+  background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
 }
 
 input:focus {
-  border-color: #28a745;
-  box-shadow: 0 0 10px rgba(40, 167, 69, 0.3);
+  border-color: #6c757d;
+  box-shadow: 0 0 15px rgba(108, 117, 125, 0.2);
   background: #ffffff;
+  transform: translateY(-1px);
 }
 
 input::placeholder {
@@ -125,11 +66,11 @@ input::placeholder {
 
 button {
   width: 100%;
-  padding: 15px;
-  background: #28a745;
+  padding: 16px;
+  background: linear-gradient(135deg, #495057 0%, #343a40 100%);
   color: white;
   border: none;
-  border-radius: 8px;
+  border-radius: 12px;
   cursor: pointer;
   font-size: 16px;
   font-weight: 600;
@@ -137,43 +78,105 @@ button {
   transition: all 0.3s ease;
   text-transform: uppercase;
   letter-spacing: 1px;
+  box-shadow: 0 4px 15px rgba(73, 80, 87, 0.3);
 }
 
 button:hover {
-  background: #218838;
+  background: linear-gradient(135deg, #343a40 0%, #212529 100%);
   transform: translateY(-2px);
-  box-shadow: 0 10px 20px rgba(40, 167, 69, 0.3);
+  box-shadow: 0 6px 20px rgba(73, 80, 87, 0.4);
 }
 
 .error {
-  color: #e74c3c;
+  color: #dc3545;
   margin-top: 15px;
   font-size: 14px;
-  text-align: center;
+  font-weight: 500;
 }
 
+/* New Styles */
+.success-message {
+  color: #28a745;
+  margin-top: 15px;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 10px;
+  background: rgba(40, 167, 69, 0.1);
+  border-radius: 5px;
+  border-left: 4px solid #28a745;
+}
+
+.error-message {
+  background: rgba(220, 53, 69, 0.1);
+  border-left: 4px solid #dc3545;
+  padding: 10px;
+  margin-top: 15px;
+  border-radius: 5px;
+}
+
+input:invalid {
+  border-color: #dc3545;
+}
+
+input:valid {
+  border-color: #28a745;
+}
+
+/* Forgot Password Link */
 .forgot-password {
   text-align: center;
   margin-top: 10px;
 }
 
 .forgot-password a {
-  color: #28a745;
+  color: #6c757d;
   text-decoration: none;
   font-size: 12px;
+  font-weight: 500;
 }
 
 .forgot-password a:hover {
   text-decoration: underline;
+  color: #495057;
+}
+
+/* Logo Section Styling */
+.logo-section {
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.app-logo {
+  width: 80px;
+  height: 80px;
+  border-radius: 16px;
+  margin-bottom: 15px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  object-fit: cover;
+  border: 3px solid #ffffff;
+}
+
+.app-title {
+  color: #495057;
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0;
+  margin-bottom: 10px;
+  background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 /* PWA Install Button Styles */
 .install-prompt {
   margin-bottom: 20px;
-  padding: 10px;
-  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-  border-radius: 10px;
+  padding: 12px;
+  background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+  border-radius: 15px;
   animation: pulse 2s infinite;
+  box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3);
 }
 
 .install-btn {
@@ -195,7 +198,7 @@ button:hover {
 
 .install-btn:hover {
   background: #ffffff;
-  color: #28a745;
+  color: #495057;
   transform: translateY(-2px);
 }
 
@@ -205,36 +208,32 @@ button:hover {
 
 @keyframes pulse {
   0% {
-    box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.7);
+    box-shadow: 0 0 0 0 rgba(108, 117, 125, 0.7);
   }
   70% {
-    box-shadow: 0 0 0 10px rgba(40, 167, 69, 0);
+    box-shadow: 0 0 0 10px rgba(108, 117, 125, 0);
   }
   100% {
-    box-shadow: 0 0 0 0 rgba(40, 167, 69, 0);
+    box-shadow: 0 0 0 0 rgba(108, 117, 125, 0);
   }
 }
 
 /* Mobile responsive styles */
 @media (max-width: 768px) {
   .app-title {
-    font-size: 2rem;
-  }
-  
-  .header-subtitle {
-    font-size: 1rem;
-  }
-  
-  .logo-section {
-    gap: 15px;
+    font-size: 20px;
   }
   
   .app-logo {
-    width: 50px;
-    height: 50px;
+    width: 60px;
+    height: 60px;
   }
   
-  form {
+  .login-container {
     padding: 30px 20px;
+  }
+  
+  h2 {
+    font-size: 24px;
   }
 }

@@ -188,27 +188,27 @@
 }
 
 .invoices-btn {
-  background: #28a745;
+  background: linear-gradient(135deg, #495057 0%, #343a40 100%);
   color: white;
-  box-shadow: 0 2px 6px rgba(40, 167, 69, 0.2);
+  box-shadow: 0 2px 6px rgba(73, 80, 87, 0.2);
 }
 
 .invoices-btn:hover {
-  background: #218838;
+  background: linear-gradient(135deg, #343a40 0%, #212529 100%);
   transform: translateY(-1px);
-  box-shadow: 0 4px 10px rgba(40, 167, 69, 0.3);
+  box-shadow: 0 4px 10px rgba(73, 80, 87, 0.3);
 }
 
 .ledger-btn {
-  background: #28a745;
+  background: linear-gradient(135deg, #495057 0%, #343a40 100%);
   color: white;
-  box-shadow: 0 2px 6px rgba(40, 167, 69, 0.2);
+  box-shadow: 0 2px 6px rgba(73, 80, 87, 0.2);
 }
 
 .ledger-btn:hover {
-  background: #218838;
+  background: linear-gradient(135deg, #343a40 0%, #212529 100%);
   transform: translateY(-1px);
-  box-shadow: 0 4px 10px rgba(40, 167, 69, 0.3);
+  box-shadow: 0 4px 10px rgba(73, 80, 87, 0.3);
 }
 
 .customer-details {
@@ -248,11 +248,11 @@
 }
 
 .due-amount.no-due {
-  color: #28a745;
+  color: #495057;
 }
 
 .paid-badge {
-  background: #28a745;
+  background: #495057;
   color: white;
   padding: 2px 8px;
   border-radius: 12px;

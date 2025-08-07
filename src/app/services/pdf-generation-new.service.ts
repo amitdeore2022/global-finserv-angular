@@ -386,7 +386,7 @@ export class PdfGenerationNewService {
     
     const bankDetails = this.extractBankDetails(invoice.selectedBank);
     doc.text('Bank Name : ' + bankDetails.name, 18, currentY + 12);
-    doc.text('A/c Holder Name : Global Financial Services', 18, currentY + 17);
+    doc.text('A/c Holder Name : ' + bankDetails.accountHolder, 18, currentY + 17);
     doc.text('A/c No. : ' + bankDetails.accountNumber, 18, currentY + 22);
     doc.text('IFSC Code : ' + bankDetails.ifscCode, 18, currentY + 27);
     
@@ -504,29 +504,20 @@ export class PdfGenerationNewService {
   }
 
   private extractBankDetails(selectedBank: string): any {
-    const bankDetails: { [key: string]: any } = {
-      'HDFC Bank': {
-        name: 'HDFC Bank',
-        accountNumber: '12345678901234',
-        ifscCode: 'HDFC0001234'
-      },
-      'SBI Bank': {
-        name: 'State Bank of India',
-        accountNumber: '98765432109876',
-        ifscCode: 'SBIN0001234'
-      },
-      'ICICI Bank': {
-        name: 'ICICI Bank',
-        accountNumber: '11223344556677',
-        ifscCode: 'ICIC0001234'
-      },
-      'PNB Bank': {
-        name: 'Punjab National Bank',
-        accountNumber: '55667788990011',
-        ifscCode: 'PUNB0001234'
-      }
+    // Default HDFC bank details for Global Financial Services
+    const defaultBankDetails = {
+      name: 'HDFC Bank, Thatte Nagar Branch',
+      accountHolder: 'Global Financial Services',
+      accountNumber: '50200107802130',
+      ifscCode: 'HDFC0000064'
     };
+
+    // If selectedBank contains our real HDFC details, use them
+    if (selectedBank && selectedBank.includes('HDFC Bank, Thatte Nagar Branch')) {
+      return defaultBankDetails;
+    }
     
-    return bankDetails[selectedBank] || bankDetails['HDFC Bank'];
+    // For any other selection or if selectedBank is empty, use default
+    return defaultBankDetails;
   }
 }
