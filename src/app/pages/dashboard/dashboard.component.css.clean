@@ -1,0 +1,446 @@
+:host {
+  display: block;
+  background: #f8f9fa;
+  min-height: calc(100vh - 120px);
+}
+
+.dashboard {
+  padding: 40px 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  padding: 20px;
+  background: linear-gradient(180deg, #C7D9DD 0%, #D5E5D5 40%, #f8f9fa 100%);
+  border-radius: 15px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e9ecef;
+}
+
+.dashboard-header h2 {
+  color: #333333;
+  font-size: 28px;
+  margin: 0;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.logout-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  background: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3);
+}
+
+.logout-btn:hover {
+  background: #c82333;
+  box-shadow: 0 4px 12px rgba(220, 53, 69, 0.4);
+  transform: translateY(-1px);
+}
+
+.logout-btn i {
+  font-size: 16px;
+}
+
+/* Quick Actions Section */
+.quick-actions {
+  margin-bottom: 40px;
+}
+
+.actions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 30px;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.action-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 25px 20px;
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e9ecef;
+  height: 140px;
+  position: relative;
+  overflow: hidden;
+}
+
+.action-btn:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+  background: linear-gradient(135deg, #ffffff 0%, #f0f8ff 100%);
+}
+
+.action-btn:hover .btn-icon {
+  transform: scale(1.1);
+  background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+}
+
+.btn-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 15px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.btn-icon i {
+  font-size: 24px;
+  color: white;
+  transition: all 0.3s ease;
+}
+
+.btn-label {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333333;
+  text-align: center;
+  line-height: 1.3;
+  transition: color 0.3s ease;
+}
+
+.action-btn:hover .btn-label {
+  color: #007bff;
+}
+
+/* Quick Stats Section */
+.quick-stats {
+  margin-bottom: 40px;
+}
+
+.stats-title {
+  color: #333333;
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 25px;
+  text-align: center;
+  letter-spacing: 0.5px;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 25px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.stat-card {
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  border-radius: 15px;
+  padding: 25px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e9ecef;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  transition: all 0.3s ease;
+  cursor: default;
+}
+
+.stat-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+}
+
+.stat-card.total-customers {
+  cursor: pointer;
+}
+
+.stat-card.total-customers:hover .stat-icon {
+  background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+  transform: scale(1.1);
+}
+
+.stat-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  color: white;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.total-revenue .stat-icon {
+  background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
+}
+
+.outstanding-amount .stat-icon {
+  background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%);
+}
+
+.collection-rate .stat-icon {
+  background: linear-gradient(135deg, #17a2b8 0%, #117a8b 100%);
+}
+
+.total-customers .stat-icon {
+  background: linear-gradient(135deg, #6f42c1 0%, #59359a 100%);
+}
+
+.total-invoices .stat-icon {
+  background: linear-gradient(135deg, #fd7e14 0%, #e55a00 100%);
+}
+
+.stat-content h4 {
+  margin: 0 0 8px 0;
+  font-size: 16px;
+  color: #666666;
+  font-weight: 600;
+}
+
+.stat-value {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+  color: #333333;
+}
+
+/* Coming Soon Popup */
+.coming-soon-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.coming-soon-popup {
+  background: white;
+  border-radius: 20px;
+  max-width: 450px;
+  width: 90%;
+  margin: 20px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: slideUp 0.3s ease-out;
+  overflow: hidden;
+}
+
+.popup-header {
+  padding: 25px 30px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #e9ecef;
+  padding-bottom: 20px;
+}
+
+.popup-header h3 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+  color: #333333;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 20px;
+  color: #666;
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 50%;
+  width: 35px;
+  height: 35px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.close-btn:hover {
+  background: #f8f9fa;
+  color: #dc3545;
+}
+
+.popup-content {
+  padding: 30px;
+  text-align: center;
+}
+
+.popup-icon {
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 25px;
+  color: white;
+  font-size: 36px;
+  box-shadow: 0 8px 25px rgba(0, 123, 255, 0.3);
+}
+
+.popup-content p {
+  margin: 15px 0;
+  font-size: 16px;
+  line-height: 1.6;
+  color: #666666;
+}
+
+.popup-content p:first-of-type {
+  font-size: 18px;
+  color: #333333;
+}
+
+.popup-footer {
+  padding: 0 30px 30px;
+  text-align: center;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+  color: white;
+  border: none;
+  padding: 12px 30px;
+  border-radius: 25px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 123, 255, 0.4);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .dashboard {
+    padding: 20px 10px;
+  }
+  
+  .dashboard-header {
+    flex-direction: column;
+    gap: 15px;
+    padding: 20px;
+  }
+  
+  .dashboard-header h2 {
+    font-size: 24px;
+  }
+  
+  .actions-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+  
+  .action-btn {
+    height: 120px;
+    padding: 20px 15px;
+  }
+  
+  .btn-icon {
+    width: 50px;
+    height: 50px;
+    margin-bottom: 10px;
+  }
+  
+  .btn-icon i {
+    font-size: 20px;
+  }
+  
+  .btn-label {
+    font-size: 14px;
+  }
+  
+  .stats-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  
+  .stat-card {
+    padding: 20px;
+  }
+  
+  .stat-icon {
+    width: 50px;
+    height: 50px;
+    font-size: 20px;
+  }
+  
+  .stat-value {
+    font-size: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .actions-grid {
+    gap: 15px;
+  }
+  
+  .action-btn {
+    height: 110px;
+    padding: 15px 10px;
+  }
+  
+  .btn-icon {
+    width: 45px;
+    height: 45px;
+  }
+  
+  .btn-icon i {
+    font-size: 18px;
+  }
+  
+  .btn-label {
+    font-size: 13px;
+  }
+}

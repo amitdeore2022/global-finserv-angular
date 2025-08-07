@@ -1,0 +1,140 @@
+<div class="dashboard">
+  <div class="dashboard-header">
+    <h2>Dashboard</h2>
+  </div>
+
+  <!-- Dashboard Action Buttons -->
+  <div class="quick-actions">
+    <div class="actions-grid">
+      <!-- Invoice Actions (Primary) -->
+      <button class="action-btn" (click)="navigateToCreateInvoice()">
+        <div class="btn-icon">
+          <i class="fas fa-plus-circle"></i>
+        </div>
+        <span class="btn-label">Create Invoice</span>
+      </button>
+
+      <button class="action-btn" (click)="navigateToViewInvoices()">
+        <div class="btn-icon">
+          <i class="fas fa-file-invoice-dollar"></i>
+        </div>
+        <span class="btn-label">View Invoices</span>
+      </button>
+
+      <!-- Customer Actions -->
+      <button class="action-btn" (click)="navigateToAddCustomer()">
+        <div class="btn-icon">
+          <i class="fas fa-user-plus"></i>
+        </div>
+        <span class="btn-label">Add Customer</span>
+      </button>
+
+      <button class="action-btn" (click)="navigateToViewCustomers()">
+        <div class="btn-icon">
+          <i class="fas fa-users"></i>
+        </div>
+        <span class="btn-label">View Customers</span>
+      </button>
+
+      <!-- Revenue Actions -->
+      <button class="action-btn" (click)="setActiveSection('monthlyRevenue')">
+        <div class="btn-icon">
+          <i class="fas fa-calendar-alt"></i>
+        </div>
+        <span class="btn-label">Monthly Revenue</span>
+      </button>
+
+      <button class="action-btn" (click)="setActiveSection('customerRevenue')">
+        <div class="btn-icon">
+          <i class="fas fa-user-chart"></i>
+        </div>
+        <span class="btn-label">Customer Revenue</span>
+      </button>
+
+      <button class="action-btn" (click)="setActiveSection('revenueReports')">
+        <div class="btn-icon">
+          <i class="fas fa-chart-bar"></i>
+        </div>
+        <span class="btn-label">Revenue Reports</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Quick Stats Section -->
+  <div class="quick-stats">
+    <h3 class="stats-title">Quick Stats</h3>
+    <div class="stats-grid">
+      <div class="stat-card total-revenue">
+        <div class="stat-icon">
+          <i class="fas fa-rupee-sign"></i>
+        </div>
+        <div class="stat-content">
+          <h4>Total Revenue</h4>
+          <p class="stat-value">₹{{ totalRevenue | number:'1.2-2' }}</p>
+        </div>
+      </div>
+
+      <div class="stat-card outstanding-amount">
+        <div class="stat-icon">
+          <i class="fas fa-clock"></i>
+        </div>
+        <div class="stat-content">
+          <h4>Outstanding Amount</h4>
+          <p class="stat-value">₹{{ outstandingAmount | number:'1.2-2' }}</p>
+        </div>
+      </div>
+
+      <div class="stat-card collection-rate">
+        <div class="stat-icon">
+          <i class="fas fa-percentage"></i>
+        </div>
+        <div class="stat-content">
+          <h4>Collection Rate</h4>
+          <p class="stat-value">{{ collectionRate | number:'1.1-1' }}%</p>
+        </div>
+      </div>
+
+      <div class="stat-card total-customers" (click)="navigateToViewCustomers()">
+        <div class="stat-icon">
+          <i class="fas fa-users"></i>
+        </div>
+        <div class="stat-content">
+          <h4>Total Customers</h4>
+          <p class="stat-value">{{ totalCustomers }}</p>
+        </div>
+      </div>
+
+      <div class="stat-card total-invoices" (click)="navigateToViewInvoices()">
+        <div class="stat-icon">
+          <i class="fas fa-file-invoice"></i>
+        </div>
+        <div class="stat-content">
+          <h4>Total Invoices</h4>
+          <p class="stat-value">{{ totalInvoices }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Coming Soon Popup -->
+  <div class="coming-soon-overlay" *ngIf="showComingSoonPopup" (click)="closeComingSoonPopup()">
+    <div class="coming-soon-popup" (click)="$event.stopPropagation()">
+      <div class="popup-header">
+        <h3>Coming Soon!</h3>
+        <button class="close-btn" (click)="closeComingSoonPopup()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="popup-content">
+        <div class="popup-icon">
+          <i class="fas fa-rocket"></i>
+        </div>
+        <p><strong>{{ comingSoonFeature }}</strong> is currently under development.</p>
+        <p>We're working hard to bring you this exciting feature soon!</p>
+      </div>
+      <div class="popup-footer">
+        <button class="btn-primary" (click)="closeComingSoonPopup()">Got it!</button>
+      </div>
+    </div>
+  </div>
+</div>
