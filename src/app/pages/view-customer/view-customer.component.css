@@ -188,27 +188,27 @@
 }
 
 .invoices-btn {
-  background: linear-gradient(135deg, #495057 0%, #343a40 100%);
+  background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
   color: white;
-  box-shadow: 0 2px 6px rgba(73, 80, 87, 0.2);
+  box-shadow: 0 2px 6px rgba(220, 53, 69, 0.2);
 }
 
 .invoices-btn:hover {
-  background: linear-gradient(135deg, #343a40 0%, #212529 100%);
+  background: linear-gradient(135deg, #c82333 0%, #a71e2a 100%);
   transform: translateY(-1px);
-  box-shadow: 0 4px 10px rgba(73, 80, 87, 0.3);
+  box-shadow: 0 4px 10px rgba(220, 53, 69, 0.3);
 }
 
 .ledger-btn {
-  background: linear-gradient(135deg, #495057 0%, #343a40 100%);
+  background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
   color: white;
-  box-shadow: 0 2px 6px rgba(73, 80, 87, 0.2);
+  box-shadow: 0 2px 6px rgba(40, 167, 69, 0.2);
 }
 
 .ledger-btn:hover {
-  background: linear-gradient(135deg, #343a40 0%, #212529 100%);
+  background: linear-gradient(135deg, #1e7e34 0%, #155724 100%);
   transform: translateY(-1px);
-  box-shadow: 0 4px 10px rgba(73, 80, 87, 0.3);
+  box-shadow: 0 4px 10px rgba(40, 167, 69, 0.3);
 }
 
 .customer-details {
