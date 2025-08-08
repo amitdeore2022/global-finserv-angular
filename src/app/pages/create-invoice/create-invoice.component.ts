@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { InvoiceService } from '../../services/invoice.service';
 import { CustomerService, Customer as FirestoreCustomer } from '../../services/customer.service';
+import { DeviceDetectionService } from '../../services/device-detection.service';
 
 interface Customer {
   id: string;
@@ -160,7 +161,8 @@ export class CreateInvoiceComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private invoiceService: InvoiceService,
-    private customerService: CustomerService
+    private customerService: CustomerService,
+    public deviceDetection: DeviceDetectionService
   ) {
     this.calculateTotals();
   }

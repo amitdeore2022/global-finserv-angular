@@ -1,6 +1,13 @@
 <div class="create-invoice-container" *ngIf="!showPreview">
   <div class="invoice-header">
-    <h2>{{ isEditMode ? 'Edit Invoice' : 'Create Invoice' }}</h2>
+    <div class="header-content">
+      <button *ngIf="deviceDetection.isMobileOrPWA()" 
+              (click)="goBack()" 
+              class="back-btn">
+        <i class="fas fa-arrow-left"></i>
+      </button>
+      <h2>{{ isEditMode ? 'Edit Invoice' : 'Create Invoice' }}</h2>
+    </div>
   </div>
 
   <form class="invoice-form">

@@ -1,6 +1,13 @@
 <div class="view-invoices-container">
   <div class="invoice-header">
-    <h2>View Invoices</h2>
+    <div class="header-content">
+      <button *ngIf="deviceDetection.isMobileOrPWA()" 
+              (click)="goBackToDashboard()" 
+              class="back-btn">
+        <i class="fas fa-arrow-left"></i>
+      </button>
+      <h2>View Invoices</h2>
+    </div>
   </div>
 
   <!-- Customer Filter Indicator -->

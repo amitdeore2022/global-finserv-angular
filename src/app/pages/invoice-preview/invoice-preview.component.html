@@ -10,6 +10,11 @@
     <!-- Action Buttons Header -->
     <div class="action-header">
       <div class="action-buttons">
+        <button *ngIf="deviceDetection.isMobileOrPWA()" 
+                (click)="goBack()" 
+                class="back-btn mobile-back">
+          <i class="fas fa-arrow-left"></i>
+        </button>
         <button 
           (click)="printInvoice()" 
           class="print-btn"

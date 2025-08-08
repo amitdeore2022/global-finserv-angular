@@ -6,6 +6,7 @@ import { CustomerService, Customer } from '../../services/customer.service';
 import { InvoiceService, Invoice } from '../../services/invoice.service';
 import { PdfGenerationService } from '../../services/pdf-generation.service';
 import { SimpleLedgerService } from '../../services/simple-ledger.service';
+import { DeviceDetectionService } from '../../services/device-detection.service';
 
 interface CustomerWithStats extends Customer {
   totalTransactionAmount: number;
@@ -37,7 +38,8 @@ export class ViewCustomerComponent implements OnInit {
     private customerService: CustomerService,
     private invoiceService: InvoiceService,
     private pdfService: PdfGenerationService,
-    private ledgerService: SimpleLedgerService
+    private ledgerService: SimpleLedgerService,
+    public deviceDetection: DeviceDetectionService
   ) {}
 
   async ngOnInit() {

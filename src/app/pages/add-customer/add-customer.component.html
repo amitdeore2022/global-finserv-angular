@@ -1,6 +1,13 @@
 <div class="add-customer">
   <div class="header">
-    <h2>Add New Customer</h2>
+    <div class="header-content">
+      <button *ngIf="deviceDetection.isMobileOrPWA()" 
+              (click)="goBack()" 
+              class="back-btn">
+        <i class="fas fa-arrow-left"></i>
+      </button>
+      <h2>Add New Customer</h2>
+    </div>
   </div>
 
   <div class="form-container">

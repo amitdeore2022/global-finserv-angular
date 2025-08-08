@@ -74,6 +74,28 @@
 .action-buttons {
   display: flex;
   gap: 12px;
+  align-items: center;
+}
+
+.mobile-back {
+  background: #6c757d !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 8px;
+  padding: 10px 15px !important;
+  cursor: pointer;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  height: 44px;
+}
+
+.mobile-back:hover {
+  background: #5a6268 !important;
+  transform: translateY(-1px);
 }
 
 .print-btn, .whatsapp-btn, .edit-btn, .save-invoice-btn {

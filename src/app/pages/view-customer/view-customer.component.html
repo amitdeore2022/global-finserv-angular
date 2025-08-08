@@ -1,6 +1,13 @@
 <div class="view-customer">
   <div class="header">
-    <h2>View Customers</h2>
+    <div class="header-content">
+      <button *ngIf="deviceDetection.isMobileOrPWA()" 
+              (click)="goBack()" 
+              class="back-btn">
+        <i class="fas fa-arrow-left"></i>
+      </button>
+      <h2>View Customers</h2>
+    </div>
   </div>
 
   <div *ngIf="isLoading" class="loading">

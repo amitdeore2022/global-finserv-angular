@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { CustomerService, Customer } from '../../services/customer.service';
+import { DeviceDetectionService } from '../../services/device-detection.service';
 
 @Component({
   selector: 'app-add-customer',
@@ -46,7 +47,8 @@ export class AddCustomerComponent {
 
   constructor(
     private router: Router,
-    private customerService: CustomerService
+    private customerService: CustomerService,
+    public deviceDetection: DeviceDetectionService
   ) {}
 
   async addCustomer() {

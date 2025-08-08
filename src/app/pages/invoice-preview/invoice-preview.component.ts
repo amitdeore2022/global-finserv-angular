@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { InvoiceService, Invoice } from '../../services/invoice.service';
 import { PdfGenerationNewService } from '../../services/pdf-generation-new.service';
+import { DeviceDetectionService } from '../../services/device-detection.service';
 
 @Component({
   selector: 'app-invoice-preview',
@@ -23,7 +24,8 @@ export class InvoicePreviewComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private invoiceService: InvoiceService,
-    private pdfService: PdfGenerationNewService
+    private pdfService: PdfGenerationNewService,
+    public deviceDetection: DeviceDetectionService
   ) {}
 
   ngOnInit() {

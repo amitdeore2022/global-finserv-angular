@@ -1,11 +1,12 @@
 // src/app/app.component.ts
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 import { RouterOutlet, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { MigrationService } from './services/migration.service';
 import { FirestoreSetupService } from './services/firestore-setup.service';
 import { DataCleanupService } from './services/data-cleanup.service';
 import { LogoutModalComponent } from './components/logout-modal/logout-modal.component';
+import { DeviceDetectionService } from './services/device-detection.service';
 
 @Component({
   selector: 'app-root',
@@ -16,12 +17,14 @@ import { LogoutModalComponent } from './components/logout-modal/logout-modal.com
 })
 export class AppComponent implements OnInit {
   showLogoutModal = false;
+  isMobileOrPWA = false;
 
   constructor(
     private router: Router,
     private migrationService: MigrationService,
     private firestoreSetup: FirestoreSetupService,
-    private dataCleanup: DataCleanupService
+    private dataCleanup: DataCleanupService,
+    private deviceDetection: DeviceDetectionService
   ) {}
 
   ngOnInit() {
@@ -30,6 +33,18 @@ export class AppComponent implements OnInit {
     
     // Initialize Firestore immediately
     this.initializeFirestore();
+    
+    // Detect if app is running as PWA or on mobile
+    this.detectMobileOrPWA();
+  }
+
+  @HostListener('window:resize', ['$event'])
+  onResize(event: any) {
+    this.detectMobileOrPWA();
+  }
+
+  private detectMobileOrPWA(): void {
+    this.isMobileOrPWA = this.deviceDetection.isMobileOrPWA();
   }
 
   private clearLegacyData(): void {
@@ -107,5 +122,10 @@ export class AppComponent implements OnInit {
     // Check if current route is dashboard page
     const currentUrl = this.router.url;
     return currentUrl === '/dashboard';
+  }
+
+  shouldShowGlobalHeader(): boolean {
+    // Show global header only on desktop web (not mobile or PWA) and not on login page
+    return !this.isMobileOrPWA && !this.isLoginPage();
   }
 }

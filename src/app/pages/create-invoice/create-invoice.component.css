@@ -23,6 +23,13 @@
   border: 1px solid #e9ecef;
 }
 
+.header-content {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  width: 100%;
+}
+
 .invoice-header h2 {
   color: #333333;
   margin: 0;
@@ -35,11 +42,16 @@
   background: #6c757d;
   color: white;
   border: none;
-  padding: 10px 20px;
   border-radius: 8px;
+  padding: 10px 15px;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 16px;
   transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  height: 44px;
 }
 
 .back-btn:hover {

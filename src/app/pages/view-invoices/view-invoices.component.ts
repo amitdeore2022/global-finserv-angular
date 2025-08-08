@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterModule, ActivatedRoute } from '@angular/router';
 import { InvoiceService, Invoice } from '../../services/invoice.service';
 import { PdfGenerationNewService } from '../../services/pdf-generation-new.service';
+import { DeviceDetectionService } from '../../services/device-detection.service';
 
 @Component({
   selector: 'app-view-invoices',
@@ -50,7 +51,8 @@ export class ViewInvoicesComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private pdfService: PdfGenerationNewService,
-    private pdfNewService: PdfGenerationNewService
+    private pdfNewService: PdfGenerationNewService,
+    public deviceDetection: DeviceDetectionService
   ) {}
 
   ngOnInit() {

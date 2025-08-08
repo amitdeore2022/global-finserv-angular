@@ -24,6 +24,41 @@
   border: 1px solid #e9ecef;
 }
 
+.header-content {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.header h2 {
+  color: #333333;
+  font-size: 28px;
+  margin: 0;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.back-btn {
+  background: #6c757d;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 15px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  height: 44px;
+}
+
+.back-btn:hover {
+  background: #5a6268;
+  transform: translateY(-1px);
+}
+
 .refresh-btn {
   background: #6c757d;
   color: white;
