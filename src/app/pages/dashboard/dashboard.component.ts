@@ -6,6 +6,7 @@ import { PdfGenerationService } from '../../services/pdf-generation.service';
 import { CustomerService, Customer } from '../../services/customer.service';
 import { InvoiceService, Invoice } from '../../services/invoice.service';
 import { LogoutModalComponent } from '../../components/logout-modal/logout-modal.component';
+import { DeviceDetectionService } from '../../services/device-detection.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -151,7 +152,8 @@ export class DashboardComponent implements OnInit {
     private route: ActivatedRoute,
     private pdfService: PdfGenerationService,
     private customerService: CustomerService,
-    private invoiceService: InvoiceService
+    private invoiceService: InvoiceService,
+    public deviceDetection: DeviceDetectionService
   ) {
     this.initializeInvoices();
   }

@@ -7,7 +7,7 @@
 .create-invoice-container {
   max-width: 900px;
   margin: 0 auto;
-  padding: 40px 20px;
+  padding: 20px;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
@@ -15,8 +15,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 30px;
-  padding: 20px;
+  margin-bottom: 20px;
+  padding: 15px 20px;
   background: linear-gradient(180deg, #C7D9DD 0%, #D5E5D5 40%, #f8f9fa 100%);
   border-radius: 15px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -62,23 +62,23 @@
 .invoice-form {
   display: flex;
   flex-direction: column;
-  gap: 30px;
+  gap: 20px;
 }
 
 .form-section {
   background: #ffffff;
-  padding: 25px;
+  padding: 20px;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   border: 1px solid #e9ecef;
 }
 
-.form-section h3 {
+.form-section h3, .form-section h4 {
   color: #2c3e50;
-  margin: 0 0 20px 0;
-  font-size: 1.3rem;
+  margin: 0 0 15px 0;
+  font-size: 1.1rem;
   font-weight: 600;
-  padding-bottom: 10px;
+  padding-bottom: 8px;
   border-bottom: 2px solid #f8f9fa;
 }
 
@@ -86,7 +86,7 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 15px;
-  margin-bottom: 15px;
+  margin-bottom: 12px;
 }
 
 .form-group {

@@ -1,6 +1,10 @@
 <div class="dashboard">
   <div class="dashboard-header">
     <h2>Dashboard</h2>
+    <button (click)="logout()" class="logout-btn">
+      <i class="fas fa-sign-out-alt"></i>
+      <span>Logout</span>
+    </button>
   </div>
 
   <!-- Dashboard Action Buttons -->
@@ -44,12 +48,13 @@
         <span class="btn-label">Monthly Revenue</span>
       </button>
 
-      <button class="action-btn" (click)="setActiveSection('customerRevenue')">
+      <!-- Customer Revenue button hidden as requested -->
+      <!-- <button class="action-btn" (click)="setActiveSection('customerRevenue')">
         <div class="btn-icon">
           <i class="fas fa-user-chart"></i>
         </div>
         <span class="btn-label">Customer Revenue</span>
-      </button>
+      </button> -->
 
       <button class="action-btn" (click)="setActiveSection('revenueReports')">
         <div class="btn-icon">
