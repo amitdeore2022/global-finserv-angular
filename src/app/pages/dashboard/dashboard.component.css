@@ -70,29 +70,25 @@
   position: relative;
 }
 
-/* Simple clean action buttons matching the image */
 .action-btn {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 20px 15px;
+  padding: 15px 10px;
   background: transparent;
-  color: #333;
+  color: #495057;
   border: none;
-  border-radius: 20px;
+  border-radius: 0;
   cursor: pointer;
   transition: all 0.3s ease;
-  min-height: 120px;
+  min-height: 100px;
   justify-content: center;
-}
-
-.action-btn:hover {
-  background: rgba(0, 0, 0, 0.05);
-  transform: translateY(-2px);
-}
-
-.action-btn:active {
-  transform: translateY(0px);
+  position: relative;
+  overflow: visible;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(14px) saturate(160%);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  box-shadow: 0 4px 18px -4px rgba(0,0,0,0.25), 0 8px 32px rgba(102,126,234,0.25);
 }
 
 .action-btn::before, .action-btn::after {
@@ -131,54 +127,47 @@
   box-shadow: 0 6px 20px -4px rgba(0,0,0,0.4), 0 10px 28px rgba(102,126,234,0.28);
 }
 
-/* Icon container enhancement with distinct colors */
+/* Icon container enhancement with distinct colors - square design */
 .btn-icon {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  transition: all 0.3s ease;
+  position: relative;
+  width: 52px;
+  height: 52px;
+  border-radius: 8px;
   border: none;
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
+  transition: all .3s ease;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
-/* Specific colors matching the image exactly */
+/* Specific colors for each action button */
 .action-btn:nth-child(1) .btn-icon {
-  background: #4285f4; /* Blue for Create Invoice */
+  background: linear-gradient(145deg, #4285f4, #5a9cfb);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.35), 0 4px 12px rgba(66,133,244,0.5);
 }
 
 .action-btn:nth-child(2) .btn-icon {
-  background: #a8c7ff; /* Light Blue for View Invoices */
+  background: linear-gradient(145deg, #34a853, #46c766);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.35), 0 4px 12px rgba(52,168,83,0.5);
 }
 
 .action-btn:nth-child(3) .btn-icon {
-  background: #ff9800; /* Orange for Add Customer */
+  background: linear-gradient(145deg, #ff9800, #ffb74d);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.35), 0 4px 12px rgba(255,152,0,0.5);
 }
 
 .action-btn:nth-child(4) .btn-icon {
-  background: #4caf50; /* Green for View Customers */
+  background: linear-gradient(145deg, #28a745, #5cb85c);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.35), 0 4px 12px rgba(40,167,69,0.5);
 }
 
 .action-btn:nth-child(5) .btn-icon {
-  background: #6c7ce0; /* Purple-blue for Monthly Revenue */
+  background: linear-gradient(145deg, #6c63ff, #8a80ff);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.35), 0 4px 12px rgba(108,99,255,0.5);
 }
 
 .action-btn:nth-child(6) .btn-icon {
-  background: #ff7043; /* Orange-red for Revenue Reports */
+  background: linear-gradient(145deg, #e91e63, #f06292);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.35), 0 4px 12px rgba(233,30,99,0.5);
 }
-
-/* Simple hover effects matching the image */
-.action-btn:hover .btn-icon {
-  transform: scale(1.05);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
-}
-
-/* Remove all complex pseudo-elements and effects */
 
 .btn-icon::after {
   content: "";
@@ -233,30 +222,32 @@
   opacity: 1;
 }
 
-/* Clean white icons matching the image */
+/* Icon styling with white icons for better contrast */
 .btn-icon i {
-  font-size: 24px;
+  font-size: 23px;
   color: white;
-  transition: transform 0.3s ease;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+  transition: transform .55s cubic-bezier(.22,1,.36,1), filter .55s ease;
 }
 
 .action-btn:hover .btn-icon i {
-  transform: scale(1.1);
+  transform: scale(1.18) translateY(-3px);
+  filter: drop-shadow(0 6px 10px rgba(118,75,162,0.55));
 }
 
-/* Clean label styling matching the image */
+/* Label enhancement - simple design */
 .btn-label {
   font-size: 13px;
   font-weight: 600;
   text-align: center;
   line-height: 1.2;
-  color: #333;
+  color: #495057;
   margin-top: 8px;
-  transition: color 0.3s ease;
+  transition: color .3s ease;
 }
 
 .action-btn:hover .btn-label {
-  color: #111;
+  background: rgba(255,255,255,0.55);
 }
 
 /* Accessibility focus */
