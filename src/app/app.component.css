@@ -213,14 +213,15 @@
   /* PWA Mobile: Position logout button centered in header */
   .header-actions {
     position: absolute;
-    bottom: 8px;
+    bottom: 12px;
     left: 50%;
     transform: translateX(-50%);
     gap: 8px;
+    z-index: 10;
   }
 
   .global-header {
-    padding: 15px 0 45px 0; /* Increased bottom padding to prevent overlap */
+    padding: 15px 0 55px 0; /* Increased bottom padding significantly */
   }
 
   .logout-btn {

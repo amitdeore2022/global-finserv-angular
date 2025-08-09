@@ -29,6 +29,7 @@ interface ServiceDetail {
 interface Invoice {
   invoiceNumber: string;
   invoiceDate: string;
+  createdBy: string;
   customer: Customer | null;
   customerType: 'existing' | 'new';
   searchTerm: string;
@@ -67,6 +68,7 @@ export class CreateInvoiceComponent implements OnInit {
   invoice: Invoice = {
     invoiceNumber: '',
     invoiceDate: this.getCurrentDate(),
+    createdBy: '',
     customer: null,
     customerType: 'existing',
     searchTerm: '',
@@ -362,6 +364,7 @@ export class CreateInvoiceComponent implements OnInit {
         // Populate the form with invoice data
         this.invoice.invoiceNumber = invoice.invoiceNumber;
         this.invoice.invoiceDate = invoice.invoiceDate;
+        this.invoice.createdBy = invoice.createdBy || '';
         this.invoice.totalAmount = invoice.totalAmount;
         this.invoice.advanceReceived = invoice.advanceReceived;
         this.invoice.balancePayable = invoice.balancePayable;
@@ -735,6 +738,7 @@ export class CreateInvoiceComponent implements OnInit {
     return {
       invoiceNumber: this.invoice.invoiceNumber,
       invoiceDate: this.invoice.invoiceDate,
+      createdBy: this.invoice.createdBy,
       customer: customerData,
       serviceDetails: mappedServiceDetails,
       totalAmount: this.invoice.totalAmount,
@@ -774,6 +778,11 @@ export class CreateInvoiceComponent implements OnInit {
   }
 
   validateInvoice(): boolean {
+    if (!this.invoice.createdBy) {
+      alert('Please select who created this invoice');
+      return false;
+    }
+
     if (!this.invoice.customer && this.invoice.customerType === 'existing') {
       alert('Please select a customer');
       return false;

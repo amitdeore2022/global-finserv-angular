@@ -26,6 +26,19 @@
             [max]="getCurrentDate()"
             (change)="onInvoiceDateChange()">
         </div>
+        <div class="form-group">
+          <label for="createdBy">Created By</label>
+          <select 
+            id="createdBy" 
+            [(ngModel)]="invoice.createdBy" 
+            name="createdBy"
+            class="form-control"
+            required>
+            <option value="">Select Creator</option>
+            <option value="Pravin">Pravin</option>
+            <option value="Pratik">Pratik</option>
+          </select>
+        </div>
         <!-- Invoice number hidden from user interface -->
         <!--
         <div class="form-group">
