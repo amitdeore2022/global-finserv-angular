@@ -3,6 +3,30 @@
     <h2>Dashboard</h2>
   </div>
 
+  <!-- Collection Recovery Meter -->
+  <div class="recovery-meter-container">
+    <div class="recovery-meter-header">
+      <h3>Collection Recovery Rate</h3>
+      <div class="recovery-percentage">{{ collectionRate | number:'1.1-1' }}%</div>
+    </div>
+    <div class="recovery-meter">
+      <div class="recovery-meter-background">
+        <div class="recovery-meter-fill" [style.width.%]="collectionRate"></div>
+        <div class="recovery-meter-indicator" [style.left.%]="collectionRate - 2">
+          <div class="indicator-arrow"></div>
+          <div class="indicator-label">{{ collectionRate | number:'1.1-1' }}%</div>
+        </div>
+      </div>
+      <div class="recovery-meter-scale">
+        <span class="scale-mark" style="left: 0%">0%</span>
+        <span class="scale-mark" style="left: 25%">25%</span>
+        <span class="scale-mark" style="left: 50%">50%</span>
+        <span class="scale-mark" style="left: 75%">75%</span>
+        <span class="scale-mark" style="left: 100%">100%</span>
+      </div>
+    </div>
+  </div>
+
   <!-- Dashboard Action Buttons -->
   <div class="quick-actions">
     <div class="actions-grid">
