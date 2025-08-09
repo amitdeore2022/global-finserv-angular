@@ -36,6 +36,13 @@ interface Invoice {
   totalAmount: number;
   advanceReceived: number;
   balancePayable: number;
+  paymentHistory?: Array<{
+    amount: number;
+    date: string;
+    type: string;
+    reference?: string;
+    notes?: string;
+  }>;
   selectedBank: string;
   paymentType: string;
   paymentNotes: string;
@@ -667,6 +674,18 @@ export class CreateInvoiceComponent implements OnInit {
       notes: service.notes || ''
     }));
 
+    // Initialize payment history if advance is received
+    let paymentHistory: any[] = [];
+    if (this.invoice.advanceReceived > 0) {
+      paymentHistory = [{
+        amount: this.invoice.advanceReceived,
+        date: this.invoice.invoiceDate,
+        type: this.invoice.paymentType || 'Cash',
+        reference: '',
+        notes: this.invoice.paymentNotes || 'Initial advance payment'
+      }];
+    }
+
     return {
       invoiceNumber: this.invoice.invoiceNumber,
       invoiceDate: this.invoice.invoiceDate,
@@ -676,6 +695,7 @@ export class CreateInvoiceComponent implements OnInit {
       advanceReceived: this.invoice.advanceReceived,
       balancePayable: this.invoice.balancePayable,
       selectedBank: this.invoice.selectedBank,
+      paymentHistory: paymentHistory,
       createdAt: new Date(),
       status: this.invoice.balancePayable === 0 ? 'PAID' as const : 
              this.invoice.advanceReceived > 0 ? 'PARTIAL' as const : 'PENDING' as const
