@@ -193,11 +193,13 @@
 
   .logo-title-section {
     flex-direction: column;
-    gap: 10px;
+    gap: 8px;
+    margin-bottom: 15px; /* Added margin to prevent overlap */
   }
 
   .title-section {
     align-items: center;
+    text-align: center;
   }
 
   .company-logo {
@@ -213,15 +215,17 @@
   /* PWA Mobile: Position logout button centered in header */
   .header-actions {
     position: absolute;
-    bottom: 12px;
+    bottom: 8px;
     left: 50%;
     transform: translateX(-50%);
     gap: 8px;
     z-index: 10;
+    width: auto;
+    flex-shrink: 0;
   }
 
   .global-header {
-    padding: 15px 0 55px 0; /* Increased bottom padding significantly */
+    padding: 15px 0 60px 0; /* Increased bottom padding for button clearance */
   }
 
   .logout-btn {
