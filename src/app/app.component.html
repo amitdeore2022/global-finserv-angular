@@ -1,5 +1,5 @@
 <div class="app-container">
-  <header class="global-header" *ngIf="shouldShowGlobalHeader()">
+  <header class="global-header" *ngIf="shouldShowGlobalHeader()" [class.mobile-layout]="isMobileOrPWA">
     <div class="header-content">
       <div class="logo-title-section">
         <img src="logo.jpg" alt="CA India Logo" class="company-logo">

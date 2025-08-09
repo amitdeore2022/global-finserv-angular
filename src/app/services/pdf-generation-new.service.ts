@@ -504,8 +504,8 @@ export class PdfGenerationNewService {
   }
 
   private extractBankDetails(selectedBank: string): any {
-    // Bank account definitions
-    const bankAccounts: { [key: string]: any } = {
+    // Central definition of supported bank accounts (full details always for PDF)
+    const bankAccounts: { [key: string]: { name: string; accountHolder: string; accountNumber: string; ifscCode: string; } } = {
       'hdfc_global': {
         name: 'HDFC Bank, Thatte Nagar Branch',
         accountHolder: 'Global Financial Services',
@@ -520,21 +520,18 @@ export class PdfGenerationNewService {
       }
     };
 
-    // If selectedBank is an account ID, use the corresponding bank details
+    // If the stored value is an ID (new implementation)
     if (selectedBank && bankAccounts[selectedBank]) {
       return bankAccounts[selectedBank];
     }
-    
-    // Legacy support - if selectedBank contains old string format
-    if (selectedBank && selectedBank.includes('HDFC Bank, Thatte Nagar Branch')) {
-      return bankAccounts['hdfc_global'];
+
+    // Legacy string matching support (old saved invoices)
+    if (selectedBank) {
+      if (selectedBank.includes('HDFC Bank')) return bankAccounts['hdfc_global'];
+      if (selectedBank.includes('ICICI')) return bankAccounts['icici_pravin'];
     }
 
-    if (selectedBank && selectedBank.includes('ICICI Bank')) {
-      return bankAccounts['icici_pravin'];
-    }
-    
-    // Default to HDFC account
+    // Fallback default
     return bankAccounts['hdfc_global'];
   }
 }

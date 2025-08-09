@@ -1,0 +1,82 @@
+<div class="quick-stats-page">
+  <div class="header">
+    <div class="header-content">
+      <button *ngIf="deviceDetection.isMobileOrPWA()" 
+              (click)="goBack()" 
+              class="back-btn">
+        <i class="fas fa-arrow-left"></i>
+      </button>
+      <h2>Quick Stats</h2>
+    </div>
+  </div>
+
+  <!-- Quick Stats Section -->
+  <div class="quick-stats">
+    <div class="stats-grid">
+      <div class="stat-card total-revenue">
+        <div class="stat-icon">
+          <i class="fas fa-rupee-sign"></i>
+        </div>
+        <div class="stat-content">
+          <h4>Total Revenue</h4>
+          <p class="stat-value">₹{{ totalRevenue | number:'1.2-2' }}</p>
+        </div>
+      </div>
+
+      <div class="stat-card outstanding-amount">
+        <div class="stat-icon">
+          <i class="fas fa-clock"></i>
+        </div>
+        <div class="stat-content">
+          <h4>Outstanding Amount</h4>
+          <p class="stat-value">₹{{ outstandingAmount | number:'1.2-2' }}</p>
+        </div>
+      </div>
+
+      <div class="stat-card collection-rate">
+        <div class="stat-icon">
+          <i class="fas fa-percentage"></i>
+        </div>
+        <div class="stat-content">
+          <h4>Collection Rate</h4>
+          <p class="stat-value">{{ collectionRate | number:'1.1-1' }}%</p>
+        </div>
+      </div>
+
+      <div class="stat-card total-customers" (click)="navigateToViewCustomers()">
+        <div class="stat-icon">
+          <i class="fas fa-users"></i>
+        </div>
+        <div class="stat-content">
+          <h4>Total Customers</h4>
+          <p class="stat-value">{{ totalCustomers }}</p>
+        </div>
+      </div>
+
+      <div class="stat-card total-invoices" (click)="navigateToViewInvoices()">
+        <div class="stat-icon">
+          <i class="fas fa-file-invoice-dollar"></i>
+        </div>
+        <div class="stat-content">
+          <h4>Total Invoices</h4>
+          <p class="stat-value">{{ totalInvoices }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Additional Stats Charts/Details can be added here -->
+  <div class="additional-stats">
+    <h3>Detailed Analytics</h3>
+    <div class="charts-container">
+      <div class="chart-placeholder">
+        <h4>Monthly Revenue Trend</h4>
+        <p>📊 Interactive charts will be displayed here</p>
+      </div>
+      <div class="chart-placeholder">
+        <h4>Customer Growth</h4>
+        <p>📈 Customer acquisition trends</p>
+      </div>
+    </div>
+  </div>
+</div>

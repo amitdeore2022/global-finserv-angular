@@ -220,6 +220,11 @@ export class DashboardComponent implements OnInit {
     this.comingSoonFeature = '';
   }
 
+  showRevenueReportsComingSoon() {
+    this.comingSoonFeature = 'Revenue Reports';
+    this.showComingSoonPopup = true;
+  }
+
   get totalDueAmount(): number {
     return this.customers.reduce((sum, customer) => sum + customer.dueAmount, 0);
   }
@@ -824,6 +829,14 @@ export class DashboardComponent implements OnInit {
   navigateToViewInvoices() {
     this.router.navigate(['/view-invoices']);
   }
+
+  navigateToQuickStats() {
+    this.router.navigate(['/quick-stats']);
+  }
+
+  // navigateToRevenueReports() {
+  //   this.router.navigate(['/revenue-reports']);
+  // }
 
   // Keep old methods for backward compatibility
   navigateToCustomers() {

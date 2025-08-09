@@ -1,0 +1,142 @@
+<div class="revenue-reports-page">
+  <div class="header">
+    <div class="header-content">
+      <button *ngIf="deviceDetection.isMobileOrPWA()" 
+              (click)="goBack()" 
+              class="back-btn">
+        <i class="fas fa-arrow-left"></i>
+      </button>
+      <h2>Revenue Reports</h2>
+    </div>
+  </div>
+
+  <!-- Sub-menu buttons for revenue reports -->
+  <div class="revenue-submenu">
+    <h3>Choose Report Type</h3>
+    <div class="submenu-grid">
+      <button class="submenu-btn" (click)="setActiveSection('monthlyRevenue')">
+        <div class="submenu-icon">
+          <i class="fas fa-calendar"></i>
+        </div>
+        <span class="submenu-label">Monthly Revenue</span>
+        <p class="submenu-description">Monthly revenue overview and trends</p>
+      </button>
+
+      <button class="submenu-btn" (click)="setActiveSection('customerRevenue')">
+        <div class="submenu-icon">
+          <i class="fas fa-user-chart"></i>
+        </div>
+        <span class="submenu-label">Customer Revenue</span>
+        <p class="submenu-description">Customer-wise revenue analysis</p>
+      </button>
+
+      <button class="submenu-btn" (click)="setActiveSection('revenueAnalytics')">
+        <div class="submenu-icon">
+          <i class="fas fa-chart-line"></i>
+        </div>
+        <span class="submenu-label">Revenue Analytics</span>
+        <p class="submenu-description">Detailed revenue analytics and reports</p>
+      </button>
+    </div>
+  </div>
+
+  <!-- Monthly Revenue Section -->
+  <div *ngIf="activeSection === 'monthlyRevenue'" class="section-container">
+    <h3>Monthly Revenue Overview</h3>
+    <div class="revenue-cards">
+      <div class="revenue-card">
+        <h4>This Month</h4>
+        <div class="revenue-amount">₹{{ totalRevenue | number:'1.2-2' }}</div>
+        <div class="revenue-trend positive">Current period</div>
+      </div>
+      <div class="revenue-card">
+        <h4>Outstanding</h4>
+        <div class="revenue-amount">₹{{ outstandingAmount | number:'1.2-2' }}</div>
+        <div class="revenue-trend">Pending collection</div>
+      </div>
+      <div class="revenue-card">
+        <h4>Collection Rate</h4>
+        <div class="revenue-amount">{{ collectionRate | number:'1.1-1' }}%</div>
+        <div class="revenue-trend">Efficiency rate</div>
+      </div>
+    </div>
+    <div class="chart-container">
+      <h4>Monthly Revenue Trend</h4>
+      <div class="chart-placeholder">
+        <p>📊 Chart will display monthly revenue trends</p>
+        <small>Integration with charting library can be added here</small>
+      </div>
+    </div>
+  </div>
+
+  <!-- Customer Revenue Section -->
+  <div *ngIf="activeSection === 'customerRevenue'" class="section-container">
+    <h3>Customer Revenue Analysis</h3>
+    <div class="customer-revenue-list">
+      <div class="customer-revenue-header">
+        <span>Customer</span>
+        <span>Total Revenue</span>
+        <span>Invoices</span>
+        <span>Outstanding</span>
+      </div>
+      <div class="customer-revenue-row" *ngFor="let customer of customers">
+        <span class="customer-name">{{ customer.name }}</span>
+        <span class="revenue-amount">₹{{ getCustomerRevenue(customer) | number:'1.2-2' }}</span>
+        <span class="invoice-count">{{ getCustomerInvoiceCount(customer) }}</span>
+        <span class="outstanding">₹{{ getCustomerOutstanding(customer) | number:'1.2-2' }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Revenue Analytics Section -->
+  <div *ngIf="activeSection === 'revenueAnalytics'" class="section-container">
+    <h3>Revenue Analytics & Detailed Reports</h3>
+    <div class="report-options">
+      <div class="report-card">
+        <h4>📊 Income Statement</h4>
+        <p>Detailed breakdown of revenue, expenses, and profit</p>
+        <button class="report-btn" (click)="showComingSoon('Income Statement')">Generate Report</button>
+      </div>
+      <div class="report-card">
+        <h4>📈 Revenue Growth</h4>
+        <p>Year-over-year and month-over-month growth analysis</p>
+        <button class="report-btn" (click)="showComingSoon('Revenue Growth')">Generate Report</button>
+      </div>
+      <div class="report-card">
+        <h4>💰 Payment Analytics</h4>
+        <p>Payment patterns, collection efficiency, and aging analysis</p>
+        <button class="report-btn" (click)="showComingSoon('Payment Analytics')">Generate Report</button>
+      </div>
+      <div class="report-card">
+        <h4>📋 Tax Summary</h4>
+        <p>GST and tax summaries for compliance reporting</p>
+        <button class="report-btn" (click)="showComingSoon('Tax Summary')">Generate Report</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Coming Soon Popup Modal -->
+<div *ngIf="showComingSoonPopup" class="coming-soon-overlay" (click)="closeComingSoonPopup()">
+  <div class="coming-soon-modal" (click)="$event.stopPropagation()">
+    <div class="coming-soon-header">
+      <div class="coming-soon-icon">
+        <i class="fas fa-rocket"></i>
+      </div>
+      <button class="close-btn" (click)="closeComingSoonPopup()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="coming-soon-content">
+      <h2>Coming Soon!</h2>
+      <h3>{{ comingSoonFeature }}</h3>
+      <p>We're working hard to bring you this exciting feature.</p>
+      <div class="coming-soon-footer">
+        <p class="timeline">Expected release: <strong>Next Update</strong></p>
+        <button class="notify-btn" (click)="closeComingSoonPopup()">
+          <i class="fas fa-bell"></i> Got it!
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
