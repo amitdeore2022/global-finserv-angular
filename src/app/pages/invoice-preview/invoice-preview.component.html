@@ -79,6 +79,10 @@
               <td><strong>Invoice Date:</strong></td>
               <td>{{invoice.invoiceDate | date:'dd/MM/yyyy'}}</td>
             </tr>
+            <tr *ngIf="invoice.createdBy">
+              <td><strong>Created By:</strong></td>
+              <td>{{invoice.createdBy}}</td>
+            </tr>
             <tr>
               <td><strong>Status:</strong></td>
               <td class="status-badge" [class]="'status-' + invoice.status.toLowerCase()">

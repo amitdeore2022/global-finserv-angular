@@ -23,9 +23,15 @@
       <label for="password">Password</label>
       <input id="password" type="password" [(ngModel)]="password" name="password" placeholder="Type your password" required />
       <div class="forgot-password">
-        <a href="#">Forgot password?</a>
+        <a href="#" (click)="showForgotPasswordMessage($event)">Forgot password?</a>
       </div>
     </div>
+    
+    <div *ngIf="showForgotMessage" class="forgot-message">
+      <i class="fas fa-info-circle"></i>
+      Please contact the administrator for password reset assistance.
+    </div>
+    
     <button type="submit">LOGIN</button>
   </form>
   <p *ngIf="errorMessage" class="error">{{ errorMessage }}</p>

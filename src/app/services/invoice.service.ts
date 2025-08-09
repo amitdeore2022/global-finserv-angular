@@ -5,6 +5,7 @@ export interface Invoice {
   id?: string;
   invoiceNumber: string;
   invoiceDate: string;
+  createdBy?: string;
   customer: {
     id?: string;
     name: string;
