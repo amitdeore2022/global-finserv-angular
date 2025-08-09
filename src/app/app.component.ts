@@ -119,13 +119,19 @@ export class AppComponent implements OnInit {
   }
 
   isDashboardPage(): boolean {
-    // Check if current route is dashboard page
+    // Check if current route is dashboard page (with or without query parameters)
     const currentUrl = this.router.url;
-    return currentUrl === '/dashboard';
+    const urlWithoutParams = currentUrl.split('?')[0]; // Remove query parameters
+    return urlWithoutParams === '/dashboard';
   }
 
   shouldShowGlobalHeader(): boolean {
-    // Show global header only on desktop web (not mobile or PWA) and not on login page
+    // Always show global header on dashboard page for logout functionality
+    if (this.isDashboardPage()) {
+      return !this.isLoginPage();
+    }
+    
+    // For other pages: show global header only on desktop web (not mobile or PWA) and not on login page
     return !this.isMobileOrPWA && !this.isLoginPage();
   }
 }
