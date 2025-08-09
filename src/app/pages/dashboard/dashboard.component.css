@@ -130,17 +130,46 @@
   box-shadow: 0 6px 20px -4px rgba(0,0,0,0.4), 0 10px 28px rgba(102,126,234,0.28);
 }
 
-/* Icon container enhancement */
+/* Icon container enhancement with distinct colors */
 .btn-icon {
   position: relative;
   width: 52px;
   height: 52px;
-  background: linear-gradient(145deg, rgba(102,126,234,0.22), rgba(118,75,162,0.22));
-  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.35), 0 4px 12px rgba(102,126,234,0.35);
-  border: 1px solid rgba(255,255,255,0.35);
+  border: 2px solid rgba(255,255,255,0.4);
   backdrop-filter: blur(8px) saturate(180%);
   -webkit-backdrop-filter: blur(8px) saturate(180%);
   transition: all .5s ease;
+}
+
+/* Specific colors for each action button */
+.action-btn:nth-child(1) .btn-icon {
+  background: linear-gradient(145deg, #4285f4, #5a9cfb);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.35), 0 4px 12px rgba(66,133,244,0.5);
+}
+
+.action-btn:nth-child(2) .btn-icon {
+  background: linear-gradient(145deg, #34a853, #46c766);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.35), 0 4px 12px rgba(52,168,83,0.5);
+}
+
+.action-btn:nth-child(3) .btn-icon {
+  background: linear-gradient(145deg, #ff9800, #ffb74d);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.35), 0 4px 12px rgba(255,152,0,0.5);
+}
+
+.action-btn:nth-child(4) .btn-icon {
+  background: linear-gradient(145deg, #28a745, #5cb85c);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.35), 0 4px 12px rgba(40,167,69,0.5);
+}
+
+.action-btn:nth-child(5) .btn-icon {
+  background: linear-gradient(145deg, #6c63ff, #8a80ff);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.35), 0 4px 12px rgba(108,99,255,0.5);
+}
+
+.action-btn:nth-child(6) .btn-icon {
+  background: linear-gradient(145deg, #e91e63, #f06292);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.35), 0 4px 12px rgba(233,30,99,0.5);
 }
 
 .btn-icon::after {
@@ -155,24 +184,52 @@
   transition: opacity .5s ease;
 }
 
-.action-btn:hover .btn-icon {
+/* Hover effects for colored icons */
+.action-btn:nth-child(1):hover .btn-icon {
   transform: rotate(8deg) scale(1.07);
-  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.6), 0 8px 22px rgba(102,126,234,0.55);
-  background: linear-gradient(145deg, rgba(102,126,234,0.35), rgba(118,75,162,0.32));
+  background: linear-gradient(145deg, #5a9cfb, #4285f4);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.6), 0 8px 22px rgba(66,133,244,0.7);
+}
+
+.action-btn:nth-child(2):hover .btn-icon {
+  transform: rotate(8deg) scale(1.07);
+  background: linear-gradient(145deg, #46c766, #34a853);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.6), 0 8px 22px rgba(52,168,83,0.7);
+}
+
+.action-btn:nth-child(3):hover .btn-icon {
+  transform: rotate(8deg) scale(1.07);
+  background: linear-gradient(145deg, #ffb74d, #ff9800);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.6), 0 8px 22px rgba(255,152,0,0.7);
+}
+
+.action-btn:nth-child(4):hover .btn-icon {
+  transform: rotate(8deg) scale(1.07);
+  background: linear-gradient(145deg, #5cb85c, #28a745);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.6), 0 8px 22px rgba(40,167,69,0.7);
+}
+
+.action-btn:nth-child(5):hover .btn-icon {
+  transform: rotate(8deg) scale(1.07);
+  background: linear-gradient(145deg, #8a80ff, #6c63ff);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.6), 0 8px 22px rgba(108,99,255,0.7);
+}
+
+.action-btn:nth-child(6):hover .btn-icon {
+  transform: rotate(8deg) scale(1.07);
+  background: linear-gradient(145deg, #f06292, #e91e63);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.6), 0 8px 22px rgba(233,30,99,0.7);
 }
 
 .action-btn:hover .btn-icon::after {
   opacity: 1;
 }
 
-/* Icon styling */
+/* Icon styling with white icons for better contrast */
 .btn-icon i {
   font-size: 23px;
-  background: linear-gradient(120deg, #667eea, #764ba2 60%, #b583f1);
-  background-clip: text; /* Added standard property */
-  -webkit-background-clip: text;
-  color: transparent;
-  filter: drop-shadow(0 4px 6px rgba(118,75,162,0.35));
+  color: white;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
   transition: transform .55s cubic-bezier(.22,1,.36,1), filter .55s ease;
 }
 
