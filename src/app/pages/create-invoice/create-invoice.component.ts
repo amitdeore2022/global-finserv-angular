@@ -36,6 +36,13 @@ interface Invoice {
   totalAmount: number;
   advanceReceived: number;
   balancePayable: number;
+  paymentHistory?: Array<{
+    amount: number;
+    date: string;
+    type: string;
+    reference?: string;
+    notes?: string;
+  }>;
   selectedBank: string;
   paymentType: string;
   paymentNotes: string;
@@ -99,20 +106,63 @@ export class CreateInvoiceComponent implements OnInit {
   };
 
   bankAccounts = [
-    'HDFC Bank, Thatte Nagar Branch - A/c Holder: Global Financial Services - A/c No: 50200107802130 - IFSC: HDFC0000064'
+    {
+      id: 'hdfc_global',
+      bankName: 'HDFC Bank',
+      branch: 'Thatte Nagar Branch',
+      accountHolder: 'Global Financial Services',
+      accountNumber: '50200107802130',
+      ifscCode: 'HDFC0000064',
+      accountType: 'Current'
+    },
+    {
+      id: 'icici_pravin',
+      bankName: 'ICICI Bank',
+      branch: '',
+      accountHolder: 'PRAVIN ANNASAHEB SHINDE',
+      accountNumber: '186901504098',
+      ifscCode: 'ICIC0001869',
+      accountType: 'Savings'
+    }
   ];
 
-  serviceOptions = [
-    'Incorporation of Producer Company',
-    'ITR Filing',
-    'GST Filing',
-    'Company Registration',
-    'GST Registration',
-    'Income Tax Return',
-    'Audit Services',
-    'Compliance Services',
-    'Other Services'
+  // Service options with usage tracking
+  serviceOptionsWithUsage = [
+    { name: 'ROC Annual Return Fees', usageCount: 0 },
+    { name: 'ROC Annual Return Challan', usageCount: 0 },
+    { name: 'Company Statutory Audit', usageCount: 0 },
+    { name: 'Director KYC', usageCount: 0 },
+    { name: 'Tax Audit', usageCount: 0 },
+    { name: 'Account Writing Charges', usageCount: 0 },
+    { name: 'Shop Act Fees', usageCount: 0 },
+    { name: 'Udyam Registration Fees', usageCount: 0 },
+    { name: 'TDS Return Fees', usageCount: 0 },
+    { name: 'TDS Return Challan', usageCount: 0 },
+    { name: 'Net Worth Certificate', usageCount: 0 },
+    { name: 'Turnover Certificate', usageCount: 0 },
+    { name: 'Working Capital Certificate', usageCount: 0 },
+    { name: 'Provisional Financial Certificate', usageCount: 0 },
+    { name: 'GST Registration Fees', usageCount: 0 },
+    { name: 'Authorised Share Capital Fees', usageCount: 0 },
+    { name: 'Allotment of Shares Fees', usageCount: 0 },
+    { name: 'CS Certification Fees', usageCount: 0 },
+    { name: 'Incorporation of Producer Company', usageCount: 0 },
+    { name: 'ITR Filing', usageCount: 0 },
+    { name: 'GST Filing', usageCount: 0 },
+    { name: 'Company Registration', usageCount: 0 },
+    { name: 'GST Registration', usageCount: 0 },
+    { name: 'Income Tax Return', usageCount: 0 },
+    { name: 'Audit Services', usageCount: 0 },
+    { name: 'Compliance Services', usageCount: 0 },
+    { name: 'Other Services', usageCount: 0 }
   ];
+
+  // Get sorted service options (most used first)
+  get serviceOptions(): string[] {
+    return [...this.serviceOptionsWithUsage]
+      .sort((a, b) => b.usageCount - a.usageCount)
+      .map(service => service.name);
+  }
 
   countryCodeOptions = [
     { code: '+91', country: 'India' },
@@ -179,6 +229,9 @@ export class CreateInvoiceComponent implements OnInit {
     
     // Load existing customers
     this.loadCustomers();
+    
+    // Load service usage data
+    this.loadServiceUsageData();
     
     // Check if we're in edit mode or restoring from preview
     this.route.queryParams.subscribe(params => {
@@ -667,6 +720,18 @@ export class CreateInvoiceComponent implements OnInit {
       notes: service.notes || ''
     }));
 
+    // Initialize payment history if advance is received
+    let paymentHistory: any[] = [];
+    if (this.invoice.advanceReceived > 0) {
+      paymentHistory = [{
+        amount: this.invoice.advanceReceived,
+        date: this.invoice.invoiceDate,
+        type: this.invoice.paymentType || 'Cash',
+        reference: '',
+        notes: this.invoice.paymentNotes || 'Initial advance payment'
+      }];
+    }
+
     return {
       invoiceNumber: this.invoice.invoiceNumber,
       invoiceDate: this.invoice.invoiceDate,
@@ -676,6 +741,7 @@ export class CreateInvoiceComponent implements OnInit {
       advanceReceived: this.invoice.advanceReceived,
       balancePayable: this.invoice.balancePayable,
       selectedBank: this.invoice.selectedBank,
+      paymentHistory: paymentHistory,
       createdAt: new Date(),
       status: this.invoice.balancePayable === 0 ? 'PAID' as const : 
              this.invoice.advanceReceived > 0 ? 'PARTIAL' as const : 'PENDING' as const
@@ -804,6 +870,11 @@ export class CreateInvoiceComponent implements OnInit {
       this.invoice.serviceDetails.push(serviceToAdd);
       this.onAmountChange(); // Recalculate totals
       
+      // Track service usage for sorting
+      if (this.newService.description && this.newService.description !== 'custom') {
+        this.incrementServiceUsage(this.newService.description);
+      }
+      
       // Reset the form
       this.newService = {
         description: '',
@@ -899,5 +970,61 @@ export class CreateInvoiceComponent implements OnInit {
     if (selectedValue) {
       this.invoice.paymentType = selectedValue;
     }
+  }
+
+  // Service usage tracking methods
+  loadServiceUsageData(): void {
+    try {
+      const savedUsage = localStorage.getItem('serviceUsageData');
+      if (savedUsage) {
+        const usageData = JSON.parse(savedUsage);
+        this.serviceOptionsWithUsage.forEach(service => {
+          if (usageData[service.name]) {
+            service.usageCount = usageData[service.name];
+          }
+        });
+      }
+    } catch (error) {
+      console.error('Error loading service usage data:', error);
+    }
+  }
+
+  saveServiceUsageData(): void {
+    try {
+      const usageData: { [key: string]: number } = {};
+      this.serviceOptionsWithUsage.forEach(service => {
+        usageData[service.name] = service.usageCount;
+      });
+      localStorage.setItem('serviceUsageData', JSON.stringify(usageData));
+    } catch (error) {
+      console.error('Error saving service usage data:', error);
+    }
+  }
+
+  incrementServiceUsage(serviceName: string): void {
+    const service = this.serviceOptionsWithUsage.find(s => s.name === serviceName);
+    if (service) {
+      service.usageCount++;
+      this.saveServiceUsageData();
+    }
+  }
+
+  // Bank account utility methods
+  getBankAccountDisplayName(bankAccount: any): string {
+    const maskedAccountNumber = this.getMaskedAccountNumber(bankAccount.accountNumber);
+    return `${bankAccount.bankName} - ${maskedAccountNumber}`;
+  }
+
+  getMaskedAccountNumber(accountNumber: string): string {
+    if (accountNumber.length <= 4) {
+      return accountNumber;
+    }
+    const lastFour = accountNumber.slice(-4);
+    const masked = 'X'.repeat(accountNumber.length - 4);
+    return masked + lastFour;
+  }
+
+  getSelectedBankDetails(): any {
+    return this.bankAccounts.find(bank => bank.id === this.invoice.selectedBank);
   }
 }

@@ -489,10 +489,37 @@ Thank you for your business! 🙏`;
       // Create payment record note
       const paymentNote = `Payment: ₹${paymentAmount.toLocaleString('en-IN')} via ${this.paymentForm.paymentType} on ${this.paymentForm.paymentDate}${this.paymentForm.reference ? ` (Ref: ${this.paymentForm.reference})` : ''}${this.paymentForm.notes ? ` - ${this.paymentForm.notes}` : ''}`;
 
+      // Create payment history entry
+      const paymentEntry = {
+        amount: paymentAmount,
+        date: this.paymentForm.paymentDate,
+        type: this.paymentForm.paymentType,
+        reference: this.paymentForm.reference || '',
+        notes: this.paymentForm.notes || ''
+      };
+
+      // Initialize payment history if it doesn't exist
+      const currentPaymentHistory = invoice.paymentHistory || [];
+      
+      // If this is the first payment and there was an initial advance, add it to history
+      if (currentPaymentHistory.length === 0 && invoice.advanceReceived > 0) {
+        currentPaymentHistory.push({
+          amount: invoice.advanceReceived,
+          date: invoice.invoiceDate, // Use invoice date as fallback
+          type: 'Cash', // Default type for existing advance
+          reference: '',
+          notes: 'Initial advance payment'
+        });
+      }
+
+      // Add new payment to history
+      currentPaymentHistory.push(paymentEntry);
+
       await this.invoiceService.updateInvoice(invoice.id!, {
         advanceReceived: newAdvanceReceived,
         balancePayable: newBalancePayable,
-        status: newStatus
+        status: newStatus,
+        paymentHistory: currentPaymentHistory
       });
 
       // Store the payment amount for success message before closing modal

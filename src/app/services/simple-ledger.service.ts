@@ -113,8 +113,23 @@ export class SimpleLedgerService {
           this.formatAmount(runningBalance)
         ]);
         
-        // If there's advance received, add credit entry
-        if (invoice.advanceReceived > 0) {
+        // Add individual payment entries from payment history
+        if (invoice.paymentHistory && invoice.paymentHistory.length > 0) {
+          invoice.paymentHistory.forEach((payment, index) => {
+            runningBalance -= payment.amount;
+            const paymentRef = payment.reference ? payment.reference : `PAY-${invoice.invoiceNumber}-${index + 1}`;
+            ledgerData.push([
+              this.formatDateShort(new Date(payment.date)),
+              `To Cash/Bank A/c (${payment.type} payment)`,
+              payment.type,
+              paymentRef,
+              '',
+              this.formatAmount(payment.amount),
+              this.formatAmount(runningBalance)
+            ]);
+          });
+        } else if (invoice.advanceReceived > 0) {
+          // Fallback for existing invoices without payment history
           runningBalance -= invoice.advanceReceived;
           ledgerData.push([
             invoiceDate,

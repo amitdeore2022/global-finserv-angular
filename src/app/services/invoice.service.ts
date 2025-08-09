@@ -24,6 +24,13 @@ export interface Invoice {
   totalAmount: number;
   advanceReceived: number;
   balancePayable: number;
+  paymentHistory?: Array<{
+    amount: number;
+    date: string;
+    type: string;
+    reference?: string;
+    notes?: string;
+  }>;
   selectedBank: string;
   createdAt: Date;
   status: 'PENDING' | 'PAID' | 'PARTIAL';
