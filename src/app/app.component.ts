@@ -103,13 +103,15 @@ export class AppComponent implements OnInit {
   showDashboardButton(): boolean {
     // Show dashboard button on all pages except login and the dashboard itself
     const currentUrl = this.router.url;
-    return currentUrl !== '/login' && currentUrl !== '/dashboard' && currentUrl !== '/' && currentUrl !== '';
+    const urlPath = currentUrl.split('?')[0]; // Remove query parameters
+    return urlPath !== '/login' && urlPath !== '/dashboard' && urlPath !== '/' && urlPath !== '';
   }
 
   showHomeButton(): boolean {
     // Show home button on all pages except login and the dashboard itself
     const currentUrl = this.router.url;
-    return currentUrl !== '/login' && currentUrl !== '/dashboard' && currentUrl !== '/' && currentUrl !== '';
+    const urlPath = currentUrl.split('?')[0]; // Remove query parameters
+    return urlPath !== '/login' && urlPath !== '/dashboard' && urlPath !== '/' && urlPath !== '';
   }
 
   isLoginPage(): boolean {
