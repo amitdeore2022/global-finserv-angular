@@ -477,21 +477,38 @@ export class PdfGenerationService {
   }
 
   private extractBankDetails(selectedBank: string): any {
-    // Default HDFC bank details for Global Financial Services
-    const defaultBankDetails = {
-      name: 'HDFC Bank, Thatte Nagar Branch',
-      accountHolder: 'Global Financial Services',
-      accountNumber: '50200107802130',
-      ifscCode: 'HDFC0000064'
+    // Bank account definitions
+    const bankAccounts: { [key: string]: any } = {
+      'hdfc_global': {
+        name: 'HDFC Bank, Thatte Nagar Branch',
+        accountHolder: 'Global Financial Services',
+        accountNumber: '50200107802130',
+        ifscCode: 'HDFC0000064'
+      },
+      'icici_pravin': {
+        name: 'ICICI Bank',
+        accountHolder: 'PRAVIN ANNASAHEB SHINDE',
+        accountNumber: '186901504098',
+        ifscCode: 'ICIC0001869'
+      }
     };
 
-    // If selectedBank contains our real HDFC details, use them
-    if (selectedBank && selectedBank.includes('HDFC Bank, Thatte Nagar Branch')) {
-      return defaultBankDetails;
+    // If selectedBank is an account ID, use the corresponding bank details
+    if (selectedBank && bankAccounts[selectedBank]) {
+      return bankAccounts[selectedBank];
     }
     
-    // For any other selection or if selectedBank is empty, use default
-    return defaultBankDetails;
+    // Legacy support - if selectedBank contains old string format
+    if (selectedBank && selectedBank.includes('HDFC Bank, Thatte Nagar Branch')) {
+      return bankAccounts['hdfc_global'];
+    }
+
+    if (selectedBank && selectedBank.includes('ICICI Bank')) {
+      return bankAccounts['icici_pravin'];
+    }
+    
+    // Default to HDFC account
+    return bankAccounts['hdfc_global'];
   }
 
     // ...existing code...

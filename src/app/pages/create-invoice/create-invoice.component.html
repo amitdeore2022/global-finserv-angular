@@ -26,6 +26,8 @@
             [max]="getCurrentDate()"
             (change)="onInvoiceDateChange()">
         </div>
+        <!-- Invoice number hidden from user interface -->
+        <!--
         <div class="form-group">
           <label for="invoiceNumber">Invoice Number</label>
           <input 
@@ -37,6 +39,7 @@
             readonly
             title="Invoice number is auto-generated based on selected date">
         </div>
+        -->
       </div>
     </div>
 
@@ -267,9 +270,7 @@
       <h4>💼 Service Details</h4>
       
       <!-- Add new service form -->
-      <div class="add-service-form">
-        <h4>{{ invoice.serviceDetails.length > 0 ? 'Add Another Service:' : 'Add Service:' }}</h4>
-        
+      <div class="add-service-form">        
         <div class="form-group">
           <label for="newServiceDescription">Service Description / Particulars *</label>
           <select 
@@ -424,7 +425,7 @@
         <label for="bankAccount">Select Bank Account (To Receive Amount) *</label>
         <select id="bankAccount" [(ngModel)]="invoice.selectedBank" name="bankAccount" class="form-control" required>
           <option value="">Select Bank Account</option>
-          <option *ngFor="let bank of bankAccounts" [value]="bank">{{bank}}</option>
+          <option *ngFor="let bank of bankAccounts" [value]="bank.id">{{getBankAccountDisplayName(bank)}}</option>
         </select>
       </div>
     </div>
@@ -507,9 +508,15 @@
         </div>
       </div>
 
-      <div class="bank-details-preview" *ngIf="invoice.selectedBank">
+      <div class="bank-details-preview" *ngIf="invoice.selectedBank && getSelectedBankDetails()">
         <h4>Payment Details:</h4>
-        <p><strong>Bank:</strong> {{ invoice.selectedBank }}</p>
+        <div *ngIf="getSelectedBankDetails() as bankDetails">
+          <p><strong>Bank:</strong> {{ bankDetails.bankName }}</p>
+          <p><strong>Account Holder:</strong> {{ bankDetails.accountHolder }}</p>
+          <p><strong>Account Number:</strong> {{ bankDetails.accountNumber }}</p>
+          <p><strong>IFSC Code:</strong> {{ bankDetails.ifscCode }}</p>
+          <p><strong>Account Type:</strong> {{ bankDetails.accountType }}</p>
+        </div>
         <p><strong>Payment Type:</strong> {{ invoice.paymentType }}</p>
         <p *ngIf="invoice.paymentNotes"><strong>Notes:</strong> {{ invoice.paymentNotes }}</p>
       </div>
