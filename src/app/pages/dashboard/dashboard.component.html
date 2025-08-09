@@ -37,13 +37,8 @@
       </button>
 
       <!-- Revenue Actions -->
-      <button class="action-btn" (click)="setActiveSection('monthlyRevenue')">
-        <div class="btn-icon">
-          <i class="fas fa-calendar"></i>
-        </div>
-        <span class="btn-label">Monthly Revenue</span>
-      </button>
-
+      <!-- Monthly Revenue button moved to Revenue Reports sub-menu -->
+      
       <!-- Customer Revenue button hidden as requested -->
       <!-- <button class="action-btn" (click)="setActiveSection('customerRevenue')">
         <div class="btn-icon">
@@ -52,146 +47,23 @@
         <span class="btn-label">Customer Revenue</span>
       </button> -->
 
-      <button class="action-btn" (click)="setActiveSection('revenueReports')">
+      <button class="action-btn" (click)="showRevenueReportsComingSoon()">
         <div class="btn-icon">
           <i class="fas fa-chart-bar"></i>
         </div>
         <span class="btn-label">Revenue Reports</span>
       </button>
+
+      <button class="action-btn" (click)="navigateToQuickStats()">
+        <div class="btn-icon">
+          <i class="fas fa-tachometer-alt"></i>
+        </div>
+        <span class="btn-label">Quick Stats</span>
+      </button>
     </div>
   </div>
 
-  <!-- Quick Stats Section (keeping from improvements) -->
-  <div class="quick-stats">
-    <h3 class="stats-title">Quick Stats</h3>
-    <div class="stats-grid">
-      <div class="stat-card total-revenue">
-        <div class="stat-icon">
-          <i class="fas fa-rupee-sign"></i>
-        </div>
-        <div class="stat-content">
-          <h4>Total Revenue</h4>
-          <p class="stat-value">₹{{ totalRevenue | number:'1.2-2' }}</p>
-        </div>
-      </div>
-
-      <div class="stat-card outstanding-amount">
-        <div class="stat-icon">
-          <i class="fas fa-clock"></i>
-        </div>
-        <div class="stat-content">
-          <h4>Outstanding Amount</h4>
-          <p class="stat-value">₹{{ outstandingAmount | number:'1.2-2' }}</p>
-        </div>
-      </div>
-
-      <div class="stat-card collection-rate">
-        <div class="stat-icon">
-          <i class="fas fa-percentage"></i>
-        </div>
-        <div class="stat-content">
-          <h4>Collection Rate</h4>
-          <p class="stat-value">{{ collectionRate | number:'1.1-1' }}%</p>
-        </div>
-      </div>
-
-      <div class="stat-card total-customers" (click)="navigateToViewCustomers()">
-        <div class="stat-icon">
-          <i class="fas fa-users"></i>
-        </div>
-        <div class="stat-content">
-          <h4>Total Customers</h4>
-          <p class="stat-value">{{ totalCustomers }}</p>
-        </div>
-      </div>
-
-      <div class="stat-card total-invoices" (click)="navigateToViewInvoices()">
-        <div class="stat-icon">
-          <i class="fas fa-file-invoice-dollar"></i>
-        </div>
-        <div class="stat-content">
-          <h4>Total Invoices</h4>
-          <p class="stat-value">{{ totalInvoices }}</p>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Revenue Sections (from original) -->
-  <!-- Monthly Revenue Section -->
-  <div *ngIf="activeCategory === 'revenue' && activeSection === 'monthlyRevenue'" class="section-container">
-    <h3>Monthly Revenue Overview</h3>
-    <div class="revenue-cards">
-      <div class="revenue-card">
-        <h4>This Month</h4>
-        <div class="revenue-amount">₹{{ totalRevenue | number:'1.2-2' }}</div>
-        <div class="revenue-trend positive">Current period</div>
-      </div>
-      <div class="revenue-card">
-        <h4>Outstanding</h4>
-        <div class="revenue-amount">₹{{ outstandingAmount | number:'1.2-2' }}</div>
-        <div class="revenue-trend">Pending collection</div>
-      </div>
-      <div class="revenue-card">
-        <h4>Collection Rate</h4>
-        <div class="revenue-amount">{{ collectionRate | number:'1.1-1' }}%</div>
-        <div class="revenue-trend">Efficiency rate</div>
-      </div>
-    </div>
-    <div class="chart-container">
-      <h4>Monthly Revenue Trend</h4>
-      <div class="chart-placeholder">
-        <p>📊 Chart will display monthly revenue trends</p>
-        <small>Integration with charting library can be added here</small>
-      </div>
-    </div>
-  </div>
-
-  <!-- Customer Revenue Section -->
-  <div *ngIf="activeCategory === 'revenue' && activeSection === 'customerRevenue'" class="section-container">
-    <h3>Customer Revenue Analysis</h3>
-    <div class="customer-revenue-list">
-      <div class="customer-revenue-header">
-        <span>Customer</span>
-        <span>Total Revenue</span>
-        <span>Invoices</span>
-        <span>Outstanding</span>
-      </div>
-      <div class="customer-revenue-row" *ngFor="let customer of customers">
-        <span class="customer-name">{{ customer.name }}</span>
-        <span class="revenue-amount">₹0.00</span>
-        <span class="invoice-count">0</span>
-        <span class="outstanding paid">₹0.00</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- Revenue Reports Section -->
-  <div *ngIf="activeCategory === 'revenue' && activeSection === 'revenueReports'" class="section-container">
-    <h3>Revenue Reports & Analytics</h3>
-    <div class="report-options">
-      <div class="report-card">
-        <h4>📊 Income Statement</h4>
-        <p>Detailed breakdown of revenue, expenses, and profit</p>
-        <button class="report-btn">Generate Report</button>
-      </div>
-      <div class="report-card">
-        <h4>📈 Revenue Growth</h4>
-        <p>Year-over-year and month-over-month growth analysis</p>
-        <button class="report-btn">Generate Report</button>
-      </div>
-      <div class="report-card">
-        <h4>💰 Payment Analytics</h4>
-        <p>Payment patterns, collection efficiency, and aging analysis</p>
-        <button class="report-btn">Generate Report</button>
-      </div>
-      <div class="report-card">
-        <h4>📋 Tax Summary</h4>
-        <p>GST and tax summaries for compliance reporting</p>
-        <button class="report-btn">Generate Report</button>
-      </div>
-    </div>
-  </div>
+  <!-- Revenue Sections moved to dedicated Revenue Reports page -->
 </div>
 
 <!-- Coming Soon Popup Modal -->

@@ -189,15 +189,6 @@
     flex-direction: column;
     gap: 12px;
     position: relative;
-    align-items: center;
-  }
-
-  /* PWA Mobile: Position logout button separately */
-  .header-actions {
-    position: static;
-    align-self: flex-end;
-    margin-top: 10px;
-    gap: 8px;
   }
 
   .logo-title-section {
@@ -219,8 +210,17 @@
     font-size: 12px;
   }
 
+  /* PWA Mobile: Position logout button centered in header */
+  .header-actions {
+    position: absolute;
+    bottom: 5px;
+    left: 50%;
+    transform: translateX(-50%);
+    gap: 8px;
+  }
+
   .global-header {
-    padding: 15px 0 20px 0; /* Reduced padding since button is not absolute positioned */
+    padding: 15px 0 35px 0; /* Added more bottom padding for positioned buttons */
   }
 
   .logout-btn {

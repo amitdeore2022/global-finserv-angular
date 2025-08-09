@@ -6,6 +6,8 @@ import { ViewCustomerComponent } from './pages/view-customer/view-customer.compo
 import { CreateInvoiceComponent } from './pages/create-invoice/create-invoice.component';
 import { ViewInvoicesComponent } from './pages/view-invoices/view-invoices.component';
 import { InvoicePreviewComponent } from './pages/invoice-preview/invoice-preview.component';
+import { QuickStatsComponent } from './pages/quick-stats/quick-stats.component';
+import { RevenueReportsComponent } from './pages/revenue-reports/revenue-reports.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -17,4 +19,6 @@ export const routes: Routes = [
   { path: 'view-invoices', component: ViewInvoicesComponent },
   { path: 'invoice-preview/:id', component: InvoicePreviewComponent },
   { path: 'invoice-preview', component: InvoicePreviewComponent },
+  { path: 'quick-stats', component: QuickStatsComponent },
+  { path: 'revenue-reports', component: RevenueReportsComponent },
 ];
