@@ -305,52 +305,9 @@ export class CreateInvoiceComponent implements OnInit {
   async loadCustomers() {
     try {
       this.existingCustomers = await this.customerService.getCustomers();
-      
-      // If no customers exist, add some sample customers for testing
-      if (this.existingCustomers.length === 0) {
-        await this.addSampleCustomers();
-        this.existingCustomers = await this.customerService.getCustomers();
-      }
     } catch (error) {
       console.error('Error loading customers:', error);
       this.existingCustomers = [];
-    }
-  }
-
-  private async addSampleCustomers() {
-    const sampleCustomers = [
-      {
-        name: 'Mr. Rahul Sharma',
-        mobile: '+91 9876543210',
-        email: 'rahul.sharma@email.com',
-        address: '123 MG Road, Mumbai, Maharashtra - 400001',
-        gst: 'GST123456789',
-        dueAmount: 0
-      },
-      {
-        name: 'Ms. Priya Patel',
-        mobile: '+91 9876543211',
-        email: 'priya.patel@email.com',
-        address: '456 FC Road, Pune, Maharashtra - 411004',
-        gst: 'GST987654321',
-        dueAmount: 0
-      },
-      {
-        name: 'Innovative Solutions Pvt Ltd',
-        mobile: '+91 9876543212',
-        email: 'contact@innovative.com',
-        address: '789 IT Park, Bangalore, Karnataka - 560001',
-        gst: 'GST456789123',
-        dueAmount: 0
-      }
-    ];
-
-    for (const customer of sampleCustomers) {
-      try {
-        await this.customerService.addCustomer(customer);
-      } catch (error) {
-        console.error('Error adding sample customer:', error);
-      }
     }
   }
 
