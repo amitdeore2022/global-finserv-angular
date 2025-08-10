@@ -179,12 +179,18 @@ export class PdfGenerationNewService {
     doc.setFont('helvetica', 'bold');
     doc.text('Invoice No.', 138, 93);
     doc.text('Date', 138, 100);
+    if (invoice.createdBy) {
+      doc.text('Created By', 138, 107);
+    }
     doc.setFont('helvetica', 'normal');
     doc.text(': ' + invoice.invoiceNumber, 163, 93);
     doc.text(': ' + this.formatDate(invoice.invoiceDate), 163, 100);
+    if (invoice.createdBy) {
+      doc.text(': ' + invoice.createdBy, 163, 107);
+    }
   }
 
-  private addServicesTable(doc: jsPDF, invoice: any, isFirstPage: boolean, startIndex: number = 0, startY: number = 120): number {
+  private addServicesTable(doc: jsPDF, invoice: any, isFirstPage: boolean, startIndex: number = 0, startY: number = 127): number {
     let currentY = startY;
     
     // Table header
@@ -196,7 +202,7 @@ export class PdfGenerationNewService {
     
     doc.setFontSize(10);
     doc.setFont('helvetica', 'bold');
-    if (startY === 120) {
+    if (startY === 127) {
       doc.text('Fees for Professional services rendered as under :', 18, currentY + 7);
     } else {
       doc.text('Services (Continued) :', 18, currentY + 7);

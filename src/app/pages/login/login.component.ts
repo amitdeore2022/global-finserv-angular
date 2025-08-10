@@ -15,6 +15,7 @@ export class LoginComponent implements OnInit {
   email = '';
   password = '';
   errorMessage = '';
+  showForgotMessage = false;
   deferredPrompt: any = null;
   showInstallButton = false;
 
@@ -85,5 +86,16 @@ export class LoginComponent implements OnInit {
       console.error('❌ Login error:', error.message);
       this.errorMessage = 'Invalid email or password';
     }
+  }
+
+  showForgotPasswordMessage(event: Event) {
+    event.preventDefault();
+    this.showForgotMessage = true;
+    this.errorMessage = ''; // Clear any existing error messages
+    
+    // Hide the message after 5 seconds
+    setTimeout(() => {
+      this.showForgotMessage = false;
+    }, 5000);
   }
 }

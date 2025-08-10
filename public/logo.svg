@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">
+  <defs>
+    <!-- Gradients for the three circles matching your image -->
+    <radialGradient id="blueCircle" cx="50%" cy="30%" r="70%">
+      <stop offset="0%" style="stop-color:#5DADE2;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#2874A6;stop-opacity:1" />
+    </radialGradient>
+    <radialGradient id="greenCircle" cx="50%" cy="30%" r="70%">
+      <stop offset="0%" style="stop-color:#58D68D;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#27AE60;stop-opacity:1" />
+    </radialGradient>
+    <radialGradient id="orangeCircle" cx="50%" cy="30%" r="70%">
+      <stop offset="0%" style="stop-color:#F7DC6F;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#F39C12;stop-opacity:1" />
+    </radialGradient>
+  </defs>
+  
+  <!-- Clean background -->
+  <rect x="0" y="0" width="400" height="400" fill="#f8f9fa"/>
+  
+  <!-- Three overlapping circles as in your image -->
+  <!-- Blue circle (top-right) -->
+  <circle cx="240" cy="140" r="60" fill="url(#blueCircle)" opacity="0.95"/>
+  
+  <!-- Green circle (bottom-left) -->
+  <circle cx="160" cy="200" r="60" fill="url(#greenCircle)" opacity="0.95"/>
+  
+  <!-- Orange circle (bottom-right) -->
+  <circle cx="240" cy="200" r="60" fill="url(#orangeCircle)" opacity="0.95"/>
+  
+  <!-- White overlap effect in center -->
+  <circle cx="200" cy="170" r="20" fill="rgba(255,255,255,0.8)"/>
+  
+  <!-- Company name text -->
+  <text x="200" y="310" text-anchor="middle" font-family="'Arial', 'Helvetica', sans-serif" font-size="32" font-weight="bold" fill="#2C3E50">
+    GLOBAL
+  </text>
+  <text x="200" y="340" text-anchor="middle" font-family="'Arial', 'Helvetica', sans-serif" font-size="18" font-weight="600" fill="#5D6D7E">
+    FINANCIAL SERVICES
+  </text>
+</svg>

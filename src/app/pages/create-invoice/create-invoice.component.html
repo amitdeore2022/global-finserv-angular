@@ -26,6 +26,19 @@
             [max]="getCurrentDate()"
             (change)="onInvoiceDateChange()">
         </div>
+        <div class="form-group">
+          <label for="createdBy">Created By</label>
+          <select 
+            id="createdBy" 
+            [(ngModel)]="invoice.createdBy" 
+            name="createdBy"
+            class="form-control"
+            required>
+            <option value="">Select Creator</option>
+            <option value="Pravin">Pravin</option>
+            <option value="Pratik">Pratik</option>
+          </select>
+        </div>
         <!-- Invoice number hidden from user interface -->
         <!--
         <div class="form-group">
@@ -339,7 +352,22 @@
             <p *ngIf="service.notes">{{ service.notes }}</p>
           </div>
           <div class="service-actions">
-            <span class="service-amount">₹{{ service.amount | number:'1.2-2' }}</span>
+            <div class="service-amount-container">
+              <!-- Editable amount input when in edit mode -->
+              <input 
+                *ngIf="isEditMode"
+                type="number" 
+                class="service-amount-input"
+                [(ngModel)]="service.amount"
+                (ngModelChange)="calculateTotals()"
+                min="0"
+                step="0.01"
+                name="serviceAmount{{i}}"
+                placeholder="Amount"
+              />
+              <!-- Display only when not in edit mode -->
+              <span *ngIf="!isEditMode" class="service-amount">₹{{ service.amount | number:'1.2-2' }}</span>
+            </div>
             <button 
               type="button" 
               class="remove-service-btn"

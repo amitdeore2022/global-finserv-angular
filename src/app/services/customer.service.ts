@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Firestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, query, orderBy, QueryDocumentSnapshot, DocumentData } from '@angular/fire/firestore';
 
 export interface Customer {

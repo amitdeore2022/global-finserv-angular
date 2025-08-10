@@ -29,6 +29,7 @@ interface ServiceDetail {
 interface Invoice {
   invoiceNumber: string;
   invoiceDate: string;
+  createdBy: string;
   customer: Customer | null;
   customerType: 'existing' | 'new';
   searchTerm: string;
@@ -67,6 +68,7 @@ export class CreateInvoiceComponent implements OnInit {
   invoice: Invoice = {
     invoiceNumber: '',
     invoiceDate: this.getCurrentDate(),
+    createdBy: '',
     customer: null,
     customerType: 'existing',
     searchTerm: '',
@@ -303,52 +305,9 @@ export class CreateInvoiceComponent implements OnInit {
   async loadCustomers() {
     try {
       this.existingCustomers = await this.customerService.getCustomers();
-      
-      // If no customers exist, add some sample customers for testing
-      if (this.existingCustomers.length === 0) {
-        await this.addSampleCustomers();
-        this.existingCustomers = await this.customerService.getCustomers();
-      }
     } catch (error) {
       console.error('Error loading customers:', error);
       this.existingCustomers = [];
-    }
-  }
-
-  private async addSampleCustomers() {
-    const sampleCustomers = [
-      {
-        name: 'Mr. Rahul Sharma',
-        mobile: '+91 9876543210',
-        email: 'rahul.sharma@email.com',
-        address: '123 MG Road, Mumbai, Maharashtra - 400001',
-        gst: 'GST123456789',
-        dueAmount: 0
-      },
-      {
-        name: 'Ms. Priya Patel',
-        mobile: '+91 9876543211',
-        email: 'priya.patel@email.com',
-        address: '456 FC Road, Pune, Maharashtra - 411004',
-        gst: 'GST987654321',
-        dueAmount: 0
-      },
-      {
-        name: 'Innovative Solutions Pvt Ltd',
-        mobile: '+91 9876543212',
-        email: 'contact@innovative.com',
-        address: '789 IT Park, Bangalore, Karnataka - 560001',
-        gst: 'GST456789123',
-        dueAmount: 0
-      }
-    ];
-
-    for (const customer of sampleCustomers) {
-      try {
-        await this.customerService.addCustomer(customer);
-      } catch (error) {
-        console.error('Error adding sample customer:', error);
-      }
     }
   }
 
@@ -362,6 +321,7 @@ export class CreateInvoiceComponent implements OnInit {
         // Populate the form with invoice data
         this.invoice.invoiceNumber = invoice.invoiceNumber;
         this.invoice.invoiceDate = invoice.invoiceDate;
+        this.invoice.createdBy = invoice.createdBy || '';
         this.invoice.totalAmount = invoice.totalAmount;
         this.invoice.advanceReceived = invoice.advanceReceived;
         this.invoice.balancePayable = invoice.balancePayable;
@@ -735,6 +695,7 @@ export class CreateInvoiceComponent implements OnInit {
     return {
       invoiceNumber: this.invoice.invoiceNumber,
       invoiceDate: this.invoice.invoiceDate,
+      createdBy: this.invoice.createdBy,
       customer: customerData,
       serviceDetails: mappedServiceDetails,
       totalAmount: this.invoice.totalAmount,
@@ -774,6 +735,11 @@ export class CreateInvoiceComponent implements OnInit {
   }
 
   validateInvoice(): boolean {
+    if (!this.invoice.createdBy) {
+      alert('Please select who created this invoice');
+      return false;
+    }
+
     if (!this.invoice.customer && this.invoice.customerType === 'existing') {
       alert('Please select a customer');
       return false;
@@ -933,8 +899,55 @@ export class CreateInvoiceComponent implements OnInit {
 
   shareViaWhatsApp(): void {
     if (this.savedInvoiceId && this.invoice.customer) {
+      // Check if this is iOS PWA
+      if (this.isIOSPWA()) {
+        this.shareViaWebShareAPISimple();
+      } else {
+        // Original behavior for Android/Desktop
+        const message = `Invoice ${this.invoice.invoiceNumber} for amount ₹${this.invoice.totalAmount} has been generated. Balance amount: ₹${this.invoice.balancePayable}`;
+        const whatsappUrl = `https://wa.me/91${this.invoice.customer?.mobile}?text=${encodeURIComponent(message)}`;
+        window.open(whatsappUrl, '_blank');
+      }
+    }
+  }
+
+  // Check if running on iOS PWA
+  private isIOSPWA(): boolean {
+    const userAgent = window.navigator.userAgent;
+    const isIOS = /iPad|iPhone|iPod/.test(userAgent);
+    const isPWA = window.matchMedia('(display-mode: standalone)').matches || 
+                  (window.navigator as any).standalone === true;
+    return isIOS && isPWA;
+  }
+
+  // iOS PWA: Simple share via Web Share API
+  private async shareViaWebShareAPISimple(): Promise<void> {
+    try {
+      console.log('📱 iOS PWA detected - using Web Share API for simple share');
+      
       const message = `Invoice ${this.invoice.invoiceNumber} for amount ₹${this.invoice.totalAmount} has been generated. Balance amount: ₹${this.invoice.balancePayable}`;
-      const whatsappUrl = `https://wa.me/91${this.invoice.customer.mobile}?text=${encodeURIComponent(message)}`;
+      
+      // Prepare share data (text only for simple share)
+      const shareData = {
+        title: `Invoice ${this.invoice.invoiceNumber}`,
+        text: message
+      };
+
+      // Check if Web Share API is available
+      if (navigator.share) {
+        await navigator.share(shareData);
+        console.log('📱 Message shared successfully via Web Share API');
+      } else {
+        // Fallback: Show instructions
+        alert('iOS PWA: Please use Safari\'s share button to share this invoice details via WhatsApp.');
+      }
+      
+    } catch (error) {
+      console.error('Error sharing via Web Share API:', error);
+      
+      // Fallback to original WhatsApp URL
+      const message = `Invoice ${this.invoice.invoiceNumber} for amount ₹${this.invoice.totalAmount} has been generated. Balance amount: ₹${this.invoice.balancePayable}`;
+      const whatsappUrl = `https://wa.me/91${this.invoice.customer?.mobile}?text=${encodeURIComponent(message)}`;
       window.open(whatsappUrl, '_blank');
     }
   }
