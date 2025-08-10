@@ -212,12 +212,11 @@
     font-size: 12px;
   }
 
-  /* PWA Mobile: Position logout button centered in header */
+  /* PWA Mobile: Position logout button in top-right corner */
   .header-actions {
     position: absolute;
-    bottom: 8px;
-    left: 50%;
-    transform: translateX(-50%);
+    top: 15px;
+    right: 15px;
     gap: 8px;
     z-index: 10;
     width: auto;
@@ -225,7 +224,7 @@
   }
 
   .global-header {
-    padding: 15px 0 60px 0; /* Increased bottom padding for button clearance */
+    padding: 15px 0 20px 0; /* Reduced bottom padding since buttons are now top-positioned */
   }
 
   .logout-btn {
