@@ -435,10 +435,23 @@
 }
 
 /* Remove any dropdown arrows from selected customer card */
+.customer-card.selected,
+.customer-card.selected *,
+.customer-card.selected p,
+.customer-card.selected div,
+.customer-card.selected span {
+  position: relative !important;
+}
+
 .customer-card.selected p::after,
-.customer-card.selected p::before {
+.customer-card.selected p::before,
+.customer-card.selected *::after,
+.customer-card.selected *::before,
+.customer-card.selected::after,
+.customer-card.selected::before {
   display: none !important;
   content: none !important;
+  visibility: hidden !important;
 }
 
 /* Remove all possible arrow/chevron indicators */
@@ -447,6 +460,7 @@
 .customer-card.selected div,
 .customer-card.selected span {
   background-image: none !important;
+  list-style: none !important;
 }
 
 /* Hide any chevron/arrow icons specifically */
@@ -455,16 +469,25 @@
 .customer-card.selected .fa-caret-down,
 .customer-card.selected i[class*="chevron"],
 .customer-card.selected i[class*="angle"],
-.customer-card.selected i[class*="caret"] {
+.customer-card.selected i[class*="caret"],
+.customer-card.selected i[class*="arrow"] {
   display: none !important;
   visibility: hidden !important;
+  opacity: 0 !important;
 }
 
-/* Remove any absolute positioned arrows */
-.customer-card.selected *::after,
-.customer-card.selected *::before {
-  content: none !important;
-  display: none !important;
+/* Remove any cursor pointer that might indicate clickability */
+.customer-card.selected,
+.customer-card.selected * {
+  cursor: default !important;
+  pointer-events: none !important;
+}
+
+/* Allow only the clear button to be clickable */
+.customer-card.selected ~ .selected-customer-header .clear-customer-btn,
+.selected-customer-header .clear-customer-btn {
+  pointer-events: auto !important;
+  cursor: pointer !important;
 }
 
 .customer-card.selected p strong {
@@ -674,6 +697,35 @@
   border: 1px solid #c3e6cb;
   min-width: 80px;
   text-align: center;
+}
+
+.service-amount-container {
+  display: flex;
+  align-items: center;
+}
+
+.service-amount-input {
+  font-weight: 600;
+  color: #28a745;
+  font-size: 15px;
+  background: #f8fff9;
+  padding: 6px 12px;
+  border-radius: 4px;
+  border: 1px solid #c3e6cb;
+  min-width: 100px;
+  text-align: center;
+  transition: all 0.2s ease;
+}
+
+.service-amount-input:focus {
+  outline: none;
+  border-color: #28a745;
+  box-shadow: 0 0 0 2px rgba(40, 167, 69, 0.2);
+  background: #ffffff;
+}
+
+.service-amount-input:hover {
+  border-color: #20c997;
 }
 
 .remove-service-btn {
