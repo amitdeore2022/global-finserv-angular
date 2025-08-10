@@ -226,119 +226,15 @@ export class ViewInvoicesComponent implements OnInit {
         whatsappButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating PDF...';
       }
 
-      // Always generate and download PDF for WhatsApp sharing
-      console.log('📄 Generating PDF for WhatsApp sharing...');
-      
-      // Check if this is the first download for this invoice
-      const downloadCountKey = `downloadCount_${invoice.invoiceNumber}`;
-      let downloadCount = parseInt(localStorage.getItem(downloadCountKey) || '0');
-      const isFirstDownload = downloadCount === 0;
-      
-      // Generate PDF with blob method
-      const pdfBlob = this.pdfService.generateInvoicePDFBlob(invoice);
-      
-      // Create standard filename
-      const customerName = invoice.customer?.name || 'Customer';
-      const sanitizedCustomerName = customerName.replace(/[^a-zA-Z0-9]/g, '_');
-      const baseFilename = `${sanitizedCustomerName}_INV_${invoice.invoiceNumber}`;
-      
-      if (isFirstDownload) {
-        // First download - normal download
-        console.log('📄 First download - normal download method');
-        const filename = `${baseFilename}.pdf`;
-        const url = window.URL.createObjectURL(pdfBlob);
-        const downloadLink = document.createElement('a');
-        downloadLink.href = url;
-        downloadLink.download = filename;
-        downloadLink.style.display = 'none';
-        
-        document.body.appendChild(downloadLink);
-        downloadLink.click();
-        document.body.removeChild(downloadLink);
-        
-        setTimeout(() => window.URL.revokeObjectURL(url), 1000);
-      } else {
-        // Subsequent downloads - use unique filename with timestamp to avoid browser cache
-        const timestamp = Date.now();
-        const uniqueFilename = `${baseFilename}_${timestamp}.pdf`;
-        
-        console.log('📄 Subsequent download - using unique filename to avoid popup');
-        
-        const url = window.URL.createObjectURL(pdfBlob);
-        const downloadLink = document.createElement('a');
-        downloadLink.href = url;
-        downloadLink.download = uniqueFilename;
-        downloadLink.style.display = 'none';
-        downloadLink.style.position = 'absolute';
-        downloadLink.style.left = '-9999px';
-        downloadLink.style.visibility = 'hidden';
-        
-        // Add random attribute to make it even more unique
-        downloadLink.setAttribute('data-unique-id', Math.random().toString(36).substr(2, 9));
-        
-        document.body.appendChild(downloadLink);
-        
-        // Trigger download immediately without timeout
-        downloadLink.click();
-        
-        // Clean up after a short delay
-        setTimeout(() => {
-          if (document.body.contains(downloadLink)) {
-            document.body.removeChild(downloadLink);
-          }
-          window.URL.revokeObjectURL(url);
-        }, 100);
-      }
-      
-      // Increment download count
-      downloadCount++;
-      localStorage.setItem(downloadCountKey, downloadCount.toString());
-      
-      console.log('📄 PDF download initiated:', `Download #${downloadCount}`);
-
-      // Update button text
-      if (whatsappButton) {
-        whatsappButton.innerHTML = '<i class="fab fa-whatsapp"></i> Opening WhatsApp...';
+      // Check if this is iOS PWA
+      if (this.isIOSPWA()) {
+        // iOS PWA: Use Web Share API to share PDF
+        await this.shareViaWebShareAPI(invoice, whatsappButton);
+        return;
       }
 
-      // Wait a moment for the download to start, then open WhatsApp
-      setTimeout(() => {
-        // Prepare WhatsApp message
-        const message = `🧾 *Invoice ${invoice.invoiceNumber}*
-
-👤 Customer: ${invoice.customer.name}
-📅 Date: ${new Date(invoice.invoiceDate).toLocaleDateString('en-IN')}
-💰 Total: ₹${invoice.totalAmount.toLocaleString('en-IN')}
-💳 Advance: ₹${invoice.advanceReceived.toLocaleString('en-IN')}
-🔄 Balance: ₹${invoice.balancePayable.toLocaleString('en-IN')}
-📊 Status: *${invoice.status}*
-
-💼 *Services:*
-${invoice.serviceDetails.map((service, index) => `${index + 1}. ${service.description} - ₹${service.amount.toLocaleString('en-IN')}`).join('\n')}
-
-🏦 *Payment:*
-${invoice.selectedBank}
-
-📱 *GLOBAL FINANCIAL SERVICES*
-☎️ 9623736781 | 9604722533
-📍 Nashik - 422003
-
-Thank you for your business! 🙏`;
-
-        // Open WhatsApp with the message
-        const phoneNumber = invoice.customer.mobile.replace(/\D/g, '');
-        const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
-        window.open(whatsappUrl, '_blank');
-
-        // Reset button after WhatsApp opens
-        setTimeout(() => {
-          if (whatsappButton) {
-            whatsappButton.disabled = false;
-            whatsappButton.innerHTML = '<i class="fab fa-whatsapp"></i> WhatsApp';
-          }
-        }, 2000);
-
-      }, 1500); // 1.5 second delay to allow PDF download to start
+      // Android/Desktop: Original behavior (download + WhatsApp link)
+      await this.shareViaDownloadAndWhatsApp(invoice, whatsappButton, invoiceId);
 
     } catch (error) {
       console.error('Error sharing on WhatsApp:', error);
@@ -351,6 +247,188 @@ Thank you for your business! 🙏`;
         whatsappButton.innerHTML = '<i class="fab fa-whatsapp"></i> WhatsApp';
       }
     }
+  }
+
+  // Check if running on iOS PWA
+  private isIOSPWA(): boolean {
+    const userAgent = window.navigator.userAgent;
+    const isIOS = /iPad|iPhone|iPod/.test(userAgent);
+    const isPWA = window.matchMedia('(display-mode: standalone)').matches || 
+                  (window.navigator as any).standalone === true;
+    return isIOS && isPWA;
+  }
+
+  // iOS PWA: Share PDF via Web Share API
+  private async shareViaWebShareAPI(invoice: any, whatsappButton: HTMLButtonElement | null) {
+    try {
+      console.log('📱 iOS PWA detected - using Web Share API');
+      
+      // Generate PDF blob
+      const pdfBlob = this.pdfService.generateInvoicePDFBlob(invoice);
+      
+      // Create filename
+      const customerName = invoice.customer?.name || 'Customer';
+      const sanitizedCustomerName = customerName.replace(/[^a-zA-Z0-9]/g, '_');
+      const filename = `${sanitizedCustomerName}_INV_${invoice.invoiceNumber}.pdf`;
+      
+      // Create File object for sharing
+      const pdfFile = new File([pdfBlob], filename, { type: 'application/pdf' });
+      
+      // Prepare share data
+      const shareData = {
+        title: `Invoice ${invoice.invoiceNumber}`,
+        text: `Invoice ${invoice.invoiceNumber} for ${invoice.customer.name} - Amount: ₹${invoice.totalAmount.toLocaleString('en-IN')}`,
+        files: [pdfFile]
+      };
+
+      // Check if Web Share API is available and supports files
+      if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
+        if (whatsappButton) {
+          whatsappButton.innerHTML = '<i class="fas fa-share-alt"></i> Opening Share...';
+        }
+        
+        await navigator.share(shareData);
+        console.log('📱 PDF shared successfully via Web Share API');
+      } else {
+        // Fallback: Show instructions for manual sharing
+        if (whatsappButton) {
+          whatsappButton.innerHTML = '<i class="fas fa-info-circle"></i> Share Instructions';
+        }
+        
+        alert('iOS PWA Sharing:\n\n1. Use the Safari share button (top-right)\n2. Select "Share PDF"\n3. Choose WhatsApp from the share options\n\nNote: Direct WhatsApp sharing is not supported in iOS PWA mode.');
+      }
+      
+    } catch (error) {
+      console.error('Error sharing via Web Share API:', error);
+      
+      // Show fallback message
+      alert('iOS PWA: Please use Safari\'s share button to share this PDF via WhatsApp.\n\nDirect sharing is not supported in PWA mode on iOS.');
+    } finally {
+      // Reset button
+      setTimeout(() => {
+        if (whatsappButton) {
+          whatsappButton.disabled = false;
+          whatsappButton.innerHTML = '<i class="fab fa-whatsapp"></i> WhatsApp';
+        }
+      }, 2000);
+    }
+  }
+
+  // Android/Desktop: Original behavior (download + WhatsApp link)
+  private async shareViaDownloadAndWhatsApp(invoice: any, whatsappButton: HTMLButtonElement | null, invoiceId: string) {
+    // Always generate and download PDF for WhatsApp sharing
+    console.log('📄 Generating PDF for WhatsApp sharing...');
+    
+    // Check if this is the first download for this invoice
+    const downloadCountKey = `downloadCount_${invoice.invoiceNumber}`;
+    let downloadCount = parseInt(localStorage.getItem(downloadCountKey) || '0');
+    const isFirstDownload = downloadCount === 0;
+    
+    // Generate PDF with blob method
+    const pdfBlob = this.pdfService.generateInvoicePDFBlob(invoice);
+    
+    // Create standard filename
+    const customerName = invoice.customer?.name || 'Customer';
+    const sanitizedCustomerName = customerName.replace(/[^a-zA-Z0-9]/g, '_');
+    const baseFilename = `${sanitizedCustomerName}_INV_${invoice.invoiceNumber}`;
+    
+    if (isFirstDownload) {
+      // First download - normal download
+      console.log('📄 First download - normal download method');
+      const filename = `${baseFilename}.pdf`;
+      const url = window.URL.createObjectURL(pdfBlob);
+      const downloadLink = document.createElement('a');
+      downloadLink.href = url;
+      downloadLink.download = filename;
+      downloadLink.style.display = 'none';
+      
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      document.body.removeChild(downloadLink);
+      
+      setTimeout(() => window.URL.revokeObjectURL(url), 1000);
+    } else {
+      // Subsequent downloads - use unique filename with timestamp to avoid browser cache
+      const timestamp = Date.now();
+      const uniqueFilename = `${baseFilename}_${timestamp}.pdf`;
+      
+      console.log('📄 Subsequent download - using unique filename to avoid popup');
+      
+      const url = window.URL.createObjectURL(pdfBlob);
+      const downloadLink = document.createElement('a');
+      downloadLink.href = url;
+      downloadLink.download = uniqueFilename;
+      downloadLink.style.display = 'none';
+      downloadLink.style.position = 'absolute';
+      downloadLink.style.left = '-9999px';
+      downloadLink.style.visibility = 'hidden';
+      
+      // Add random attribute to make it even more unique
+      downloadLink.setAttribute('data-unique-id', Math.random().toString(36).substr(2, 9));
+      
+      document.body.appendChild(downloadLink);
+      
+      // Trigger download immediately without timeout
+      downloadLink.click();
+      
+      // Clean up after a short delay
+      setTimeout(() => {
+        if (document.body.contains(downloadLink)) {
+          document.body.removeChild(downloadLink);
+        }
+        window.URL.revokeObjectURL(url);
+      }, 100);
+    }
+    
+    // Increment download count
+    downloadCount++;
+    localStorage.setItem(downloadCountKey, downloadCount.toString());
+    
+    console.log('📄 PDF download initiated:', `Download #${downloadCount}`);
+
+    // Update button text
+    if (whatsappButton) {
+      whatsappButton.innerHTML = '<i class="fab fa-whatsapp"></i> Opening WhatsApp...';
+    }
+
+    // Wait a moment for the download to start, then open WhatsApp
+    setTimeout(() => {
+      // Prepare WhatsApp message
+      const message = `🧾 *Invoice ${invoice.invoiceNumber}*
+
+👤 Customer: ${invoice.customer.name}
+📅 Date: ${new Date(invoice.invoiceDate).toLocaleDateString('en-IN')}
+💰 Total: ₹${invoice.totalAmount.toLocaleString('en-IN')}
+💳 Advance: ₹${invoice.advanceReceived.toLocaleString('en-IN')}
+🔄 Balance: ₹${invoice.balancePayable.toLocaleString('en-IN')}
+📊 Status: *${invoice.status}*
+
+💼 *Services:*
+${invoice.serviceDetails.map((service: any, index: number) => `${index + 1}. ${service.description} - ₹${service.amount.toLocaleString('en-IN')}`).join('\n')}
+
+🏦 *Payment:*
+${invoice.selectedBank}
+
+📱 *GLOBAL FINANCIAL SERVICES*
+☎️ 9623736781 | 9604722533
+📍 Nashik - 422003
+
+Thank you for your business! 🙏`;
+
+      // Open WhatsApp with the message
+      const phoneNumber = invoice.customer.mobile.replace(/\D/g, '');
+      const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+      window.open(whatsappUrl, '_blank');
+
+      // Reset button after WhatsApp opens
+      setTimeout(() => {
+        if (whatsappButton) {
+          whatsappButton.disabled = false;
+          whatsappButton.innerHTML = '<i class="fab fa-whatsapp"></i> WhatsApp';
+        }
+      }, 2000);
+
+    }, 1500); // 1.5 second delay to allow PDF download to start
   }
 
   editInvoice(invoiceId: string) {

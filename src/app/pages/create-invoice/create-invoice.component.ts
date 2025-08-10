@@ -899,8 +899,55 @@ export class CreateInvoiceComponent implements OnInit {
 
   shareViaWhatsApp(): void {
     if (this.savedInvoiceId && this.invoice.customer) {
+      // Check if this is iOS PWA
+      if (this.isIOSPWA()) {
+        this.shareViaWebShareAPISimple();
+      } else {
+        // Original behavior for Android/Desktop
+        const message = `Invoice ${this.invoice.invoiceNumber} for amount ₹${this.invoice.totalAmount} has been generated. Balance amount: ₹${this.invoice.balancePayable}`;
+        const whatsappUrl = `https://wa.me/91${this.invoice.customer?.mobile}?text=${encodeURIComponent(message)}`;
+        window.open(whatsappUrl, '_blank');
+      }
+    }
+  }
+
+  // Check if running on iOS PWA
+  private isIOSPWA(): boolean {
+    const userAgent = window.navigator.userAgent;
+    const isIOS = /iPad|iPhone|iPod/.test(userAgent);
+    const isPWA = window.matchMedia('(display-mode: standalone)').matches || 
+                  (window.navigator as any).standalone === true;
+    return isIOS && isPWA;
+  }
+
+  // iOS PWA: Simple share via Web Share API
+  private async shareViaWebShareAPISimple(): Promise<void> {
+    try {
+      console.log('📱 iOS PWA detected - using Web Share API for simple share');
+      
       const message = `Invoice ${this.invoice.invoiceNumber} for amount ₹${this.invoice.totalAmount} has been generated. Balance amount: ₹${this.invoice.balancePayable}`;
-      const whatsappUrl = `https://wa.me/91${this.invoice.customer.mobile}?text=${encodeURIComponent(message)}`;
+      
+      // Prepare share data (text only for simple share)
+      const shareData = {
+        title: `Invoice ${this.invoice.invoiceNumber}`,
+        text: message
+      };
+
+      // Check if Web Share API is available
+      if (navigator.share) {
+        await navigator.share(shareData);
+        console.log('📱 Message shared successfully via Web Share API');
+      } else {
+        // Fallback: Show instructions
+        alert('iOS PWA: Please use Safari\'s share button to share this invoice details via WhatsApp.');
+      }
+      
+    } catch (error) {
+      console.error('Error sharing via Web Share API:', error);
+      
+      // Fallback to original WhatsApp URL
+      const message = `Invoice ${this.invoice.invoiceNumber} for amount ₹${this.invoice.totalAmount} has been generated. Balance amount: ₹${this.invoice.balancePayable}`;
+      const whatsappUrl = `https://wa.me/91${this.invoice.customer?.mobile}?text=${encodeURIComponent(message)}`;
       window.open(whatsappUrl, '_blank');
     }
   }
